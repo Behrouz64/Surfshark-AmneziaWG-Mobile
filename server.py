@@ -59,6 +59,15 @@ class ScannerState:
             self.credentials.private_key = privkey.strip()
             self.credentials.address = address.strip() if address.strip() else "10.14.0.2/16"
             self.credentials.dns = dns.strip() if dns.strip() else "162.252.172.57, 149.154.159.92"
+            try:
+                if os.path.exists(self.data_file):
+                    with open(self.data_file, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                    data["user_interface"] = self.credentials.to_dict()
+                    with open(self.data_file, "w", encoding="utf-8") as f:
+                        json.dump(data, f, indent=2, ensure_ascii=False)
+            except Exception as e:
+                print(f"Error persisting credentials to {self.data_file}: {e}")
 
     def run_scan(self, continent: str = "All") -> List[ServerCluster]:
         with self._lock:
@@ -170,6 +179,7 @@ class MobileApiHandler(BaseHTTPRequestHandler):
                 "progress": GLOBAL_STATE.scan_progress,
                 "credentials": {
                     "has_key": GLOBAL_STATE.credentials.is_configured,
+                    "private_key": GLOBAL_STATE.credentials.private_key,
                     "address": GLOBAL_STATE.credentials.address,
                     "dns": GLOBAL_STATE.credentials.dns,
                     "preview": f"...{GLOBAL_STATE.credentials.private_key[-8:]}" if GLOBAL_STATE.credentials.is_configured else "Not Set",

@@ -175,6 +175,9 @@
             }
 
             if (data.credentials) {
+                if (data.credentials.private_key) {
+                    elements.inputPrivKey.value = data.credentials.private_key;
+                }
                 elements.inputAddress.value = data.credentials.address || '10.14.0.2/16';
                 elements.inputDns.value = data.credentials.dns || '162.252.172.57, 149.154.159.92';
             }
