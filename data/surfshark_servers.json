@@ -524,8 +524,8 @@
       "port": 51820,
       "public_key": "dZNq48noPkey9rwSbAU+masbafpDSaAmtAMaP+gzLxA=",
       "resolved_ips": [
-        "217.9.244.101",
-        "217.9.244.99"
+        "217.9.244.99",
+        "217.9.244.101"
       ],
       "secure_core": false,
       "port_forward": false,
