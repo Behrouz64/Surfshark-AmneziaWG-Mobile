@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a192f"/>
+      <stop offset="100%" stop-color="#020c1b"/>
+    </linearGradient>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#0891b2"/>
+    </linearGradient>
+    <linearGradient id="boltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#a5f3fc"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Squircle Base -->
+  <rect x="16" y="16" width="480" height="480" rx="110" fill="url(#bg)" stroke="#06b6d4" stroke-width="6" stroke-opacity="0.4"/>
+
+  <!-- Glowing Circular Accent -->
+  <circle cx="256" cy="256" r="160" fill="none" stroke="#06b6d4" stroke-width="3" stroke-dasharray="16 12" opacity="0.3"/>
+
+  <!-- Shark Fin Outline -->
+  <path d="M150 370 C 180 370, 240 360, 310 280 C 370 210, 380 160, 360 145 C 340 135, 290 190, 240 240 C 190 290, 160 330, 150 370 Z" fill="url(#cyanGrad)" filter="url(#glow)"/>
+
+  <!-- Central Lightning Bolt / Speed Accent -->
+  <polygon points="260,170 310,170 270,250 325,250 210,380 235,290 195,290" fill="url(#boltGrad)"/>
+</svg>

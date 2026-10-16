@@ -111,7 +111,7 @@ export default {
       if (expTimestamp > 0) {
         const daysLeft = Math.ceil((expTimestamp - nowSeconds) / 86400);
         const expDateStr = new Date(expTimestamp * 1000).toISOString().split("T")[0];
-        const infoRemark = encodeURIComponent(`⏳ [${deviceName || "Device"}] Active until ${expDateStr} (${daysLeft} days left)`);
+        const infoRemark = encodeURIComponent(`⏳ Subscription Active until ${expDateStr} (${daysLeft} days left)`);
         // Dummy non-routable node that acts as a visible status banner in Shadowrocket
         infoNode = `wg://10.255.255.1:51820?publicKey=dZNq48noPkey9rwSbAU%2BmasbafpDSaAmtAMaP%2BgzLxA%3D&privateKey=GJfG1b7zCubnBHQHdNyJVKDMtoylDQgfpqZDhm4jjVM%3D&ip=10.14.0.2#${infoRemark}`;
       }
@@ -119,24 +119,13 @@ export default {
       // Format target private key for URL query substitution
       const encodedDeviceKey = encodeURIComponent(deviceKey);
 
-      // Process nodes: substitute privateKey and append device label if provided
+      // Process nodes: substitute privateKey without altering server names
       const processedNodes = lines.map(line => {
         let node = line;
 
         // Replace private key if specified
         if (deviceKey) {
           node = node.replace(/privateKey=[^&]+/, `privateKey=${encodedDeviceKey}`);
-        }
-
-        // Add device name prefix to remark if specified
-        if (deviceName) {
-          const hashIndex = node.indexOf("#");
-          if (hashIndex !== -1) {
-            const beforeHash = node.substring(0, hashIndex + 1);
-            const currentRemark = decodeURIComponent(node.substring(hashIndex + 1));
-            const newRemark = encodeURIComponent(`[${deviceName}] ${currentRemark}`);
-            node = beforeHash + newRemark;
-          }
         }
 
         return node;

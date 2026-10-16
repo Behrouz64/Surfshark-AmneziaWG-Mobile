@@ -46,3 +46,6 @@ htmlcov/
 *.conf
 local_keys.json
 data/custom_credentials.json
+
+# Cloudflare Wrangler
+.wrangler/

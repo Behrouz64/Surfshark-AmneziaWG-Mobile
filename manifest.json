@@ -1,0 +1,26 @@
+{
+  "name": "Surfshark AmneziaWG",
+  "short_name": "Surfshark",
+  "description": "Surfshark AmneziaWG Mobile Scanner & Subscription Manager",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#06090e",
+  "theme_color": "#06090e",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

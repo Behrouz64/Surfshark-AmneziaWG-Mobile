@@ -5,8 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Surfshark">
     <meta name="theme-color" content="#0b0f17">
     <title>Surfshark AmneziaWG Mobile — Standalone DoH & Node Generator</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
     <style>
 /* Surfshark AmneziaWG Mobile Scanner - Modern Cupertino Dark Theme */
 
@@ -957,7 +962,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     <!-- Top Header -->
     <header class="app-header">
         <div class="header-left">
-            <div class="logo-icon">🦈</div>
+            <img src="icon-192.png" alt="App Icon" style="width: 34px; height: 34px; border-radius: 9px; border: 1px solid rgba(6, 182, 212, 0.4); box-shadow: 0 0 12px rgba(6, 182, 212, 0.2);" onerror="this.outerHTML='<div class='logo-icon'>🦈</div>'">
             <div>
                 <h1 class="app-title">Surfshark AWG Mobile</h1>
                 <p class="app-subtitle">Standalone DoH &amp; Shadowrocket Importer</p>
@@ -1116,6 +1121,18 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     <!-- AmneziaWG Obfuscation Settings -->
                     <div class="obfuscation-box">
                         <div class="obfuscation-title">🛡️ AmneziaWG Obfuscation Parameters (DPI Bypass)</div>
+                        
+                        <div class="form-group" style="margin-bottom: 12px;">
+                            <label for="cfg-obfs-preset">Obfuscation Preset</label>
+                            <select id="cfg-obfs-preset" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                                <option value="default">⚡ Standard / Surfshark Official (Default)</option>
+                                <option value="aggressive">🛡️ Aggressive DPI Bypass (Heavy Obfuscation)</option>
+                                <option value="light">🚀 Low Overhead / Low Ping (Fast &amp; Light)</option>
+                                <option value="extreme">🔥 Extreme Randomization (High Entropy)</option>
+                                <option value="custom">⚙️ Custom (Manual Edit)</option>
+                            </select>
+                        </div>
+
                         <div class="modal-grid-2">
                             <div class="form-group">
                                 <label for="cfg-jc">Jc (Junk Packets)</label>
@@ -1126,15 +1143,43 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                 <input type="number" id="cfg-jmin" value="50" min="1" max="1280">
                             </div>
                         </div>
-                        <div class="modal-grid-2">
+
+                        <div class="modal-grid-2" style="margin-top: 8px;">
                             <div class="form-group">
                                 <label for="cfg-jmax">Jmax (Max Junk Bytes)</label>
                                 <input type="number" id="cfg-jmax" value="1000" min="50" max="1420">
                             </div>
                             <div class="form-group">
-                                <label for="cfg-h1">H1 (Header Type 1)</label>
-                                <input type="number" id="cfg-h1" value="1" min="1" max="255">
+                                <label for="cfg-s1">S1 (Init Junk Size)</label>
+                                <input type="number" id="cfg-s1" value="0" min="0" max="1280">
                             </div>
+                        </div>
+
+                        <div class="modal-grid-2" style="margin-top: 8px;">
+                            <div class="form-group">
+                                <label for="cfg-s2">S2 (Resp Junk Size)</label>
+                                <input type="number" id="cfg-s2" value="0" min="0" max="1280">
+                            </div>
+                            <div class="form-group">
+                                <label for="cfg-h1">H1 (Handshake Type)</label>
+                                <input type="number" id="cfg-h1" value="1" min="1" max="65535">
+                            </div>
+                        </div>
+
+                        <div class="modal-grid-2" style="margin-top: 8px;">
+                            <div class="form-group">
+                                <label for="cfg-h2">H2 (Response Type)</label>
+                                <input type="number" id="cfg-h2" value="2" min="1" max="65535">
+                            </div>
+                            <div class="form-group">
+                                <label for="cfg-h3">H3 (Underload Type)</label>
+                                <input type="number" id="cfg-h3" value="3" min="1" max="65535">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 8px;">
+                            <label for="cfg-h4">H4 (Transport Type)</label>
+                            <input type="number" id="cfg-h4" value="4" min="1" max="65535">
                         </div>
                     </div>
 
@@ -1396,6 +1441,52 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         }
     };
 
+    const OBFUSCATION_PRESETS = {
+        default: {
+            name: "Standard",
+            jc: 4, jmin: 50, jmax: 1000, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4
+        },
+        aggressive: {
+            name: "Aggressive",
+            jc: 8, jmin: 80, jmax: 1280, s1: 15, s2: 15, h1: 1488, h2: 1489, h3: 1490, h4: 1491
+        },
+        light: {
+            name: "Light",
+            jc: 3, jmin: 40, jmax: 70, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4
+        },
+        extreme: {
+            name: "Extreme",
+            jc: 6, jmin: 100, jmax: 1100, s1: 20, s2: 20, h1: 2, h2: 5, h3: 7, h4: 9
+        }
+    };
+
+    function detectPreset(s) {
+        for (const [key, p] of Object.entries(OBFUSCATION_PRESETS)) {
+            if (
+                Number(s.jc) === p.jc && Number(s.jmin) === p.jmin && Number(s.jmax) === p.jmax &&
+                Number(s.s1) === p.s1 && Number(s.s2) === p.s2 &&
+                Number(s.h1) === p.h1 && Number(s.h2) === p.h2 && Number(s.h3) === p.h3 && Number(s.h4) === p.h4
+            ) {
+                return key;
+            }
+        }
+        return "custom";
+    }
+
+    function applyPresetValues(presetKey) {
+        const p = OBFUSCATION_PRESETS[presetKey];
+        if (!p) return;
+        document.getElementById("cfg-jc").value = p.jc;
+        document.getElementById("cfg-jmin").value = p.jmin;
+        document.getElementById("cfg-jmax").value = p.jmax;
+        document.getElementById("cfg-s1").value = p.s1;
+        document.getElementById("cfg-s2").value = p.s2;
+        document.getElementById("cfg-h1").value = p.h1;
+        document.getElementById("cfg-h2").value = p.h2;
+        document.getElementById("cfg-h3").value = p.h3;
+        document.getElementById("cfg-h4").value = p.h4;
+    }
+
     // Load Settings from LocalStorage
     function loadSavedSettings() {
         try {
@@ -1416,7 +1507,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         document.getElementById("cfg-jc").value = App.settings.jc;
         document.getElementById("cfg-jmin").value = App.settings.jmin;
         document.getElementById("cfg-jmax").value = App.settings.jmax;
-        document.getElementById("cfg-h1").value = App.settings.h1;
+        document.getElementById("cfg-s1").value = App.settings.s1 || 0;
+        document.getElementById("cfg-s2").value = App.settings.s2 || 0;
+        document.getElementById("cfg-h1").value = App.settings.h1 || 1;
+        document.getElementById("cfg-h2").value = App.settings.h2 || 2;
+        document.getElementById("cfg-h3").value = App.settings.h3 || 3;
+        document.getElementById("cfg-h4").value = App.settings.h4 || 4;
+
+        const presetKey = detectPreset(App.settings);
+        document.getElementById("cfg-obfs-preset").value = presetKey;
         document.getElementById("stat-provider").textContent = App.settings.doh_provider === "google" ? "Google" : "Cloudflare";
     }
 
@@ -1428,7 +1527,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         App.settings.jc = parseInt(document.getElementById("cfg-jc").value) || 4;
         App.settings.jmin = parseInt(document.getElementById("cfg-jmin").value) || 50;
         App.settings.jmax = parseInt(document.getElementById("cfg-jmax").value) || 1000;
+        App.settings.s1 = parseInt(document.getElementById("cfg-s1").value) || 0;
+        App.settings.s2 = parseInt(document.getElementById("cfg-s2").value) || 0;
         App.settings.h1 = parseInt(document.getElementById("cfg-h1").value) || 1;
+        App.settings.h2 = parseInt(document.getElementById("cfg-h2").value) || 2;
+        App.settings.h3 = parseInt(document.getElementById("cfg-h3").value) || 3;
+        App.settings.h4 = parseInt(document.getElementById("cfg-h4").value) || 4;
 
         localStorage.setItem("surfshark_awg_settings", JSON.stringify(App.settings));
         document.getElementById("stat-provider").textContent = App.settings.doh_provider === "google" ? "Google" : "Cloudflare";
@@ -1966,10 +2070,45 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             saveSettings();
             closeModal("modal-settings");
         });
+        // Preset change listener
+        document.getElementById("cfg-obfs-preset").addEventListener("change", (e) => {
+            const val = e.target.value;
+            if (val !== "custom") {
+                applyPresetValues(val);
+                showToast("Preset " + val + " loaded");
+            }
+        });
+
+        ["cfg-jc", "cfg-jmin", "cfg-jmax", "cfg-s1", "cfg-s2", "cfg-h1", "cfg-h2", "cfg-h3", "cfg-h4"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener("input", () => {
+                    const current = {
+                        jc: parseInt(document.getElementById("cfg-jc").value) || 0,
+                        jmin: parseInt(document.getElementById("cfg-jmin").value) || 0,
+                        jmax: parseInt(document.getElementById("cfg-jmax").value) || 0,
+                        s1: parseInt(document.getElementById("cfg-s1").value) || 0,
+                        s2: parseInt(document.getElementById("cfg-s2").value) || 0,
+                        h1: parseInt(document.getElementById("cfg-h1").value) || 0,
+                        h2: parseInt(document.getElementById("cfg-h2").value) || 0,
+                        h3: parseInt(document.getElementById("cfg-h3").value) || 0,
+                        h4: parseInt(document.getElementById("cfg-h4").value) || 0,
+                    };
+                    document.getElementById("cfg-obfs-preset").value = detectPreset(current);
+                });
+            }
+        });
+
         document.getElementById("btn-reset-settings").addEventListener("click", () => {
             localStorage.removeItem("surfshark_awg_settings");
+            App.settings = Object.assign(App.settings, OBFUSCATION_PRESETS.default, {
+                privkey: "eIAi8RMy6+QScRWERt/+jEedxdqro4FFJO9A8L3ptGU=",
+                address: "10.14.0.2/16",
+                dns: "162.252.172.57, 149.154.159.92",
+                doh_provider: "cloudflare"
+            });
             loadSavedSettings();
-            showToast("Settings reset to defaults");
+            showToast("Settings reset to Default Preset");
             applyFilters();
         });
 
