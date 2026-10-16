@@ -151,11 +151,15 @@ html_content = f'''<!DOCTYPE html>
                     <span class="btn-icon">📋</span>
                     <span>Copy All (Group)</span>
                 </button>
-                <button id="btn-download-zip" class="btn btn-secondary" title="Download all .conf configs in a single ZIP archive">
-                    <span class="btn-icon">📦</span>
-                    <span>Download ZIP</span>
+                <button id="btn-open-sub" class="btn btn-secondary" title="Direct subscription URL for Shadowrocket">
+                    <span class="btn-icon">🔗</span>
+                    <span>Subscription URL</span>
                 </button>
             </div>
+            <button id="btn-download-zip" class="btn btn-secondary btn-block" title="Download all .conf configs in a single ZIP archive">
+                <span class="btn-icon">📦</span>
+                <span>Download All .conf (ZIP)</span>
+            </button>
         </section>
 
         <!-- Continent Chips & Search -->
@@ -269,6 +273,45 @@ html_content = f'''<!DOCTYPE html>
                         <button type="button" id="btn-reset-settings" class="btn btn-secondary" style="flex: 1;">Reset</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Live Subscription Link -->
+    <div id="modal-sub" class="modal-overlay" style="display: none;">
+        <div class="modal-sheet">
+            <div class="modal-header">
+                <h2>Direct Shadowrocket Subscription</h2>
+                <button class="modal-close" data-close="modal-sub">✕</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-desc">
+                    Paste this subscription link directly into Shadowrocket. It automatically syncs 150+ multi-IP AmneziaWG nodes without needing any computer!
+                </p>
+                <div class="form-group">
+                    <label>Plain Text Subscription URL</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="sub-url-input" readonly value="https://behrouz64.github.io/Surfshark-AmneziaWG-Mobile/sub.txt" style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
+                        <button id="btn-copy-sub-url" class="btn btn-primary" style="padding: 8px 14px;">Copy</button>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 10px;">
+                    <label>Base64 Subscription URL</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="sub-b64-input" readonly value="https://behrouz64.github.io/Surfshark-AmneziaWG-Mobile/sub_base64.txt" style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
+                        <button id="btn-copy-b64-url" class="btn btn-secondary" style="padding: 8px 14px;">Copy</button>
+                    </div>
+                </div>
+                <div class="sub-steps" style="margin-top: 14px; background: var(--bg-main); padding: 12px; border-radius: var(--radius-md); font-size: 12px; border: 1px solid var(--border-color);">
+                    <h4 style="margin-bottom: 6px; color: var(--accent-cyan);">How to add in Shadowrocket:</h4>
+                    <ol style="padding-left: 18px; line-height: 1.6; color: var(--text-secondary);">
+                        <li>Tap <strong>Copy</strong> on either URL above.</li>
+                        <li>Open Shadowrocket on your iPhone and tap <strong>+</strong> (top-right).</li>
+                        <li>Select Type: <strong>Subscribe</strong>.</li>
+                        <li>Paste the URL and tap <strong>Save</strong>.</li>
+                        <li>All 150+ nodes will download and auto-update!</li>
+                    </ol>
+                </div>
             </div>
         </div>
     </div>
@@ -494,21 +537,22 @@ html_content = f'''<!DOCTYPE html>
     }}
 
     // Config & Link Builders
-    function buildRemark(srv) {{
+    function buildRemark(srv, targetIp = null, index = 0, total = 1) {{
         const loc = srv.city || srv.country;
-        const ip = srv.effective_ip || srv.hostname;
+        const ip = targetIp || srv.effective_ip || srv.hostname;
+        const suffix = total > 1 ? ` #${{index + 1}}` : "";
         const pingStr = srv.ping_ms ? ` — ${{srv.ping_ms}}ms` : "";
-        return `🦈 ${{srv.flag}} ${{srv.country}} — ${{loc}} (${{ip}})${{pingStr}}`;
+        return `🦈 ${{srv.flag}} ${{srv.country}} — ${{loc}}${{suffix}} (${{ip}})${{pingStr}}`;
     }}
 
-    function buildWireguardUrl(srv) {{
-        const ip = srv.effective_ip || (srv.resolved_ips && srv.resolved_ips[0]) || srv.hostname;
+    function buildWireguardUrl(srv, targetIp = null, index = 0, total = 1) {{
+        const ip = targetIp || srv.effective_ip || (srv.resolved_ips && srv.resolved_ips[0]) || srv.hostname;
         const s = App.settings;
         const privkey = encodeURIComponent(s.privkey);
         const pubkey = encodeURIComponent(srv.public_key);
         const addr = (s.address || "10.14.0.2").split("/")[0].trim();
         const dnsEncoded = encodeURIComponent(s.dns || "162.252.172.57, 149.154.159.92");
-        const remark = encodeURIComponent(buildRemark(srv));
+        const remark = encodeURIComponent(buildRemark(srv, ip, index, total));
 
         const obfsObj = {{
             s1: String(s.s1 !== undefined ? s.s1 : 0),
@@ -538,11 +582,12 @@ html_content = f'''<!DOCTYPE html>
         return `wg://${{ip}}:${{srv.port || 51820}}?${{params}}#${{remark}}`;
     }}
 
-    function buildAmneziaConf(srv) {{
-        const ip = srv.effective_ip || (srv.resolved_ips && srv.resolved_ips[0]) || srv.hostname;
+    function buildAmneziaConf(srv, targetIp = null, index = 0, total = 1) {{
+        const ip = targetIp || srv.effective_ip || (srv.resolved_ips && srv.resolved_ips[0]) || srv.hostname;
         const s = App.settings;
+        const suffix = total > 1 ? ` #${{index + 1}}` : "";
         return [
-            `# Surfshark AmneziaWG — ${{srv.country}} - ${{srv.city}}`,
+            `# Surfshark AmneziaWG — ${{srv.country}} - ${{srv.city}}${{suffix}}`,
             `# Endpoint: ${{ip}}:${{srv.port || 51820}}`,
             "",
             "[Interface]",
@@ -618,16 +663,23 @@ html_content = f'''<!DOCTYPE html>
         }}
 
         const html = servers.map(s => {{
-            const ip = s.effective_ip || (s.resolved_ips && s.resolved_ips[0]) || s.hostname;
-            const wgUrl = buildWireguardUrl(s);
+            const ips = (s.resolved_ips && s.resolved_ips.length > 0) ? s.resolved_ips : [s.effective_ip || s.hostname];
+            const primaryIp = ips[0];
+            const wgUrl = buildWireguardUrl(s, primaryIp, 0, ips.length);
             const deeplink = `shadowrocket://add/${{wgUrl}}`;
 
             let badgeHtml = "";
             if (s.is_doh_resolved) {{
-                badgeHtml = `<span class="badge badge-resolved">⚡ ${{s.ping_ms}}ms (DoH)</span>`;
+                badgeHtml = `<span class="badge badge-resolved">⚡ ${{s.ping_ms}}ms (${{ips.length}} IPs)</span>`;
             }} else {{
-                badgeHtml = `<span class="badge badge-unresolved">Seed IP</span>`;
+                badgeHtml = `<span class="badge badge-unresolved">Seed (${{ips.length}} IPs)</span>`;
             }}
+
+            const ipPills = ips.map((item, idx) => `
+                <button class="btn-card-action btn-copy-one" data-url="${{buildWireguardUrl(s, item, idx, ips.length)}}" style="font-size: 10px; padding: 2px 7px; margin-right: 4px; display: inline-flex;" title="Copy IP #${{idx + 1}}">
+                    #${{idx + 1}}: ${{item}} 📋
+                </button>
+            `).join("");
 
             return `
                 <div class="server-card ${{s.is_doh_resolved ? 'working' : ''}}">
@@ -636,7 +688,7 @@ html_content = f'''<!DOCTYPE html>
                             <span class="server-flag">${{s.flag}}</span>
                             <div>
                                 <div class="server-info-title">${{s.country}} · ${{s.city}}</div>
-                                <div class="server-info-sub">${{ip}}:${{s.port || 51820}}</div>
+                                <div class="server-info-sub" style="margin-top: 5px; display: flex; flex-wrap: wrap; gap: 4px;">${{ipPills}}</div>
                             </div>
                         </div>
                         <div>${{badgeHtml}}</div>
@@ -698,12 +750,16 @@ html_content = f'''<!DOCTYPE html>
             showToast("ZIP library loading... try again in a moment.");
             return;
         }}
-        showToast("Generating ZIP archive in browser...");
+        showToast("Generating ZIP archive with all resolved IPs...");
         const zip = new JSZip();
         App.servers.forEach(s => {{
             const continent = s.continent || "Other";
-            const fname = `${{continent}}/Surfshark_${{s.country}}_${{s.city}}_${{s.effective_ip || 'node'}}.conf`;
-            zip.file(fname, buildAmneziaConf(s));
+            const ips = (s.resolved_ips && s.resolved_ips.length > 0) ? s.resolved_ips : [s.effective_ip || 'node'];
+            ips.forEach((ip, idx) => {{
+                const suffix = ips.length > 1 ? `_IP${{idx + 1}}` : "";
+                const fname = `${{continent}}/Surfshark_${{s.country}}_${{s.city}}${{suffix}}_${{ip}}.conf`;
+                zip.file(fname, buildAmneziaConf(s, ip, idx, ips.length));
+            }});
         }});
 
         const content = await zip.generateAsync({{ type: "blob" }});
@@ -719,9 +775,15 @@ html_content = f'''<!DOCTYPE html>
     }}
 
     function openBatchModal() {{
-        const urls = App.filtered.map(s => buildWireguardUrl(s)).join("\\n");
-        document.getElementById("batch-count").textContent = App.filtered.length;
-        document.getElementById("batch-textarea").value = urls;
+        const urls = [];
+        App.filtered.forEach(s => {{
+            const ips = (s.resolved_ips && s.resolved_ips.length > 0) ? s.resolved_ips : [s.effective_ip || s.hostname];
+            ips.forEach((ip, idx) => {{
+                urls.push(buildWireguardUrl(s, ip, idx, ips.length));
+            }});
+        }});
+        document.getElementById("batch-count").textContent = urls.length;
+        document.getElementById("batch-textarea").value = urls.join("\\n");
         openModal("modal-batch");
     }}
 
@@ -849,6 +911,18 @@ html_content = f'''<!DOCTYPE html>
         document.getElementById("btn-resolve-all").addEventListener("click", resolveAllServers);
         document.getElementById("btn-download-zip").addEventListener("click", downloadAllZip);
         document.getElementById("btn-copy-all").addEventListener("click", openBatchModal);
+        document.getElementById("btn-open-sub").addEventListener("click", () => openModal("modal-sub"));
+
+        // Subscription Modal Copy buttons
+        document.getElementById("btn-copy-sub-url").addEventListener("click", () => {{
+            const url = document.getElementById("sub-url-input").value;
+            copyToClipboard(url, "Subscription URL copied! Paste into Shadowrocket.");
+        }});
+
+        document.getElementById("btn-copy-b64-url").addEventListener("click", () => {{
+            const url = document.getElementById("sub-b64-input").value;
+            copyToClipboard(url, "Base64 Subscription URL copied!");
+        }});
 
         // Batch Modal Copy buttons
         document.getElementById("btn-copy-batch-raw").addEventListener("click", () => {{

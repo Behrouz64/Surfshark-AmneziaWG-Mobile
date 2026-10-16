@@ -1,0 +1,36 @@
+name: Auto-Update Surfshark AmneziaWG Nodes & Subscription
+
+on:
+  schedule:
+    # Run twice daily at 00:00 and 12:00 UTC
+    - cron: '0 0,12 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  update-nodes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run DoH Resolver and Update Subscriptions
+        run: |
+          python update_subscription.py
+          python build_standalone.py
+
+      - name: Commit and push changes if updated
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/surfshark_servers.json sub.txt sub_base64.txt index.html templates/index.html surfshark_standalone.html
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore(auto): update DoH resolved IPs and subscription nodes [skip ci]" && git push origin main)
