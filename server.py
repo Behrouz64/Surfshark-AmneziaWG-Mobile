@@ -289,15 +289,26 @@ class MobileApiHandler(BaseHTTPRequestHandler):
 
 
 def get_local_ip() -> str:
-    """Detect LAN IPv4 address to show clickable link for phones on Wi-Fi."""
+    """Detect real LAN IPv4 address to show reachable link for phones on Wi-Fi."""
+    import subprocess
+    # Check macOS Wi-Fi interfaces en0/en1 first
+    for iface in ("en0", "en1"):
+        try:
+            out = subprocess.check_output(["ipconfig", "getifaddr", iface], stderr=subprocess.DEVNULL, text=True).strip()
+            if out and not out.startswith("198.18."):
+                return out
+        except Exception:
+            pass
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]
         s.close()
-        return ip
+        if not ip.startswith("198.18."):
+            return ip
     except Exception:
-        return "127.0.0.1"
+        pass
+    return "127.0.0.1"
 
 
 def main():
