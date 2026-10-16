@@ -52,29 +52,36 @@ class ConfigBuilder:
         dns = credentials.dns if credentials.dns else "162.252.172.57, 149.154.159.92"
 
         lines = [
-            f"# Surfshark AmneziaWG — {cluster.display_name}",
+            f"# Surfshark {'AmneziaWG' if preset.is_obfuscated else 'WireGuard'} — {cluster.display_name}",
             f"# Endpoint: {ip}:{cluster.port}",
             "",
             "[Interface]",
             f"PrivateKey = {privkey}",
             f"Address = {address}",
             f"DNS = {dns}",
-            f"Jc = {preset.jc}",
-            f"Jmin = {preset.jmin}",
-            f"Jmax = {preset.jmax}",
-            f"S1 = {preset.s1}",
-            f"S2 = {preset.s2}",
-            f"H1 = {preset.h1}",
-            f"H2 = {preset.h2}",
-            f"H3 = {preset.h3}",
-            f"H4 = {preset.h4}",
+        ]
+        if preset.is_obfuscated:
+            lines.extend([
+                "",
+                "# AmneziaWG Obfuscation (DPI Bypass)",
+                f"Jc = {preset.jc}",
+                f"Jmin = {preset.jmin}",
+                f"Jmax = {preset.jmax}",
+                f"S1 = {preset.s1}",
+                f"S2 = {preset.s2}",
+                f"H1 = {preset.h1}",
+                f"H2 = {preset.h2}",
+                f"H3 = {preset.h3}",
+                f"H4 = {preset.h4}",
+            ])
+        lines.extend([
             "",
             "[Peer]",
             f"PublicKey = {cluster.public_key}",
             "AllowedIPs = 0.0.0.0/0, ::/0",
             f"Endpoint = {ip}:{cluster.port}",
             "PersistentKeepalive = 25",
-        ]
+        ])
         return "\n".join(lines) + "\n"
 
     @classmethod
@@ -85,7 +92,7 @@ class ConfigBuilder:
         preset: Optional[ObfuscationPreset] = None,
         target_ip: Optional[str] = None,
     ) -> str:
-        """Generate a wg:// URI compliant with Shadowrocket's AmneziaWG obfuscation format."""
+        """Generate a wg:// URI compliant with Shadowrocket's WireGuard / AmneziaWG obfuscation format."""
         ip = target_ip or cluster.effective_ip
         if not ip:
             return ""
@@ -99,20 +106,6 @@ class ConfigBuilder:
         client_ip = credentials.address.split("/")[0].strip() if "/" in credentials.address else credentials.address.strip()
         dns_encoded = urllib.parse.quote(credentials.dns, safe="")
 
-        obfs_dict = {
-            "s1": str(preset.s1),
-            "h2": str(preset.h2),
-            "jmax": str(preset.jmax),
-            "s2": str(preset.s2),
-            "h3": str(preset.h3),
-            "jc": str(preset.jc),
-            "jmin": str(preset.jmin),
-            "h1": str(preset.h1),
-            "h4": str(preset.h4),
-        }
-        obfs_json = json.dumps(obfs_dict, separators=(",", ":"))
-        obfs_param = urllib.parse.quote(obfs_json)
-
         params = [
             f"publicKey={pubkey_encoded}",
             f"privateKey={privkey_encoded}",
@@ -121,9 +114,27 @@ class ConfigBuilder:
             "mtu=1280",
             "udp=1",
             "keepalive=25",
-            "obfs=amneziawg",
-            f"obfsParam={obfs_param}",
         ]
+
+        if preset.is_obfuscated:
+            obfs_dict = {
+                "s1": str(preset.s1),
+                "h2": str(preset.h2),
+                "jmax": str(preset.jmax),
+                "s2": str(preset.s2),
+                "h3": str(preset.h3),
+                "jc": str(preset.jc),
+                "jmin": str(preset.jmin),
+                "h1": str(preset.h1),
+                "h4": str(preset.h4),
+            }
+            obfs_json = json.dumps(obfs_dict, separators=(",", ":"))
+            obfs_param = urllib.parse.quote(obfs_json)
+            params.extend([
+                "obfs=amneziawg",
+                f"obfsParam={obfs_param}",
+            ])
+
         param_str = "&".join(params)
         remark = cls.build_remark(cluster, ip, cluster.best_ping)
         remark_encoded = urllib.parse.quote(remark)

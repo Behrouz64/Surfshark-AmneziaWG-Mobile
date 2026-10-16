@@ -96,3 +96,22 @@ def test_generate_qr_code_data_url():
     decoded = base64.b64decode(raw_b64)
     # Check PNG magic header
     assert decoded[:8] == b"\x89PNG\r\n\x1a\n"
+
+
+def test_pure_wireguard_config_and_url(sample_cluster, sample_creds):
+    no_obfs_preset = ObfuscationPreset(name="Pure WireGuard", jc=0, jmin=0, jmax=0, s1=0, s2=0, h1=1, h2=2, h3=3, h4=4)
+    assert not no_obfs_preset.is_obfuscated
+
+    conf = ConfigBuilder.build_amnezia_config(sample_cluster, sample_creds, no_obfs_preset)
+    assert "[Interface]" in conf
+    assert "[Peer]" in conf
+    assert "PrivateKey = dGVzdFByaXZhdGVLZXkxMjM0NTY3ODkwMTI=" in conf
+    assert "Jc" not in conf
+    assert "S1" not in conf
+    assert "H1" not in conf
+
+    url = ConfigBuilder.build_shadowrocket_url(sample_cluster, sample_creds, no_obfs_preset)
+    assert url.startswith("wg://193.36.119.53:51820?")
+    assert "obfs=amneziawg" not in url
+    assert "obfsParam=" not in url
+

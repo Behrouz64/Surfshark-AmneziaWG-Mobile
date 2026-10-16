@@ -28,6 +28,10 @@ class ObfuscationPreset:
     h3: int = 3
     h4: int = 4
 
+    @property
+    def is_obfuscated(self) -> bool:
+        return not (self.jc == 0 and self.s1 == 0 and self.s2 == 0 and self.h1 == 1 and self.h2 == 2 and self.h3 == 3 and self.h4 == 4)
+
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 

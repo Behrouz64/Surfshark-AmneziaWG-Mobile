@@ -143,16 +143,17 @@ def main():
     print(f"Saved: {sub_b64_path}")
 
     # Generate separate subscriptions per continent
-    continents = ["Europe", "Americas", "Asia", "Africa", "Oceania"]
+    continents = ["Europe", "North America", "South America", "Americas", "Asia", "Africa", "Oceania"]
     for cont in continents:
         cont_nodes = []
         for s in updated_servers:
-            if s.get("continent") == cont:
+            s_cont = s.get("continent", "")
+            if s_cont == cont or (cont == "Americas" and s_cont in ("North America", "South America")):
                 ips = s.get("resolved_ips", [])
                 for idx, ip in enumerate(ips):
                     cont_nodes.append(generate_node_url(s, ip, sub_index=idx, total_ips=len(ips)))
 
-        c_name = cont.lower()
+        c_name = cont.lower().replace(" ", "_")
         cont_txt_path = os.path.join(BASE_DIR, f"sub_{c_name}.txt")
         with open(cont_txt_path, "w", encoding="utf-8") as f:
             f.write("\n".join(cont_nodes) + "\n")

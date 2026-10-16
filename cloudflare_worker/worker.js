@@ -338,17 +338,28 @@ export default {
     }
 
     // Determine target subscription file from GitHub Pages
+    let cleanContinent = continent.replace(/[\s\-]+/g, "_");
+    if (cleanContinent === "na" || cleanContinent === "northamerica") cleanContinent = "north_america";
+    if (cleanContinent === "sa" || cleanContinent === "southamerica") cleanContinent = "south_america";
+
     let sourceFileName = "sub.txt";
-    if (["europe", "asia", "americas", "africa", "oceania"].includes(continent)) {
-      sourceFileName = `sub_${continent}.txt`;
+    if (["europe", "north_america", "south_america", "asia", "americas", "africa", "oceania"].includes(cleanContinent)) {
+      sourceFileName = `sub_${cleanContinent}.txt`;
     }
 
     const targetUrl = `${GITHUB_PAGES_BASE}/${sourceFileName}`;
 
     try {
-      const upstreamResp = await fetch(targetUrl, {
-        cf: { cacheTtl: 300, cacheEverything: true },
+      let upstreamResp = await fetch(targetUrl, {
+        cf: { cacheTtl: 120, cacheEverything: true },
       });
+
+      if (!upstreamResp.ok) {
+        const rawFallbackUrl = `https://raw.githubusercontent.com/Behrouz64/Surfshark-AmneziaWG-Mobile/master/${sourceFileName}`;
+        upstreamResp = await fetch(rawFallbackUrl, {
+          cf: { cacheTtl: 120, cacheEverything: true },
+        });
+      }
 
       if (!upstreamResp.ok) {
         return textResponse(`Error fetching upstream: ${upstreamResp.status}`, 502);
@@ -370,11 +381,15 @@ export default {
         infoNode = `wg://10.255.255.1:51820?publicKey=dZNq48noPkey9rwSbAU%2BmasbafpDSaAmtAMaP%2BgzLxA%3D&privateKey=GJfG1b7zCubnBHQHdNyJVKDMtoylDQgfpqZDhm4jjVM%3D&ip=10.14.0.2#${infoRemark}`;
       }
 
+      const noObfs = params.get("obfs") === "0" || params.get("noobfs") === "1" || params.get("preset") === "none";
       const encodedDeviceKey = encodeURIComponent(deviceKey);
       const processedNodes = lines.map(line => {
         let node = line;
         if (deviceKey) {
           node = node.replace(/privateKey=[^&]+/, `privateKey=${encodedDeviceKey}`);
+        }
+        if (noObfs) {
+          node = node.replace(/&obfs=[^&]+/, "").replace(/&obfsParam=[^&#]+/, "");
         }
         return node;
       });

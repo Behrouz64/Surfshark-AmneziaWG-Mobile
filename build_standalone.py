@@ -184,12 +184,13 @@ html_content = f'''<!DOCTYPE html>
         <!-- Continent Chips & Search -->
         <section class="filter-section">
             <div class="chips-scroll" id="continent-chips">
-                <button class="chip active" data-continent="All">All</button>
-                <button class="chip" data-continent="Europe">Europe</button>
-                <button class="chip" data-continent="Americas">Americas</button>
-                <button class="chip" data-continent="Asia">Asia</button>
-                <button class="chip" data-continent="Africa">Africa</button>
-                <button class="chip" data-continent="Oceania">Oceania</button>
+                <button class="chip active" data-continent="All">All (76)</button>
+                <button class="chip" data-continent="Europe">Europe (42)</button>
+                <button class="chip" data-continent="North America">North America (9)</button>
+                <button class="chip" data-continent="South America">South America (2)</button>
+                <button class="chip" data-continent="Asia">Asia (16)</button>
+                <button class="chip" data-continent="Africa">Africa (4)</button>
+                <button class="chip" data-continent="Oceania">Oceania (3)</button>
             </div>
 
             <div class="search-bar-row">
@@ -270,6 +271,7 @@ html_content = f'''<!DOCTYPE html>
                             <label for="cfg-obfs-preset">Obfuscation Preset</label>
                             <select id="cfg-obfs-preset" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
                                 <option value="default">⚡ Standard / Surfshark Official (Default)</option>
+                                <option value="none">🌐 بدون مبهم‌سازی / Pure WireGuard (No Obfs)</option>
                                 <option value="aggressive">🛡️ Aggressive DPI Bypass (Heavy Obfuscation)</option>
                                 <option value="light">🚀 Low Overhead / Low Ping (Fast &amp; Light)</option>
                                 <option value="extreme">🔥 Extreme Randomization (High Entropy)</option>
@@ -352,8 +354,10 @@ html_content = f'''<!DOCTYPE html>
                     <select id="sub-scope-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px; border-radius: var(--radius-md); font-size: 13px; outline: none;">
                         <option value="all">🌐 Global / All Continents (151 Nodes)</option>
                         <option value="europe">🇪🇺 Europe (83 Nodes)</option>
+                        <option value="north_america">🌎 North America (18 Nodes)</option>
+                        <option value="south_america">🌎 South America (4 Nodes)</option>
                         <option value="asia">🌏 Asia (32 Nodes)</option>
-                        <option value="americas">🌎 Americas (22 Nodes)</option>
+                        <option value="americas">🌎 All Americas (22 Nodes)</option>
                         <option value="africa">🌍 Africa (8 Nodes)</option>
                         <option value="oceania">🇦🇺 Oceania (6 Nodes)</option>
                     </select>
@@ -529,6 +533,13 @@ html_content = f'''<!DOCTYPE html>
 
                         <div class="sub-actions-row">
                             <div class="form-group" style="flex: 1;">
+                                <label for="dev-obfs-select">Obfuscation</label>
+                                <select id="dev-obfs-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                                    <option value="awg">🛡️ AmneziaWG (DPI Bypass)</option>
+                                    <option value="none">🌐 Pure WireGuard (No Obfs)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
                                 <label for="dev-duration-select">Duration / Expiry</label>
                                 <select id="dev-duration-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
                                     <option value="30">30 Days</option>
@@ -540,17 +551,20 @@ html_content = f'''<!DOCTYPE html>
                                     <option value="0">Unlimited (No Expiry)</option>
                                 </select>
                             </div>
-                            <div class="form-group" style="flex: 1;">
-                                <label for="dev-region-select">Region / Continent</label>
-                                <select id="dev-region-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
-                                    <option value="all">🌐 All Continents</option>
-                                    <option value="europe">🇪🇺 Europe</option>
-                                    <option value="asia">🌏 Asia</option>
-                                    <option value="americas">🌎 Americas</option>
-                                    <option value="africa">🌍 Africa</option>
-                                    <option value="oceania">🇦🇺 Oceania</option>
-                                </select>
-                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 4px;">
+                            <label for="dev-region-select">Region / Continent</label>
+                            <select id="dev-region-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                                <option value="all">🌐 All Continents</option>
+                                <option value="europe">🇪🇺 Europe</option>
+                                <option value="north_america">🌎 North America</option>
+                                <option value="south_america">🌎 South America</option>
+                                <option value="americas">🌎 All Americas</option>
+                                <option value="asia">🌏 Asia</option>
+                                <option value="africa">🌍 Africa</option>
+                                <option value="oceania">🇦🇺 Oceania</option>
+                            </select>
                         </div>
 
                         <button type="button" id="btn-create-dev-sub" class="btn btn-primary" style="margin-top: 4px; padding: 10px;">
@@ -689,6 +703,10 @@ html_content = f'''<!DOCTYPE html>
             name: "Standard",
             jc: 4, jmin: 50, jmax: 1000, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4
         }},
+        none: {{
+            name: "Pure WireGuard",
+            jc: 0, jmin: 0, jmax: 0, s1: 0, s2: 0, h1: 1, h2: 2, h3: 3, h4: 4
+        }},
         aggressive: {{
             name: "Aggressive",
             jc: 8, jmin: 80, jmax: 1280, s1: 15, s2: 15, h1: 1488, h2: 1489, h3: 1490, h4: 1491
@@ -704,6 +722,9 @@ html_content = f'''<!DOCTYPE html>
     }};
 
     function detectPreset(s) {{
+        if (Number(s.jc) === 0 && Number(s.s1) === 0 && Number(s.s2) === 0 && Number(s.h1) === 1 && Number(s.h2) === 2 && Number(s.h3) === 3 && Number(s.h4) === 4) {{
+            return "none";
+        }}
         for (const [key, p] of Object.entries(OBFUSCATION_PRESETS)) {{
             if (
                 Number(s.jc) === p.jc && Number(s.jmin) === p.jmin && Number(s.jmax) === p.jmax &&
@@ -766,16 +787,19 @@ html_content = f'''<!DOCTYPE html>
         App.settings.privkey = document.getElementById("cfg-privkey").value.trim() || "{default_privkey}";
         App.settings.address = document.getElementById("cfg-address").value.trim() || "10.14.0.2/16";
         App.settings.dns = document.getElementById("cfg-dns").value.trim() || "162.252.172.57, 149.154.159.92";
-        App.settings.doh_provider = document.getElementById("cfg-doh").value;
-        App.settings.jc = parseInt(document.getElementById("cfg-jc").value) || 4;
-        App.settings.jmin = parseInt(document.getElementById("cfg-jmin").value) || 50;
-        App.settings.jmax = parseInt(document.getElementById("cfg-jmax").value) || 1000;
-        App.settings.s1 = parseInt(document.getElementById("cfg-s1").value) || 0;
-        App.settings.s2 = parseInt(document.getElementById("cfg-s2").value) || 0;
-        App.settings.h1 = parseInt(document.getElementById("cfg-h1").value) || 1;
-        App.settings.h2 = parseInt(document.getElementById("cfg-h2").value) || 2;
-        App.settings.h3 = parseInt(document.getElementById("cfg-h3").value) || 3;
-        App.settings.h4 = parseInt(document.getElementById("cfg-h4").value) || 4;
+        const parseNum = (id, fallback) => {{
+            const v = parseInt(document.getElementById(id).value, 10);
+            return isNaN(v) ? fallback : v;
+        }};
+        App.settings.jc = parseNum("cfg-jc", 4);
+        App.settings.jmin = parseNum("cfg-jmin", 50);
+        App.settings.jmax = parseNum("cfg-jmax", 1000);
+        App.settings.s1 = parseNum("cfg-s1", 0);
+        App.settings.s2 = parseNum("cfg-s2", 0);
+        App.settings.h1 = parseNum("cfg-h1", 1);
+        App.settings.h2 = parseNum("cfg-h2", 2);
+        App.settings.h3 = parseNum("cfg-h3", 3);
+        App.settings.h4 = parseNum("cfg-h4", 4);
 
         localStorage.setItem("surfshark_awg_settings", JSON.stringify(App.settings));
         document.getElementById("stat-provider").textContent = App.settings.doh_provider === "google" ? "Google" : "Cloudflare";
@@ -893,19 +917,7 @@ html_content = f'''<!DOCTYPE html>
         const addr = (s.address || "10.14.0.2").split("/")[0].trim();
         const dnsEncoded = encodeURIComponent(s.dns || "162.252.172.57, 149.154.159.92");
         const remark = encodeURIComponent(buildRemark(srv, ip, index, total));
-
-        const obfsObj = {{
-            s1: String(s.s1 !== undefined ? s.s1 : 0),
-            h2: String(s.h2 !== undefined ? s.h2 : 2),
-            jmax: String(s.jmax || 1000),
-            s2: String(s.s2 !== undefined ? s.s2 : 0),
-            h3: String(s.h3 !== undefined ? s.h3 : 3),
-            jc: String(s.jc || 4),
-            jmin: String(s.jmin || 50),
-            h1: String(s.h1 || 1),
-            h4: String(s.h4 !== undefined ? s.h4 : 4)
-        }};
-        const obfsParam = encodeURIComponent(JSON.stringify(obfsObj));
+        const isObfs = !(Number(s.jc) === 0 && Number(s.s1) === 0 && Number(s.s2) === 0 && Number(s.h1) === 1 && Number(s.h2) === 2 && Number(s.h3) === 3 && Number(s.h4) === 4);
 
         const params = [
             `publicKey=${{pubkey}}`,
@@ -914,35 +926,59 @@ html_content = f'''<!DOCTYPE html>
             `dns=${{dnsEncoded}}`,
             `mtu=1280`,
             `udp=1`,
-            `keepalive=25`,
-            `obfs=amneziawg`,
-            `obfsParam=${{obfsParam}}`
-        ].join("&");
+            `keepalive=25`
+        ];
 
-        return `wg://${{ip}}:${{srv.port || 51820}}?${{params}}#${{remark}}`;
+        if (isObfs) {{
+            const obfsObj = {{
+                s1: String(s.s1 !== undefined ? s.s1 : 0),
+                h2: String(s.h2 !== undefined ? s.h2 : 2),
+                jmax: String(s.jmax || 1000),
+                s2: String(s.s2 !== undefined ? s.s2 : 0),
+                h3: String(s.h3 !== undefined ? s.h3 : 3),
+                jc: String(s.jc || 4),
+                jmin: String(s.jmin || 50),
+                h1: String(s.h1 || 1),
+                h4: String(s.h4 !== undefined ? s.h4 : 4)
+            }};
+            const obfsParam = encodeURIComponent(JSON.stringify(obfsObj));
+            params.push("obfs=amneziawg");
+            params.push(`obfsParam=${{obfsParam}}`);
+        }}
+
+        return `wg://${{ip}}:${{srv.port || 51820}}?${{params.join("&")}}#${{remark}}`;
     }}
 
     function buildAmneziaConf(srv, targetIp = null, index = 0, total = 1) {{
         const ip = targetIp || srv.effective_ip || (srv.resolved_ips && srv.resolved_ips[0]) || srv.hostname;
         const s = App.settings;
         const suffix = total > 1 ? ` #${{index + 1}}` : "";
-        return [
-            `# Surfshark AmneziaWG — ${{srv.country}} - ${{srv.city}}${{suffix}}`,
+        const isObfs = !(Number(s.jc) === 0 && Number(s.s1) === 0 && Number(s.s2) === 0 && Number(s.h1) === 1 && Number(s.h2) === 2 && Number(s.h3) === 3 && Number(s.h4) === 4);
+        const confLines = [
+            `# Surfshark ${{isObfs ? "AmneziaWG" : "WireGuard"}} — ${{srv.country}} - ${{srv.city}}${{suffix}}`,
             `# Endpoint: ${{ip}}:${{srv.port || 51820}}`,
             "",
             "[Interface]",
             `PrivateKey = ${{s.privkey}}`,
             `Address = ${{s.address}}`,
-            `DNS = ${{s.dns}}`,
-            `Jc = ${{s.jc}}`,
-            `Jmin = ${{s.jmin}}`,
-            `Jmax = ${{s.jmax}}`,
-            `S1 = ${{s.s1}}`,
-            `S2 = ${{s.s2}}`,
-            `H1 = ${{s.h1}}`,
-            `H2 = ${{s.h2}}`,
-            `H3 = ${{s.h3}}`,
-            `H4 = ${{s.h4}}`,
+            `DNS = ${{s.dns}}`
+        ];
+
+        if (isObfs) {{
+            confLines.push(
+                `Jc = ${{s.jc}}`,
+                `Jmin = ${{s.jmin}}`,
+                `Jmax = ${{s.jmax}}`,
+                `S1 = ${{s.s1}}`,
+                `S2 = ${{s.s2}}`,
+                `H1 = ${{s.h1}}`,
+                `H2 = ${{s.h2}}`,
+                `H3 = ${{s.h3}}`,
+                `H4 = ${{s.h4}}`
+            );
+        }}
+
+        confLines.push(
             "",
             "[Peer]",
             `PublicKey = ${{srv.public_key}}`,
@@ -950,7 +986,9 @@ html_content = f'''<!DOCTYPE html>
             `Endpoint = ${{ip}}:${{srv.port || 51820}}`,
             "PersistentKeepalive = 25",
             ""
-        ].join("\\n");
+        );
+
+        return confLines.join("\\n");
     }}
 
     // Filter & Render
@@ -958,7 +996,11 @@ html_content = f'''<!DOCTYPE html>
         let list = [...App.servers];
 
         if (App.selectedContinent !== "All") {{
-            list = list.filter(s => s.continent === App.selectedContinent);
+            if (App.selectedContinent === "Americas") {{
+                list = list.filter(s => s.continent === "Americas" || s.continent === "North America" || s.continent === "South America");
+            }} else {{
+                list = list.filter(s => s.continent === App.selectedContinent);
+            }}
         }}
 
         if (App.searchTerm) {{
@@ -1571,7 +1613,8 @@ html_content = f'''<!DOCTYPE html>
                         '<div style="display: flex; align-items: center; gap: 6px;">' +
                             '<span style="font-size: 13px;">📱</span>' +
                             '<strong style="font-size: 12px; color: var(--text-primary);">' + escapeHtml(dev.name) + '</strong>' +
-                            '<span style="font-size: 10px; color: var(--text-secondary); text-transform: capitalize;">(' + (dev.region || "all") + ')</span>' +
+                            (dev.obfs === "none" ? '<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(234, 179, 8, 0.2); color: #eab308;">🌐 WireGuard</span>' : '<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(59, 130, 246, 0.2); color: #60a5fa;">🛡️ AWG</span>') +
+                            '<span style="font-size: 10px; color: var(--text-secondary); text-transform: capitalize;">(' + (dev.region ? escapeHtml(dev.region.replace(/_/g, " ")) : "all") + ')</span>' +
                         '</div>' +
                         statusBadge +
                     '</div>' +
@@ -2000,6 +2043,7 @@ html_content = f'''<!DOCTYPE html>
             btnCreateDevSub.addEventListener("click", async () => {{
                 const name = document.getElementById("dev-name-input").value.trim();
                 const key = document.getElementById("dev-key-input").value.trim();
+                const obfsChoice = document.getElementById("dev-obfs-select") ? document.getElementById("dev-obfs-select").value : "awg";
                 const durationDays = parseInt(document.getElementById("dev-duration-select").value, 10);
                 const region = document.getElementById("dev-region-select").value;
 
@@ -2016,15 +2060,19 @@ html_content = f'''<!DOCTYPE html>
                 const expSec = durationDays > 0 ? (nowSec + durationDays * 86400) : 0;
                 const workerBase = getEffectiveWorkerUrl();
 
-                const subUrl = workerBase + "/sub?key=" + encodeURIComponent(key) +
+                let subUrl = workerBase + "/sub?key=" + encodeURIComponent(key) +
                                "&name=" + encodeURIComponent(name) +
                                "&exp=" + expSec +
                                "&continent=" + encodeURIComponent(region);
+                if (obfsChoice === "none") {{
+                    subUrl += "&obfs=0";
+                }}
 
                 const devObj = {{
                     id: "dev_" + Date.now(),
                     name: name,
                     key: key,
+                    obfs: obfsChoice,
                     durationDays: durationDays,
                     expTimestamp: expSec,
                     region: region,

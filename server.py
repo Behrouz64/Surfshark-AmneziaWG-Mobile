@@ -191,7 +191,19 @@ class MobileApiHandler(BaseHTTPRequestHandler):
         # 4. List Servers API (with optional continent filter)
         if path == "/api/servers":
             continent = query.get("continent", ["All"])[0]
-            servers = [c for c in GLOBAL_STATE.clusters if continent == "All" or c.continent == continent]
+
+            def matches_cont(s_cont: str, q_cont: str) -> bool:
+                if not q_cont or q_cont.lower() == "all":
+                    return True
+                q_norm = q_cont.lower().replace("-", "_").replace(" ", "_")
+                s_norm = s_cont.lower().replace("-", "_").replace(" ", "_")
+                if q_norm == s_norm:
+                    return True
+                if q_norm == "americas" and s_norm in ("north_america", "south_america"):
+                    return True
+                return False
+
+            servers = [c for c in GLOBAL_STATE.clusters if matches_cont(c.continent, continent)]
             resp = []
             for s in servers:
                 s_dict = s.to_dict()
@@ -204,18 +216,25 @@ class MobileApiHandler(BaseHTTPRequestHandler):
         # 5. Live Subscription Endpoint (/sub) for Shadowrocket / Streisand
         if path == "/sub" or path.startswith("/sub"):
             continent = query.get("continent", ["All"])[0]
-            # Also handle /sub_europe.txt or /sub_asia.txt
-            if "_" in path:
-                cont_part = path.split("_")[-1].replace(".txt", "").replace("b64", "").strip()
-                match = next((c for c in ("Europe", "Americas", "Asia", "Africa", "Oceania") if c.lower() == cont_part.lower()), None)
-                if match:
-                    continent = match
+            no_obfs = query.get("obfs", ["1"])[0] == "0" or query.get("noobfs", ["0"])[0] == "1" or query.get("preset", [""])[0] == "none"
+            preset_to_use = ObfuscationPreset(name="Pure WireGuard", jc=0, jmin=0, jmax=0, s1=0, s2=0, h1=1, h2=2, h3=3, h4=4) if no_obfs else GLOBAL_STATE.preset
 
-            working_clusters = [c for c in GLOBAL_STATE.clusters if c.effective_ip and (continent == "All" or c.continent == continent)]
+            def matches_cont(s_cont: str, q_cont: str) -> bool:
+                if not q_cont or q_cont.lower() == "all":
+                    return True
+                q_norm = q_cont.lower().replace("-", "_").replace(" ", "_")
+                s_norm = s_cont.lower().replace("-", "_").replace(" ", "_")
+                if q_norm == s_norm:
+                    return True
+                if q_norm == "americas" and s_norm in ("north_america", "south_america"):
+                    return True
+                return False
+
+            working_clusters = [c for c in GLOBAL_STATE.clusters if c.effective_ip and matches_cont(c.continent, continent)]
             b64_sub = ConfigBuilder.generate_subscription_base64(
-                working_clusters, GLOBAL_STATE.credentials, GLOBAL_STATE.preset
+                working_clusters, GLOBAL_STATE.credentials, preset_to_use
             )
-            self._send_file(b64_sub.encode("utf-8"), "text/plain; charset=utf-8", f"surfshark_{continent.lower()}_subscription.txt")
+            self._send_file(b64_sub.encode("utf-8"), "text/plain; charset=utf-8", f"surfshark_{continent.lower().replace(' ', '_')}_subscription.txt")
             return
 
         # 6. Single Config Download
