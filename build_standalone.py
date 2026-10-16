@@ -367,11 +367,14 @@ html_content = f'''<!DOCTYPE html>
                     </div>
 
                     <div class="form-group">
-                        <label for="dev-key-input">WireGuard Private Key</label>
+                        <label for="dev-key-input">Surfshark WireGuard Private Key</label>
                         <div style="display: flex; gap: 6px;">
-                            <input type="text" id="dev-key-input" placeholder="Device Private Key (Base64)" required style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
-                            <button type="button" id="btn-gen-wg-key" class="btn btn-secondary" style="padding: 6px 10px; font-size: 11px;" title="Generate a fresh valid WireGuard key">🎲 Gen Key</button>
+                            <input type="text" id="dev-key-input" placeholder="Paste Private Key from Surfshark account..." required style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
+                            <button type="button" id="btn-paste-dev-key" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;" title="Paste from clipboard">📋 Paste</button>
                         </div>
+                        <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px; display: block; line-height: 1.4;">
+                            💡 کلید اختصاصی هر دیوایس را از پنل کاربری Surfshark (بخش Manual setup &gt; WireGuard) دریافت و اینجا وارد کنید.
+                        </span>
                     </div>
 
                     <div class="sub-actions-row">
@@ -1264,10 +1267,19 @@ html_content = f'''<!DOCTYPE html>
             showToast("Cloudflare Worker domain saved!");
         }});
 
-        document.getElementById("btn-gen-wg-key").addEventListener("click", () => {{
-            const newKey = generateWgPrivateKey();
-            document.getElementById("dev-key-input").value = newKey;
-            showToast("Random valid WireGuard Private Key generated!");
+        document.getElementById("btn-paste-dev-key").addEventListener("click", async () => {{
+            try {{
+                if (navigator.clipboard && navigator.clipboard.readText) {{
+                    const text = await navigator.clipboard.readText();
+                    if (text && text.trim()) {{
+                        document.getElementById("dev-key-input").value = text.trim();
+                        showToast("Private key pasted from clipboard!");
+                        return;
+                    }}
+                }}
+            }} catch (e) {{}}
+            document.getElementById("dev-key-input").focus();
+            showToast("Please paste your Surfshark private key");
         }});
 
         document.getElementById("btn-create-dev-sub").addEventListener("click", () => {{
@@ -1281,7 +1293,7 @@ html_content = f'''<!DOCTYPE html>
                 return;
             }}
             if (!key) {{
-                alert("Please provide or generate a WireGuard private key.");
+                alert("Please enter the WireGuard private key from your Surfshark account.");
                 return;
             }}
 
