@@ -85,37 +85,49 @@ class ConfigBuilder:
         preset: Optional[ObfuscationPreset] = None,
         target_ip: Optional[str] = None,
     ) -> str:
-        """Generate a wireguard:// URI compatible with Shadowrocket, Streisand, Sing-box."""
+        """Generate a wg:// URI compliant with Shadowrocket's AmneziaWG obfuscation format."""
         ip = target_ip or cluster.effective_ip
         if not ip:
             return ""
 
+        import json
+
         preset = preset or ObfuscationPreset()
-        privkey = credentials.private_key if credentials.private_key else "INSERT_YOUR_PRIVATE_KEY_HERE"
+        privkey = credentials.private_key if credentials.private_key else "YOUR_SURFSHARK_PRIVATE_KEY_HERE"
         privkey_encoded = urllib.parse.quote(privkey, safe="")
         pubkey_encoded = urllib.parse.quote(cluster.public_key, safe="")
-        address_clean = credentials.address.split("/")[0] if "/" in credentials.address else credentials.address
+        client_ip = credentials.address.split("/")[0].strip() if "/" in credentials.address else credentials.address.strip()
+        dns_encoded = urllib.parse.quote(credentials.dns, safe="")
+
+        obfs_dict = {
+            "s1": str(preset.s1),
+            "h2": str(preset.h2),
+            "jmax": str(preset.jmax),
+            "s2": str(preset.s2),
+            "h3": str(preset.h3),
+            "jc": str(preset.jc),
+            "jmin": str(preset.jmin),
+            "h1": str(preset.h1),
+            "h4": str(preset.h4),
+        }
+        obfs_json = json.dumps(obfs_dict, separators=(",", ":"))
+        obfs_param = urllib.parse.quote(obfs_json)
 
         params = [
             f"publicKey={pubkey_encoded}",
-            f"address={address_clean}",
-            f"mtu=1280",
-            f"dns={urllib.parse.quote(credentials.dns, safe=',')}",
-            "persistentKeepalive=25",
-            f"jc={preset.jc}",
-            f"jmin={preset.jmin}",
-            f"jmax={preset.jmax}",
-            f"s1={preset.s1}",
-            f"s2={preset.s2}",
-            f"h1={preset.h1}",
-            f"h2={preset.h2}",
-            f"h3={preset.h3}",
-            f"h4={preset.h4}",
+            f"privateKey={privkey_encoded}",
+            f"ip={client_ip}",
+            f"dns={dns_encoded}",
+            "mtu=1280",
+            "udp=1",
+            "keepalive=25",
+            "obfs=amneziawg",
+            f"obfsParam={obfs_param}",
         ]
         param_str = "&".join(params)
         remark = cls.build_remark(cluster, ip, cluster.best_ping)
         remark_encoded = urllib.parse.quote(remark)
-        return f"wireguard://{privkey_encoded}@{ip}:{cluster.port}?{param_str}#{remark_encoded}"
+        return f"wg://{ip}:{cluster.port}?{param_str}#{remark_encoded}"
 
     @classmethod
     def build_shadowrocket_deeplink(

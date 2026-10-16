@@ -1369,28 +1369,36 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         const s = App.settings;
         const privkey = encodeURIComponent(s.privkey);
         const pubkey = encodeURIComponent(srv.public_key);
-        const addr = s.address.split("/")[0];
-        const dnsEncoded = encodeURIComponent(s.dns);
+        const addr = (s.address || "10.14.0.2").split("/")[0].trim();
+        const dnsEncoded = encodeURIComponent(s.dns || "162.252.172.57, 149.154.159.92");
         const remark = encodeURIComponent(buildRemark(srv));
+
+        const obfsObj = {
+            s1: String(s.s1 !== undefined ? s.s1 : 0),
+            h2: String(s.h2 !== undefined ? s.h2 : 2),
+            jmax: String(s.jmax || 1000),
+            s2: String(s.s2 !== undefined ? s.s2 : 0),
+            h3: String(s.h3 !== undefined ? s.h3 : 3),
+            jc: String(s.jc || 4),
+            jmin: String(s.jmin || 50),
+            h1: String(s.h1 || 1),
+            h4: String(s.h4 !== undefined ? s.h4 : 4)
+        };
+        const obfsParam = encodeURIComponent(JSON.stringify(obfsObj));
 
         const params = [
             `publicKey=${pubkey}`,
-            `address=${addr}`,
-            `mtu=1280`,
+            `privateKey=${privkey}`,
+            `ip=${addr}`,
             `dns=${dnsEncoded}`,
-            `persistentKeepalive=25`,
-            `jc=${s.jc}`,
-            `jmin=${s.jmin}`,
-            `jmax=${s.jmax}`,
-            `s1=${s.s1}`,
-            `s2=${s.s2}`,
-            `h1=${s.h1}`,
-            `h2=${s.h2}`,
-            `h3=${s.h3}`,
-            `h4=${s.h4}`
+            `mtu=1280`,
+            `udp=1`,
+            `keepalive=25`,
+            `obfs=amneziawg`,
+            `obfsParam=${obfsParam}`
         ].join("&");
 
-        return `wireguard://${privkey}@${ip}:${srv.port || 51820}?${params}#${remark}`;
+        return `wg://${ip}:${srv.port || 51820}?${params}#${remark}`;
     }
 
     function buildAmneziaConf(srv) {

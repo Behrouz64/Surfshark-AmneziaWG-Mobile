@@ -53,25 +53,24 @@ def test_build_amnezia_config(sample_cluster, sample_creds, sample_preset):
 
 def test_build_shadowrocket_url(sample_cluster, sample_creds, sample_preset):
     url = ConfigBuilder.build_shadowrocket_url(sample_cluster, sample_creds, sample_preset)
-    assert url.startswith("wireguard://")
-    assert "193.36.119.53:51820" in url
+    assert url.startswith("wg://193.36.119.53:51820?")
     assert "publicKey=" in url
-    assert "jc=4" in url
-    assert "jmin=50" in url
-    assert "jmax=1000" in url
+    assert "privateKey=" in url
+    assert "ip=10.14.0.2" in url
+    assert "obfs=amneziawg" in url
+    assert "obfsParam=" in url
     assert "#" in url  # Node title with country & city flag
 
 
 def test_build_shadowrocket_deeplink(sample_cluster, sample_creds, sample_preset):
     deeplink = ConfigBuilder.build_shadowrocket_deeplink(sample_cluster, sample_creds, sample_preset)
-    assert deeplink.startswith("shadowrocket://add/")
-    assert "wireguard://" in deeplink
+    assert deeplink.startswith("shadowrocket://add/wg://")
 
 
 def test_generate_subscription_base64(sample_cluster, sample_creds, sample_preset):
     b64_sub = ConfigBuilder.generate_subscription_base64([sample_cluster], sample_creds, sample_preset)
     decoded = base64.b64decode(b64_sub).decode("utf-8")
-    assert "wireguard://" in decoded
+    assert "wg://" in decoded
     assert "193.36.119.53:51820" in decoded
 
 
