@@ -1217,7 +1217,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                         <a href="https://github.com/Behrouz64/Surfshark-AmneziaWG-Mobile/tree/main/cloudflare_worker" target="_blank" style="color: var(--accent-cyan); text-decoration: none; font-size: 10px;">Setup Guide ↗</a>
                     </label>
                     <div style="display: flex; gap: 8px; margin-top: 6px;">
-                        <input type="url" id="cf-worker-url" placeholder="https://surfshark-sub.your-name.workers.dev" style="flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
+                        <input type="url" id="cf-worker-url" value="https://surfshark-amneziawg-sub.bsaidian.workers.dev" style="flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
                         <button type="button" id="btn-save-worker-url" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;">Save</button>
                     </div>
                 </div>
@@ -1990,8 +1990,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
         }
 
-        const DEFAULT_CF_WORKER = "https://surfshark-sub.your-username.workers.dev";
-        let cfWorkerUrl = localStorage.getItem("surfshark_cf_worker_url") || "";
+        const DEFAULT_CF_WORKER = "https://surfshark-amneziawg-sub.bsaidian.workers.dev";
+        let cfWorkerUrl = localStorage.getItem("surfshark_cf_worker_url") || DEFAULT_CF_WORKER;
         let managedDevices = [];
         try {
             managedDevices = JSON.parse(localStorage.getItem("surfshark_managed_devices") || "[]");
