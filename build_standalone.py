@@ -396,7 +396,7 @@ html_content = f'''<!DOCTYPE html>
             </div>
             <div class="modal-body">
                 <!-- 1. First-Time Setup Card (if no admin registered yet) -->
-                <div id="auth-setup-card" style="display: none; background: var(--bg-main); border: 1px solid var(--accent-cyan); border-radius: var(--radius-md); padding: 14px;">
+                <div id="auth-setup-card" style="display: block; background: var(--bg-main); border: 1px solid var(--accent-cyan); border-radius: var(--radius-md); padding: 14px;">
                     <h3 style="color: var(--accent-cyan); font-size: 14px; margin-bottom: 6px;">👑 First-Time Setup (Create Admin)</h3>
                     <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
                         Create your Master Admin account to manage and synchronize subscriptions across all your devices securely on Cloudflare.
@@ -1782,7 +1782,7 @@ html_content = f'''<!DOCTYPE html>
 
                     authSession = {{ token: data.token, username: data.username, role: data.role }};
                     localStorage.setItem("surfshark_auth_session", JSON.stringify(authSession));
-                    alert("🎉 Master Admin created successfully!\n\n⚠️ IMPORTANT: Keep your Master Recovery Key safe. You can use it to reset your password if you ever forget it.");
+                    alert("🎉 Master Admin created successfully!\\n\\n⚠️ IMPORTANT: Keep your Master Recovery Key safe. You can use it to reset your password if you ever forget it.");
                     updateAuthUI();
                     fetchCloudDevices();
                 }} catch (err) {{
