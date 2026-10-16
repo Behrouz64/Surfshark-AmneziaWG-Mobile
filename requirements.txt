@@ -1,0 +1,9 @@
+# Core dependencies
+qrcode>=7.4.2
+Pillow>=10.0.0
+
+# Optional DNS resolution enhancements
+dnspython>=2.4.0
+
+# Testing and development
+pytest>=7.4.0

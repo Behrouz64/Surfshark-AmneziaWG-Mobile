@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  surfshark-awg-mobile:
+    build: .
+    container_name: surfshark-awg-mobile
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data:/app/data

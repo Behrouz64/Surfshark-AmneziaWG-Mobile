@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0b0f17">
+    <title>Surfshark AmneziaWG Mobile Scanner</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Top Header -->
+    <header class="app-header">
+        <div class="header-left">
+            <div class="logo-icon">🦈</div>
+            <div>
+                <h1 class="app-title">Surfshark AWG</h1>
+                <p class="app-subtitle">Mobile Node Scanner & Importer</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button id="btn-open-settings" class="icon-btn" aria-label="Settings" title="Credentials & Settings">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="app-container">
+        <!-- VPN Active Warning Banner (Hidden by default) -->
+        <div id="vpn-warning" class="warning-banner" style="display: none;">
+            <div class="warning-icon">⚠️</div>
+            <div class="warning-text">
+                <strong>Active VPN Detected:</strong> An active virtual tunnel interface (utun) is running. To test censorship bypass from within restricted networks, turn off any active VPN first.
+            </div>
+        </div>
+
+        <!-- Credentials Setup Banner (shown if no private key configured) -->
+        <div id="credentials-banner" class="notice-banner" style="display: none;">
+            <div class="notice-icon">🔑</div>
+            <div class="notice-text">
+                <strong>Private Key Not Set:</strong> Add your Surfshark WireGuard private key to generate valid configs and 1-tap links.
+            </div>
+            <button id="btn-banner-setup" class="btn btn-sm btn-accent">Set Key</button>
+        </div>
+
+        <!-- Status & Stats Card -->
+        <section class="stats-card">
+            <div class="stat-item">
+                <span class="stat-label">Total Servers</span>
+                <span id="stat-total" class="stat-value">--</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-label">Working / Online</span>
+                <span id="stat-working" class="stat-value text-success">--</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-label">Scanner Status</span>
+                <span id="stat-status" class="stat-value text-accent">Ready</span>
+            </div>
+        </section>
+
+        <!-- Scan Progress Bar (Active during scan) -->
+        <div id="progress-container" class="progress-box" style="display: none;">
+            <div class="progress-info">
+                <span id="progress-status-text">Scanning servers...</span>
+                <span id="progress-percentage">0%</span>
+            </div>
+            <div class="progress-track">
+                <div id="progress-bar" class="progress-fill" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <!-- Main Action Buttons -->
+        <section class="action-grid">
+            <button id="btn-scan" class="btn btn-primary btn-block">
+                <span class="btn-icon">⚡</span>
+                <span id="btn-scan-label">Start Scan</span>
+            </button>
+            <div class="secondary-actions">
+                <button id="btn-sub-info" class="btn btn-secondary">
+                    <span class="btn-icon">🔗</span>
+                    <span>Subscription</span>
+                </button>
+                <button id="btn-export-zip" class="btn btn-secondary">
+                    <span class="btn-icon">📦</span>
+                    <span>Download ZIP</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Filters Section -->
+        <section class="filter-section">
+            <!-- Continent Filter Chips (Horizontal Scroll) -->
+            <div class="chips-scroll" id="continent-chips">
+                <button class="chip active" data-continent="All">All</button>
+                <button class="chip" data-continent="Europe">Europe</button>
+                <button class="chip" data-continent="North America">N. America</button>
+                <button class="chip" data-continent="Asia Pacific">Asia</button>
+                <button class="chip" data-continent="Middle East">Middle East</button>
+                <button class="chip" data-continent="South America">S. America</button>
+                <button class="chip" data-continent="Africa">Africa</button>
+            </div>
+
+            <!-- Search and Filter Bar -->
+            <div class="search-bar-row">
+                <div class="search-input-wrapper">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="search-input" placeholder="Search country, city, hostname..." autocomplete="off">
+                    <button id="btn-clear-search" class="clear-btn" style="display: none;">✕</button>
+                </div>
+                <label class="toggle-filter" title="Only display servers with verified UDP reachability">
+                    <input type="checkbox" id="toggle-working-only">
+                    <span class="toggle-switch"></span>
+                    <span class="toggle-label">Online Only</span>
+                </label>
+            </div>
+        </section>
+
+        <!-- Server List Container -->
+        <section class="server-list-header">
+            <div class="list-count-text">
+                Showing <span id="displayed-count">0</span> servers
+            </div>
+            <div class="sort-selector">
+                <select id="sort-select">
+                    <option value="latency">Fastest First</option>
+                    <option value="country">Country (A-Z)</option>
+                </select>
+            </div>
+        </section>
+
+        <section id="server-list" class="server-cards-container">
+            <!-- Server Cards are rendered here via app.js -->
+            <div class="empty-state">
+                <div class="empty-icon">⏳</div>
+                <p>Loading server catalog...</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal: Settings & Credentials -->
+    <div id="modal-settings" class="modal-overlay" style="display: none;">
+        <div class="modal-sheet">
+            <div class="modal-header">
+                <h2>WireGuard Credentials</h2>
+                <button class="modal-close" data-close="modal-settings">✕</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-desc">
+                    Enter your Surfshark manual WireGuard credentials to enable 1-tap Shadowrocket links and full config downloads.
+                </p>
+                <form id="form-settings">
+                    <div class="form-group">
+                        <label for="input-privkey">Client Private Key</label>
+                        <input type="password" id="input-privkey" placeholder="Enter base64 private key..." autocomplete="off">
+                        <small class="form-hint">Obtain from Surfshark Account &gt; VPN &gt; Manual Setup &gt; WireGuard.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="input-address">Interface Address</label>
+                        <input type="text" id="input-address" value="10.14.0.2/16">
+                    </div>
+                    <div class="form-group">
+                        <label for="input-dns">DNS Servers</label>
+                        <input type="text" id="input-dns" value="162.252.172.57, 149.154.159.92">
+                    </div>
+                    <div class="obfuscation-box">
+                        <div class="obfuscation-title">AmneziaWG Obfuscation Preset (Active)</div>
+                        <div class="obfuscation-params">
+                            <span>Jc = 4</span>
+                            <span>Jmin = 50</span>
+                            <span>Jmax = 1000</span>
+                            <span>H1 = 1</span>
+                            <span>H2 = 2</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Save Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: QR Code Viewer -->
+    <div id="modal-qr" class="modal-overlay" style="display: none;">
+        <div class="modal-sheet">
+            <div class="modal-header">
+                <h2 id="qr-modal-title">Server QR Code</h2>
+                <button class="modal-close" data-close="modal-qr">✕</button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="modal-desc" id="qr-modal-desc">Scan with Shadowrocket, AmneziaVPN, or mobile camera</p>
+                <div class="qr-image-wrapper">
+                    <img id="qr-img" src="" alt="QR Code">
+                </div>
+                <div class="qr-action-row">
+                    <button id="btn-qr-copy" class="btn btn-secondary btn-block">📋 Copy Import Link</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Live Subscription Link -->
+    <div id="modal-sub" class="modal-overlay" style="display: none;">
+        <div class="modal-sheet">
+            <div class="modal-header">
+                <h2>Mobile Subscription</h2>
+                <button class="modal-close" data-close="modal-sub">✕</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-desc">
+                    Add this subscription URL into Shadowrocket, Streisand, Sing-box, or Karing to auto-sync all online servers.
+                </p>
+                <div class="sub-url-box">
+                    <input type="text" id="sub-url-input" readonly>
+                    <button id="btn-copy-sub-url" class="btn btn-accent">Copy</button>
+                </div>
+                <div class="sub-steps">
+                    <h4>How to use in Shadowrocket (iOS):</h4>
+                    <ol>
+                        <li>Copy the URL above.</li>
+                        <li>Open Shadowrocket, tap <strong>+</strong> (Add).</li>
+                        <li>Change Type to <strong>Subscribe</strong>.</li>
+                        <li>Paste the URL and tap <strong>Save</strong>.</li>
+                        <li>Swipe down to update nodes anytime!</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Element -->
+    <div id="toast" class="toast-popup" style="display: none;"></div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
