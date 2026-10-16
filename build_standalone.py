@@ -101,6 +101,9 @@ html_content = f'''<!DOCTYPE html>
             </div>
         </div>
         <div class="header-actions">
+            <button id="btn-open-devices" class="icon-btn" aria-label="Device &amp; Expiry Manager" title="Device &amp; Expiry Manager">
+                <span style="font-size: 18px;">📱</span>
+            </button>
             <button id="btn-open-settings" class="icon-btn" aria-label="Settings" title="Settings &amp; Obfuscation">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="3"></circle>
@@ -156,6 +159,10 @@ html_content = f'''<!DOCTYPE html>
                     <span>Subscription URL</span>
                 </button>
             </div>
+            <button id="btn-open-devices-bar" class="btn btn-secondary btn-block" style="border-color: rgba(6, 182, 212, 0.4); color: var(--accent-cyan);" title="Manage multi-device subscriptions and set expiry dates">
+                <span class="btn-icon">📱</span>
+                <span>Manage Devices &amp; Expiry (Cloudflare)</span>
+            </button>
             <button id="btn-download-zip" class="btn btn-secondary btn-block" title="Download all .conf configs in a single ZIP archive">
                 <span class="btn-icon">📦</span>
                 <span>Download All .conf (ZIP)</span>
@@ -323,6 +330,114 @@ html_content = f'''<!DOCTYPE html>
                         <li>Paste the URL and tap <strong>Save</strong>.</li>
                         <li>All nodes will download and auto-update!</li>
                     </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Device & Expiry Manager (Cloudflare Worker) -->
+    <div id="modal-devices" class="modal-overlay" style="display: none;">
+        <div class="modal-sheet" style="max-height: 85vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2>📱 Device &amp; Expiry Manager</h2>
+                <button class="modal-close" data-close="modal-devices">✕</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-desc">
+                    Generate multi-device subscriptions with custom Private Keys, device names, and expiration dates powered by Cloudflare Worker.
+                </p>
+
+                <!-- Worker Setup Section -->
+                <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px; margin-bottom: 14px;">
+                    <label style="font-size: 11px; font-weight: 600; color: var(--accent-cyan); display: flex; justify-content: space-between; align-items: center;">
+                        <span>⚙️ Cloudflare Worker Domain</span>
+                        <a href="https://github.com/Behrouz64/Surfshark-AmneziaWG-Mobile/tree/main/cloudflare_worker" target="_blank" style="color: var(--accent-cyan); text-decoration: none; font-size: 10px;">Setup Guide ↗</a>
+                    </label>
+                    <div style="display: flex; gap: 8px; margin-top: 6px;">
+                        <input type="url" id="cf-worker-url" placeholder="https://surfshark-sub.your-name.workers.dev" style="flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
+                        <button type="button" id="btn-save-worker-url" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;">Save</button>
+                    </div>
+                </div>
+
+                <!-- Form to Add New Device -->
+                <form id="form-create-device" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 10px;">
+                    <div class="form-group">
+                        <label for="dev-name-input">Device Name / Label</label>
+                        <input type="text" id="dev-name-input" placeholder="e.g. iPhone-Dad or MacBook" required style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dev-key-input">WireGuard Private Key</label>
+                        <div style="display: flex; gap: 6px;">
+                            <input type="text" id="dev-key-input" placeholder="Device Private Key (Base64)" required style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
+                            <button type="button" id="btn-gen-wg-key" class="btn btn-secondary" style="padding: 6px 10px; font-size: 11px;" title="Generate a fresh valid WireGuard key">🎲 Gen Key</button>
+                        </div>
+                    </div>
+
+                    <div class="sub-actions-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="dev-duration-select">Duration / Expiry</label>
+                            <select id="dev-duration-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                                <option value="30">30 Days</option>
+                                <option value="7">7 Days (Trial)</option>
+                                <option value="60">60 Days (2 Months)</option>
+                                <option value="90">90 Days (3 Months)</option>
+                                <option value="180">180 Days (6 Months)</option>
+                                <option value="365">365 Days (1 Year)</option>
+                                <option value="0">Unlimited (No Expiry)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="dev-region-select">Region / Continent</label>
+                            <select id="dev-region-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                                <option value="all">🌐 All Continents</option>
+                                <option value="europe">🇪🇺 Europe</option>
+                                <option value="asia">🌏 Asia</option>
+                                <option value="americas">🌎 Americas</option>
+                                <option value="africa">🌍 Africa</option>
+                                <option value="oceania">🇦🇺 Oceania</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="button" id="btn-create-dev-sub" class="btn btn-primary" style="margin-top: 4px; padding: 10px;">
+                        ⚡ Generate &amp; Save Device Subscription
+                    </button>
+                </form>
+
+                <!-- Result Card (shown after generation) -->
+                <div id="dev-result-box" style="display: none; margin-top: 14px; background: var(--bg-main); border: 1px solid var(--accent-cyan); border-radius: var(--radius-md); padding: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 id="dev-res-title" style="color: var(--accent-cyan); margin: 0; font-size: 13px;">New Subscription Ready!</h4>
+                        <span id="dev-res-badge" style="font-size: 10px; background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); padding: 2px 6px; border-radius: 4px;">Active</span>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <label style="font-size: 10px;">Direct Shadowrocket Subscription Link</label>
+                        <div style="display: flex; gap: 6px;">
+                            <input type="text" id="dev-res-url" readonly style="flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 6px; border-radius: var(--radius-md); font-family: monospace; font-size: 10px;">
+                            <button id="btn-copy-dev-url" class="btn btn-primary" style="padding: 4px 10px; font-size: 11px;">Copy</button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 10px; background: var(--bg-card); padding: 10px; border-radius: var(--radius-md);">
+                        <div id="dev-qr-container" style="background: white; padding: 6px; border-radius: 6px; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;"></div>
+                        <div style="flex: 1; font-size: 11px; color: var(--text-secondary); line-height: 1.5;">
+                            <strong>Scan with Shadowrocket:</strong>
+                            <p style="margin: 4px 0 0 0;">Open Shadowrocket on your iPhone, tap <strong>[ - ]</strong> (Scan QR), and aim at this code.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Saved Devices Section -->
+                <div style="margin-top: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 style="font-size: 12px; color: var(--text-secondary); margin: 0;">My Managed Devices (<span id="saved-dev-count">0</span>)</h4>
+                        <button type="button" id="btn-clear-devices" style="background: none; border: none; color: var(--text-muted); font-size: 10px; cursor: pointer;">Clear All</button>
+                    </div>
+                    <div id="saved-devices-list" style="display: flex; flex-direction: column; gap: 8px;">
+                        <!-- Injected dynamically -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -1002,6 +1117,247 @@ html_content = f'''<!DOCTYPE html>
                 document.body.style.overflow = "";
             }});
         }});
+
+        // --- Multi-Device & Expiry Manager Logic ---
+        function escapeHtml(str) {{
+            if (!str) return "";
+            return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }}
+
+        const DEFAULT_CF_WORKER = "https://surfshark-sub.your-username.workers.dev";
+        let cfWorkerUrl = localStorage.getItem("surfshark_cf_worker_url") || "";
+        let managedDevices = [];
+        try {{
+            managedDevices = JSON.parse(localStorage.getItem("surfshark_managed_devices") || "[]");
+        }} catch (e) {{
+            managedDevices = [];
+        }}
+
+        function getEffectiveWorkerUrl() {{
+            return cfWorkerUrl.trim().replace(/\/+$/, "") || DEFAULT_CF_WORKER;
+        }}
+
+        function saveManagedDevices() {{
+            localStorage.setItem("surfshark_managed_devices", JSON.stringify(managedDevices));
+            renderManagedDevices();
+        }}
+
+        function renderManagedDevices() {{
+            const container = document.getElementById("saved-devices-list");
+            const countEl = document.getElementById("saved-dev-count");
+            if (!container) return;
+
+            countEl.textContent = managedDevices.length;
+            if (managedDevices.length === 0) {{
+                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 12px; border: 1px dashed var(--border-color); border-radius: var(--radius-md);">No devices added yet. Create one above!</div>';
+                return;
+            }}
+
+            const nowSec = Math.floor(Date.now() / 1000);
+            let html = "";
+            managedDevices.forEach((dev, idx) => {{
+                let statusBadge = "";
+                if (dev.expTimestamp === 0) {{
+                    statusBadge = '<span style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #10b981;">♾️ Unlimited</span>';
+                }} else if (nowSec > dev.expTimestamp) {{
+                    const expDate = new Date(dev.expTimestamp * 1000).toISOString().split("T")[0];
+                    statusBadge = '<span style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(239, 68, 68, 0.15); color: #ef4444;">❌ Expired (' + expDate + ')</span>';
+                }} else {{
+                    const daysLeft = Math.ceil((dev.expTimestamp - nowSec) / 86400);
+                    const color = daysLeft <= 5 ? "#f59e0b" : "#10b981";
+                    const bg = daysLeft <= 5 ? "rgba(245, 158, 11, 0.15)" : "rgba(16, 185, 129, 0.15)";
+                    statusBadge = '<span style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: ' + bg + '; color: ' + color + ';">⏳ ' + daysLeft + ' days left</span>';
+                }}
+
+                html += '<div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px; display: flex; flex-direction: column; gap: 6px;">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: center;">' +
+                        '<div style="display: flex; align-items: center; gap: 6px;">' +
+                            '<span style="font-size: 13px;">📱</span>' +
+                            '<strong style="font-size: 12px; color: var(--text-primary);">' + escapeHtml(dev.name) + '</strong>' +
+                            '<span style="font-size: 10px; color: var(--text-secondary); text-transform: capitalize;">(' + dev.region + ')</span>' +
+                        '</div>' +
+                        statusBadge +
+                    '</div>' +
+                    '<div style="display: flex; gap: 6px; margin-top: 4px;">' +
+                        '<button type="button" class="btn btn-secondary btn-copy-dev-item" data-index="' + idx + '" style="flex: 1; padding: 4px 8px; font-size: 10px;">📋 Copy Link</button>' +
+                        '<button type="button" class="btn btn-secondary btn-qr-dev-item" data-index="' + idx + '" style="padding: 4px 10px; font-size: 10px;">📱 QR</button>' +
+                        '<button type="button" class="btn btn-secondary btn-del-dev-item" data-index="' + idx + '" style="padding: 4px 8px; font-size: 10px; color: #ef4444;">🗑️</button>' +
+                    '</div>' +
+                '</div>';
+            }});
+            container.innerHTML = html;
+
+            container.querySelectorAll(".btn-copy-dev-item").forEach(btn => {{
+                btn.addEventListener("click", () => {{
+                    const i = parseInt(btn.getAttribute("data-index"), 10);
+                    if (managedDevices[i]) {{
+                        copyToClipboard(managedDevices[i].url, "Subscription URL for " + managedDevices[i].name + " copied!");
+                    }}
+                }});
+            }});
+
+            container.querySelectorAll(".btn-qr-dev-item").forEach(btn => {{
+                btn.addEventListener("click", () => {{
+                    const i = parseInt(btn.getAttribute("data-index"), 10);
+                    if (managedDevices[i]) {{
+                        showDevQr(managedDevices[i]);
+                    }}
+                }});
+            }});
+
+            container.querySelectorAll(".btn-del-dev-item").forEach(btn => {{
+                btn.addEventListener("click", () => {{
+                    const i = parseInt(btn.getAttribute("data-index"), 10);
+                    if (managedDevices[i] && confirm("Delete device " + managedDevices[i].name + "?")) {{
+                        managedDevices.splice(i, 1);
+                        saveManagedDevices();
+                    }}
+                }});
+            }});
+        }}
+
+        function generateWgPrivateKey() {{
+            const array = new Uint8Array(32);
+            window.crypto.getRandomValues(array);
+            array[0] &= 248;
+            array[31] &= 127;
+            array[31] |= 64;
+            let binary = "";
+            for (let i = 0; i < array.length; i++) {{
+                binary += String.fromCharCode(array[i]);
+            }}
+            return btoa(binary);
+        }}
+
+        function showDevQr(dev) {{
+            const box = document.getElementById("qr-box");
+            const label = document.getElementById("qr-modal-title");
+            if (label) label.textContent = "Shadowrocket QR — " + dev.name;
+            if (box) {{
+                box.innerHTML = "";
+                try {{
+                    new QRCode(box, {{
+                        text: dev.url,
+                        width: 220,
+                        height: 220,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.M
+                    }});
+                }} catch (e) {{
+                    box.innerHTML = "<p>QR generator unavailable</p>";
+                }}
+                App.activeQrUrl = dev.url;
+                openModal("modal-qr");
+            }}
+        }}
+
+        const cfInput = document.getElementById("cf-worker-url");
+        if (cfInput) {{
+            cfInput.value = cfWorkerUrl;
+        }}
+
+        document.getElementById("btn-save-worker-url").addEventListener("click", () => {{
+            const val = document.getElementById("cf-worker-url").value.trim();
+            cfWorkerUrl = val;
+            localStorage.setItem("surfshark_cf_worker_url", val);
+            showToast("Cloudflare Worker domain saved!");
+        }});
+
+        document.getElementById("btn-gen-wg-key").addEventListener("click", () => {{
+            const newKey = generateWgPrivateKey();
+            document.getElementById("dev-key-input").value = newKey;
+            showToast("Random valid WireGuard Private Key generated!");
+        }});
+
+        document.getElementById("btn-create-dev-sub").addEventListener("click", () => {{
+            const name = document.getElementById("dev-name-input").value.trim();
+            const key = document.getElementById("dev-key-input").value.trim();
+            const durationDays = parseInt(document.getElementById("dev-duration-select").value, 10);
+            const region = document.getElementById("dev-region-select").value;
+
+            if (!name) {{
+                alert("Please enter a device name / label.");
+                return;
+            }}
+            if (!key) {{
+                alert("Please provide or generate a WireGuard private key.");
+                return;
+            }}
+
+            const nowSec = Math.floor(Date.now() / 1000);
+            const expSec = durationDays > 0 ? (nowSec + durationDays * 86400) : 0;
+            const workerBase = getEffectiveWorkerUrl();
+
+            const subUrl = workerBase + "/sub?key=" + encodeURIComponent(key) +
+                           "&name=" + encodeURIComponent(name) +
+                           "&exp=" + expSec +
+                           "&continent=" + encodeURIComponent(region);
+
+            const devObj = {{
+                id: "dev_" + Date.now(),
+                name: name,
+                key: key,
+                durationDays: durationDays,
+                expTimestamp: expSec,
+                region: region,
+                url: subUrl,
+                createdAt: nowSec
+            }};
+
+            managedDevices.unshift(devObj);
+            saveManagedDevices();
+
+            document.getElementById("dev-result-box").style.display = "block";
+            document.getElementById("dev-res-title").textContent = "Subscription for " + name;
+            document.getElementById("dev-res-url").value = subUrl;
+            
+            const daysText = durationDays > 0 ? (durationDays + " Days") : "Unlimited";
+            document.getElementById("dev-res-badge").textContent = daysText;
+
+            const qrBox = document.getElementById("dev-qr-container");
+            if (qrBox) {{
+                qrBox.innerHTML = "";
+                try {{
+                    new QRCode(qrBox, {{
+                        text: subUrl,
+                        width: 90,
+                        height: 90,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.M
+                    }});
+                }} catch (e) {{
+                    qrBox.innerHTML = "QR";
+                }}
+            }}
+
+            showToast("Device subscription generated and saved!");
+        }});
+
+        document.getElementById("btn-copy-dev-url").addEventListener("click", () => {{
+            const u = document.getElementById("dev-res-url").value;
+            copyToClipboard(u, "Device subscription URL copied!");
+        }});
+
+        document.getElementById("btn-clear-devices").addEventListener("click", () => {{
+            if (managedDevices.length > 0 && confirm("Clear all saved devices?")) {{
+                managedDevices = [];
+                saveManagedDevices();
+            }}
+        }});
+
+        document.getElementById("btn-open-devices").addEventListener("click", () => {{
+            renderManagedDevices();
+            openModal("modal-devices");
+        }});
+        const btnBar = document.getElementById("btn-open-devices-bar");
+        if (btnBar) {{
+            btnBar.addEventListener("click", () => {{
+                renderManagedDevices();
+                openModal("modal-devices");
+            }});
+        }}
 
         applyFilters();
     }});
