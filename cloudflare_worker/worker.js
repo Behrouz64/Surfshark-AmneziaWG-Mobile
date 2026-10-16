@@ -1,17 +1,77 @@
 /**
- * Cloudflare Worker for Surfshark AmneziaWG Dynamic Multi-Device Subscriptions
- * 
- * Features:
- * - Dynamic Private Key injection per device (?key=...)
- * - Device Name branding (?name=...)
- * - Expiration enforcement (?exp=UNIX_TIMESTAMP)
- * - Per-Continent filtering (?continent=europe|asia|americas|africa|oceania|all)
- * - Base64 output support (?b64=1)
- * - Informative status nodes inside Shadowrocket
- * - Edge CDN caching (5 minutes) for maximum speed and zero load
+ * Cloudflare Worker for Surfshark AmneziaWG
+ * - Multi-User Management with Cloudflare KV
+ * - Role-Based Access (Admin & Standard Users)
+ * - Cloud Device Synchronization across Mobile & Desktop
+ * - Password Reset with Master Recovery Key
+ * - Dynamic Private Key & Expiry Subscriptions for Shadowrocket
  */
 
 const GITHUB_PAGES_BASE = "https://behrouz64.github.io/Surfshark-AmneziaWG-Mobile";
+const JWT_SECRET = "surfshark_awg_secret_salt_2026";
+
+async function hashPassword(password) {
+  const enc = new TextEncoder().encode(password + JWT_SECRET);
+  const buf = await crypto.subtle.digest("SHA-256", enc);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+function jsonResponse(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    },
+  });
+}
+
+function textResponse(text, status = 200, headers = {}) {
+  return new Response(text, {
+    status,
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      ...headers,
+    },
+  });
+}
+
+async function verifyAuth(request, env) {
+  const authHeader = request.headers.get("Authorization") || "";
+  const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+  if (!token) return null;
+
+  try {
+    const raw = atob(token);
+    const [username, expStr, sig] = raw.split(":");
+    if (!username || !expStr || !sig) return null;
+
+    if (Date.now() > parseInt(expStr, 10)) return null;
+
+    const expectedSig = (await hashPassword(username + expStr)).substring(0, 16);
+    if (sig !== expectedSig) return null;
+
+    const usersJson = await env.SURFSHARK_KV.get("users_registry");
+    const users = usersJson ? JSON.parse(usersJson) : {};
+    const user = users[username];
+    if (!user) return null;
+
+    return { username, role: user.role };
+  } catch (e) {
+    return null;
+  }
+}
+
+async function createToken(username) {
+  const exp = Date.now() + 30 * 86400 * 1000; // 30 days session
+  const sig = (await hashPassword(username + exp)).substring(0, 16);
+  return btoa(`${username}:${exp}:${sig}`);
+}
 
 export default {
   async fetch(request, env, ctx) {
@@ -23,32 +83,242 @@ export default {
       return new Response(null, {
         headers: {
           "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
-          "Access-Control-Allow-Headers": "*",
+          "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
         },
       });
     }
 
-    // Default home/info page if accessed directly in a browser without parameters
-    if (url.pathname === "/" && !params.has("key") && !params.has("sub")) {
-      return new Response(
-        `Surfshark AmneziaWG Dynamic Subscription Worker\n\n` +
-        `Usage:\n` +
-        `  ${url.origin}/sub?key=<PRIVATE_KEY>&name=<DEVICE_NAME>&exp=<UNIX_TIMESTAMP>&continent=<REGION>\n\n` +
-        `Parameters:\n` +
-        `  - key: Device WireGuard private key (Required)\n` +
-        `  - name: Optional label for the device (e.g. iPhone-User)\n` +
-        `  - exp: Expiration timestamp in seconds (0 or omitted for unlimited)\n` +
-        `  - continent: all | europe | asia | americas | africa | oceania\n` +
-        `  - b64: 1 to return Base64 encoded payload\n`,
-        {
-          headers: { "Content-Type": "text/plain; charset=utf-8" },
-        }
-      );
+    // ==========================================
+    // 1. API: AUTH STATUS & SETUP (First-time Admin)
+    // ==========================================
+    if (url.pathname === "/api/auth/status") {
+      const usersJson = await env.SURFSHARK_KV.get("users_registry");
+      const users = usersJson ? JSON.parse(usersJson) : {};
+      const hasUsers = Object.keys(users).length > 0;
+      return jsonResponse({ hasAdmin: hasUsers, count: Object.keys(users).length });
     }
 
+    if (url.pathname === "/api/auth/setup" && request.method === "POST") {
+      const usersJson = await env.SURFSHARK_KV.get("users_registry");
+      let users = usersJson ? JSON.parse(usersJson) : {};
+      
+      // If admin already exists, don't allow re-setup
+      if (Object.keys(users).length > 0) {
+        return jsonResponse({ error: "System already initialized. Please login." }, 400);
+      }
+
+      const body = await request.json();
+      const username = (body.username || "").trim().toLowerCase();
+      const password = body.password || "";
+      const recoveryKey = (body.recoveryKey || "").trim();
+
+      if (!username || username.length < 3) {
+        return jsonResponse({ error: "Username must be at least 3 characters." }, 400);
+      }
+      if (!password || password.length < 4) {
+        return jsonResponse({ error: "Password must be at least 4 characters." }, 400);
+      }
+      if (!recoveryKey || recoveryKey.length < 6) {
+        return jsonResponse({ error: "Recovery key must be at least 6 characters." }, 400);
+      }
+
+      const pwHash = await hashPassword(password);
+      const recHash = await hashPassword(recoveryKey);
+
+      users[username] = {
+        passwordHash: pwHash,
+        role: "admin",
+        createdAt: Math.floor(Date.now() / 1000)
+      };
+
+      await env.SURFSHARK_KV.put("users_registry", JSON.stringify(users));
+      await env.SURFSHARK_KV.put("master_recovery_hash", recHash);
+
+      const token = await createToken(username);
+      return jsonResponse({ success: true, token, username, role: "admin" });
+    }
+
+    // ==========================================
+    // 2. API: LOGIN
+    // ==========================================
+    if (url.pathname === "/api/auth/login" && request.method === "POST") {
+      const body = await request.json();
+      const username = (body.username || "").trim().toLowerCase();
+      const password = body.password || "";
+
+      const usersJson = await env.SURFSHARK_KV.get("users_registry");
+      const users = usersJson ? JSON.parse(usersJson) : {};
+      const user = users[username];
+
+      if (!user) {
+        return jsonResponse({ error: "Invalid username or password" }, 401);
+      }
+
+      const pwHash = await hashPassword(password);
+      if (pwHash !== user.passwordHash) {
+        return jsonResponse({ error: "Invalid username or password" }, 401);
+      }
+
+      const token = await createToken(username);
+      return jsonResponse({ success: true, token, username, role: user.role });
+    }
+
+    // ==========================================
+    // 3. API: PASSWORD RESET (Using Master Recovery Key)
+    // ==========================================
+    if (url.pathname === "/api/auth/reset" && request.method === "POST") {
+      const body = await request.json();
+      const username = (body.username || "").trim().toLowerCase();
+      const recoveryKey = (body.recoveryKey || "").trim();
+      const newPassword = body.newPassword || "";
+
+      if (!username || !recoveryKey || !newPassword) {
+        return jsonResponse({ error: "Please fill all fields." }, 400);
+      }
+
+      const storedRecHash = await env.SURFSHARK_KV.get("master_recovery_hash");
+      const inputRecHash = await hashPassword(recoveryKey);
+
+      if (!storedRecHash || storedRecHash !== inputRecHash) {
+        return jsonResponse({ error: "Invalid Recovery Key!" }, 403);
+      }
+
+      const usersJson = await env.SURFSHARK_KV.get("users_registry");
+      let users = usersJson ? JSON.parse(usersJson) : {};
+      if (!users[username]) {
+        return jsonResponse({ error: `User ${username} not found.` }, 404);
+      }
+
+      users[username].passwordHash = await hashPassword(newPassword);
+      await env.SURFSHARK_KV.put("users_registry", JSON.stringify(users));
+
+      return jsonResponse({ success: true, message: "Password reset successfully! You can now login." });
+    }
+
+    // ==========================================
+    // 4. API: GET ME (Check Session)
+    // ==========================================
+    if (url.pathname === "/api/auth/me") {
+      const auth = await verifyAuth(request, env);
+      if (!auth) return jsonResponse({ error: "Unauthorized" }, 401);
+      return jsonResponse({ authenticated: true, user: auth });
+    }
+
+    // ==========================================
+    // 5. API: USERS MANAGEMENT (Admin Only)
+    // ==========================================
+    if (url.pathname === "/api/users") {
+      const auth = await verifyAuth(request, env);
+      if (!auth || auth.role !== "admin") {
+        return jsonResponse({ error: "Admin access required." }, 403);
+      }
+
+      const usersJson = await env.SURFSHARK_KV.get("users_registry");
+      let users = usersJson ? JSON.parse(usersJson) : {};
+
+      // GET: List all users
+      if (request.method === "GET") {
+        const userList = Object.keys(users).map(u => ({
+          username: u,
+          role: users[u].role,
+          createdAt: users[u].createdAt
+        }));
+        return jsonResponse({ users: userList });
+      }
+
+      // POST: Create a new user account
+      if (request.method === "POST") {
+        const body = await request.json();
+        const newU = (body.username || "").trim().toLowerCase();
+        const newP = body.password || "";
+        const role = body.role === "admin" ? "admin" : "user";
+
+        if (!newU || newU.length < 3) return jsonResponse({ error: "Username too short." }, 400);
+        if (!newP || newP.length < 4) return jsonResponse({ error: "Password too short." }, 400);
+
+        if (users[newU]) return jsonResponse({ error: "User already exists." }, 400);
+
+        users[newU] = {
+          passwordHash: await hashPassword(newP),
+          role: role,
+          createdAt: Math.floor(Date.now() / 1000)
+        };
+
+        await env.SURFSHARK_KV.put("users_registry", JSON.stringify(users));
+        return jsonResponse({ success: true, message: `User ${newU} created.` });
+      }
+
+      // DELETE: Delete user
+      if (request.method === "DELETE") {
+        const targetU = (params.get("user") || "").trim().toLowerCase();
+        if (!targetU) return jsonResponse({ error: "User parameter missing" }, 400);
+        if (targetU === auth.username) return jsonResponse({ error: "Cannot delete your own admin account!" }, 400);
+
+        delete users[targetU];
+        await env.SURFSHARK_KV.put("users_registry", JSON.stringify(users));
+        await env.SURFSHARK_KV.delete(`devices:${targetU}`);
+        return jsonResponse({ success: true, message: `User ${targetU} deleted.` });
+      }
+    }
+
+    // ==========================================
+    // 6. API: CLOUD DEVICES SYNC (KV)
+    // ==========================================
+    if (url.pathname === "/api/devices") {
+      const auth = await verifyAuth(request, env);
+      if (!auth) return jsonResponse({ error: "Unauthorized" }, 401);
+
+      const targetUsername = (auth.role === "admin" && params.has("user")) ? params.get("user") : auth.username;
+      const kvKey = `devices:${targetUsername}`;
+
+      // GET: Retrieve user devices from Cloudflare KV
+      if (request.method === "GET") {
+        const devJson = await env.SURFSHARK_KV.get(kvKey);
+        const devices = devJson ? JSON.parse(devJson) : [];
+        return jsonResponse({ devices, username: targetUsername });
+      }
+
+      // POST: Save or append device to Cloudflare KV
+      if (request.method === "POST") {
+        const newDev = await request.json();
+        if (!newDev || !newDev.name || !newDev.key) {
+          return jsonResponse({ error: "Invalid device data" }, 400);
+        }
+
+        const devJson = await env.SURFSHARK_KV.get(kvKey);
+        let devices = devJson ? JSON.parse(devJson) : [];
+
+        // Check if device with same ID exists, update or add to front
+        const existingIdx = devices.findIndex(d => d.id === newDev.id);
+        if (existingIdx !== -1) {
+          devices[existingIdx] = newDev;
+        } else {
+          devices.unshift(newDev);
+        }
+
+        await env.SURFSHARK_KV.put(kvKey, JSON.stringify(devices));
+        return jsonResponse({ success: true, devices });
+      }
+
+      // DELETE: Remove device from Cloudflare KV
+      if (request.method === "DELETE") {
+        const devId = params.get("id");
+        if (!devId) return jsonResponse({ error: "Device ID missing" }, 400);
+
+        const devJson = await env.SURFSHARK_KV.get(kvKey);
+        let devices = devJson ? JSON.parse(devJson) : [];
+        devices = devices.filter(d => d.id !== devId);
+
+        await env.SURFSHARK_KV.put(kvKey, JSON.stringify(devices));
+        return jsonResponse({ success: true, devices });
+      }
+    }
+
+    // ==========================================
+    // 7. SUBSCRIPTION ENDPOINT (/sub)
+    // ==========================================
     const deviceKey = params.get("key") || "";
-    const deviceName = params.get("name") || "";
     const expParam = params.get("exp") || "0";
     const continent = (params.get("continent") || params.get("region") || "all").toLowerCase();
     const returnB64 = params.get("b64") === "1" || params.get("format") === "base64";
@@ -61,18 +331,10 @@ export default {
     if (isExpired) {
       const expDateStr = new Date(expTimestamp * 1000).toISOString().split("T")[0];
       const expiredRemark = encodeURIComponent(`⚠️ Subscription Expired on ${expDateStr} — Contact Admin`);
-      // Return a visible expired alert node so Shadowrocket users clearly see it in the list
       const alertNode = `wg://127.0.0.1:51820?publicKey=dZNq48noPkey9rwSbAU%2BmasbafpDSaAmtAMaP%2BgzLxA%3D&privateKey=GJfG1b7zCubnBHQHdNyJVKDMtoylDQgfpqZDhm4jjVM%3D&ip=10.14.0.2#${expiredRemark}`;
       
       const payload = returnB64 ? btoa(alertNode) : alertNode;
-      return new Response(payload, {
-        status: 200,
-        headers: {
-          "Content-Type": "text/plain; charset=utf-8",
-          "Access-Control-Allow-Origin": "*",
-          "X-Subscription-Status": "Expired",
-        },
-      });
+      return textResponse(payload, 200, { "X-Subscription-Status": "Expired" });
     }
 
     // Determine target subscription file from GitHub Pages
@@ -84,74 +346,50 @@ export default {
     const targetUrl = `${GITHUB_PAGES_BASE}/${sourceFileName}`;
 
     try {
-      // Fetch fresh upstream nodes with Cloudflare Edge caching
       const upstreamResp = await fetch(targetUrl, {
-        cf: {
-          cacheTtl: 300, // Cache for 5 minutes at edge
-          cacheEverything: true,
-        },
+        cf: { cacheTtl: 300, cacheEverything: true },
       });
 
       if (!upstreamResp.ok) {
-        return new Response(`Error fetching subscription from upstream: ${upstreamResp.status}`, {
-          status: 502,
-          headers: { "Content-Type": "text/plain; charset=utf-8" },
-        });
+        return textResponse(`Error fetching upstream: ${upstreamResp.status}`, 502);
       }
 
       const rawContent = await upstreamResp.text();
       const lines = rawContent.split("\n").map(l => l.trim()).filter(l => l.startsWith("wg://"));
 
       if (lines.length === 0) {
-        return new Response("No active nodes found in subscription.", { status: 500 });
+        return textResponse("No active nodes found in subscription.", 500);
       }
 
-      // Calculate days remaining info if expiry is set
+      // Add status info banner if expiring
       let infoNode = null;
       if (expTimestamp > 0) {
         const daysLeft = Math.ceil((expTimestamp - nowSeconds) / 86400);
         const expDateStr = new Date(expTimestamp * 1000).toISOString().split("T")[0];
         const infoRemark = encodeURIComponent(`⏳ Subscription Active until ${expDateStr} (${daysLeft} days left)`);
-        // Dummy non-routable node that acts as a visible status banner in Shadowrocket
         infoNode = `wg://10.255.255.1:51820?publicKey=dZNq48noPkey9rwSbAU%2BmasbafpDSaAmtAMaP%2BgzLxA%3D&privateKey=GJfG1b7zCubnBHQHdNyJVKDMtoylDQgfpqZDhm4jjVM%3D&ip=10.14.0.2#${infoRemark}`;
       }
 
-      // Format target private key for URL query substitution
       const encodedDeviceKey = encodeURIComponent(deviceKey);
-
-      // Process nodes: substitute privateKey without altering server names
       const processedNodes = lines.map(line => {
         let node = line;
-
-        // Replace private key if specified
         if (deviceKey) {
           node = node.replace(/privateKey=[^&]+/, `privateKey=${encodedDeviceKey}`);
         }
-
         return node;
       });
 
       const allNodes = infoNode ? [infoNode, ...processedNodes] : processedNodes;
       const finalBody = allNodes.join("\n") + "\n";
-
       const outputPayload = returnB64 ? btoa(unescape(encodeURIComponent(finalBody))) : finalBody;
 
-      return new Response(outputPayload, {
-        status: 200,
-        headers: {
-          "Content-Type": "text/plain; charset=utf-8",
-          "Access-Control-Allow-Origin": "*",
-          "Cache-Control": "public, max-age=180",
-          "X-Device-Name": deviceName,
-          "X-Nodes-Count": String(processedNodes.length),
-        },
+      return textResponse(outputPayload, 200, {
+        "Cache-Control": "public, max-age=180",
+        "X-Nodes-Count": String(processedNodes.length),
       });
 
     } catch (err) {
-      return new Response(`Worker internal error: ${err.message}`, {
-        status: 500,
-        headers: { "Content-Type": "text/plain; charset=utf-8" },
-      });
+      return textResponse(`Worker internal error: ${err.message}`, 500);
     }
   },
 };

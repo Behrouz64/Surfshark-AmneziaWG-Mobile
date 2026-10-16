@@ -1,3 +1,7 @@
 name = "surfshark-amneziawg-sub"
 main = "worker.js"
 compatibility_date = "2024-01-01"
+
+[[kv_namespaces]]
+binding = "SURFSHARK_KV"
+id = "d38092e4a23e4acc90cb772f40df775a"

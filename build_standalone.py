@@ -106,9 +106,6 @@ html_content = f'''<!DOCTYPE html>
             </div>
         </div>
         <div class="header-actions">
-            <button id="btn-open-devices" class="icon-btn" aria-label="Device &amp; Expiry Manager" title="Device &amp; Expiry Manager">
-                <span style="font-size: 18px;">📱</span>
-            </button>
             <button id="btn-open-settings" class="icon-btn" aria-label="Settings" title="Settings &amp; Obfuscation">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="3"></circle>
@@ -154,6 +151,19 @@ html_content = f'''<!DOCTYPE html>
                 <span class="btn-icon">⚡</span>
                 <span id="btn-resolve-label">Resolve All IPs (DoH nslookup)</span>
             </button>
+
+            <!-- Prominent Multi-User Cloud Management Bar -->
+            <button id="btn-open-devices-bar" class="btn btn-secondary btn-block" style="border-color: rgba(6, 182, 212, 0.45); background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(15, 23, 42, 0.6)); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; text-align: left;" title="Multi-User Cloud Sync &amp; Device Subscriptions">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 22px;">📱</span>
+                    <div>
+                        <div style="font-weight: 600; color: var(--accent-cyan); font-size: 13px;">Manage Devices &amp; Users</div>
+                        <div id="user-status-label" style="font-size: 11px; color: var(--text-secondary); margin-top: 1px;">Cloudflare Cloud Sync (KV)</div>
+                    </div>
+                </div>
+                <span id="user-badge" style="font-size: 10px; background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); padding: 4px 10px; border-radius: 999px; font-weight: 500;">Open ↗</span>
+            </button>
+
             <div class="btn-group-row">
                 <button id="btn-copy-all" class="btn btn-secondary" title="Copy all node links for 1-tap Shadowrocket batch import">
                     <span class="btn-icon">📋</span>
@@ -164,10 +174,7 @@ html_content = f'''<!DOCTYPE html>
                     <span>Subscription URL</span>
                 </button>
             </div>
-            <button id="btn-open-devices-bar" class="btn btn-secondary btn-block" style="border-color: rgba(6, 182, 212, 0.4); color: var(--accent-cyan);" title="Manage multi-device subscriptions and set expiry dates">
-                <span class="btn-icon">📱</span>
-                <span>Manage Devices &amp; Expiry (Cloudflare)</span>
-            </button>
+
             <button id="btn-download-zip" class="btn btn-secondary btn-block" title="Download all .conf configs in a single ZIP archive">
                 <span class="btn-icon">📦</span>
                 <span>Download All .conf (ZIP)</span>
@@ -380,111 +387,210 @@ html_content = f'''<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- Modal: Device & Expiry Manager (Cloudflare Worker) -->
+    <!-- Modal: Device & Multi-User Manager (Cloudflare KV) -->
     <div id="modal-devices" class="modal-overlay" style="display: none;">
         <div class="modal-sheet" style="max-height: 85vh; overflow-y: auto;">
             <div class="modal-header">
-                <h2>📱 Device &amp; Expiry Manager</h2>
+                <h2>📱 Cloud Device &amp; User Manager</h2>
                 <button class="modal-close" data-close="modal-devices">✕</button>
             </div>
             <div class="modal-body">
-                <p class="modal-desc">
-                    Generate multi-device subscriptions with custom Private Keys, device names, and expiration dates powered by Cloudflare Worker.
-                </p>
-
-                <!-- Worker Setup Section -->
-                <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px; margin-bottom: 14px;">
-                    <label style="font-size: 11px; font-weight: 600; color: var(--accent-cyan); display: flex; justify-content: space-between; align-items: center;">
-                        <span>⚙️ Cloudflare Worker Domain</span>
-                        <a href="https://github.com/Behrouz64/Surfshark-AmneziaWG-Mobile/tree/main/cloudflare_worker" target="_blank" style="color: var(--accent-cyan); text-decoration: none; font-size: 10px;">Setup Guide ↗</a>
-                    </label>
-                    <div style="display: flex; gap: 8px; margin-top: 6px;">
-                        <input type="url" id="cf-worker-url" value="https://surfshark-amneziawg-sub.bsaidian.workers.dev" style="flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
-                        <button type="button" id="btn-save-worker-url" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;">Save</button>
-                    </div>
+                <!-- 1. First-Time Setup Card (if no admin registered yet) -->
+                <div id="auth-setup-card" style="display: none; background: var(--bg-main); border: 1px solid var(--accent-cyan); border-radius: var(--radius-md); padding: 14px;">
+                    <h3 style="color: var(--accent-cyan); font-size: 14px; margin-bottom: 6px;">👑 First-Time Setup (Create Admin)</h3>
+                    <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
+                        Create your Master Admin account to manage and synchronize subscriptions across all your devices securely on Cloudflare.
+                    </p>
+                    <form id="form-admin-setup" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 8px;">
+                        <div class="form-group">
+                            <label>Admin Username</label>
+                            <input type="text" id="setup-username" placeholder="e.g. admin" required style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: var(--radius-md); font-size: 12px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Admin Password</label>
+                            <input type="password" id="setup-password" placeholder="Choose a password" required style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: var(--radius-md); font-size: 12px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Master Recovery Key (for password reset)</label>
+                            <input type="text" id="setup-recovery-key" placeholder="A secret passphrase (e.g. my-secret-pin-99)" required style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: var(--radius-md); font-size: 12px;">
+                            <span style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">⚠️ Save this key safely! If you ever forget your password, you can reset it with this key.</span>
+                        </div>
+                        <button type="button" id="btn-submit-setup" class="btn btn-primary" style="margin-top: 6px; padding: 10px;">
+                            🚀 Initialize Cloud Account
+                        </button>
+                    </form>
                 </div>
 
-                <!-- Form to Add New Device -->
-                <form id="form-create-device" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 10px;">
-                    <div class="form-group">
-                        <label for="dev-name-input">Device Name / Label</label>
-                        <input type="text" id="dev-name-input" placeholder="e.g. iPhone-Dad or MacBook" required style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px;">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="dev-key-input">Surfshark WireGuard Private Key</label>
-                        <div style="display: flex; gap: 6px;">
-                            <input type="text" id="dev-key-input" placeholder="Paste Private Key from Surfshark account..." required style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
-                            <button type="button" id="btn-paste-dev-key" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;" title="Paste from clipboard">📋 Paste</button>
+                <!-- 2. Login Card -->
+                <div id="auth-login-card" style="display: none; background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px;">
+                    <h3 style="color: var(--accent-cyan); font-size: 14px; margin-bottom: 6px;">🔑 Login to Cloud Manager</h3>
+                    <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">
+                        Login to view and manage your synchronized devices from any Mac or phone.
+                    </p>
+                    <form id="form-user-login" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 8px;">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" id="login-username" placeholder="Username" required style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: var(--radius-md); font-size: 12px;">
                         </div>
-                        <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px; display: block; line-height: 1.4;">
-                            💡 کلید اختصاصی هر دیوایس را از پنل کاربری Surfshark (بخش Manual setup &gt; WireGuard) دریافت و اینجا وارد کنید.
-                        </span>
-                    </div>
-
-                    <div class="sub-actions-row">
-                        <div class="form-group" style="flex: 1;">
-                            <label for="dev-duration-select">Duration / Expiry</label>
-                            <select id="dev-duration-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
-                                <option value="30">30 Days</option>
-                                <option value="7">7 Days (Trial)</option>
-                                <option value="60">60 Days (2 Months)</option>
-                                <option value="90">90 Days (3 Months)</option>
-                                <option value="180">180 Days (6 Months)</option>
-                                <option value="365">365 Days (1 Year)</option>
-                                <option value="0">Unlimited (No Expiry)</option>
-                            </select>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="login-password" placeholder="Password" required style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: var(--radius-md); font-size: 12px;">
                         </div>
-                        <div class="form-group" style="flex: 1;">
-                            <label for="dev-region-select">Region / Continent</label>
-                            <select id="dev-region-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
-                                <option value="all">🌐 All Continents</option>
-                                <option value="europe">🇪🇺 Europe</option>
-                                <option value="asia">🌏 Asia</option>
-                                <option value="americas">🌎 Americas</option>
-                                <option value="africa">🌍 Africa</option>
-                                <option value="oceania">🇦🇺 Oceania</option>
-                            </select>
+                        <button type="button" id="btn-submit-login" class="btn btn-primary" style="margin-top: 4px; padding: 10px;">
+                            🔓 Login
+                        </button>
+                        <div style="text-align: center; margin-top: 6px;">
+                            <a href="javascript:void(0)" id="link-show-reset" style="color: var(--text-muted); font-size: 11px; text-decoration: underline;">Forgot password? Reset with Recovery Key</a>
                         </div>
-                    </div>
-
-                    <button type="button" id="btn-create-dev-sub" class="btn btn-primary" style="margin-top: 4px; padding: 10px;">
-                        ⚡ Generate &amp; Save Device Subscription
-                    </button>
-                </form>
-
-                <!-- Result Card (shown after generation) -->
-                <div id="dev-result-box" style="display: none; margin-top: 14px; background: var(--bg-main); border: 1px solid var(--accent-cyan); border-radius: var(--radius-md); padding: 12px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <h4 id="dev-res-title" style="color: var(--accent-cyan); margin: 0; font-size: 13px;">New Subscription Ready!</h4>
-                        <span id="dev-res-badge" style="font-size: 10px; background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); padding: 2px 6px; border-radius: 4px;">Active</span>
-                    </div>
-                    
-                    <div class="form-group" style="margin-bottom: 8px;">
-                        <label style="font-size: 10px;">Direct Shadowrocket Subscription Link</label>
-                        <div style="display: flex; gap: 6px;">
-                            <input type="text" id="dev-res-url" readonly style="flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 6px; border-radius: var(--radius-md); font-family: monospace; font-size: 10px;">
-                            <button id="btn-copy-dev-url" class="btn btn-primary" style="padding: 4px 10px; font-size: 11px;">Copy</button>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 10px; background: var(--bg-card); padding: 10px; border-radius: var(--radius-md);">
-                        <div id="dev-qr-container" style="background: white; padding: 6px; border-radius: 6px; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;"></div>
-                        <div style="flex: 1; font-size: 11px; color: var(--text-secondary); line-height: 1.5;">
-                            <strong>Scan with Shadowrocket:</strong>
-                            <p style="margin: 4px 0 0 0;">Open Shadowrocket on your iPhone, tap <strong>[ - ]</strong> (Scan QR), and aim at this code.</p>
-                        </div>
-                    </div>
+                    </form>
                 </div>
 
-                <!-- Saved Devices Section -->
-                <div style="margin-top: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <h4 style="font-size: 12px; color: var(--text-secondary); margin: 0;">My Managed Devices (<span id="saved-dev-count">0</span>)</h4>
-                        <button type="button" id="btn-clear-devices" style="background: none; border: none; color: var(--text-muted); font-size: 10px; cursor: pointer;">Clear All</button>
+                <!-- 3. Password Reset Card -->
+                <div id="auth-reset-card" style="display: none; background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px;">
+                    <h3 style="color: #f59e0b; font-size: 14px; margin-bottom: 6px;">🔄 Reset Password</h3>
+                    <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">
+                        Enter your username and your Master Recovery Key to reset your password.
+                    </p>
+                    <form id="form-user-reset" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 8px;">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" id="reset-username" placeholder="Username" required style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: var(--radius-md); font-size: 12px;">
+                        </div>
+                        <div class="form-group">
+                            <label>Master Recovery Key</label>
+                            <input type="text" id="reset-recovery-key" placeholder="Enter recovery key..." required style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: var(--radius-md); font-size: 12px;">
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" id="reset-new-password" placeholder="Enter new password" required style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: var(--radius-md); font-size: 12px;">
+                        </div>
+                        <div class="sub-actions-row" style="margin-top: 4px;">
+                            <button type="button" id="btn-submit-reset" class="btn btn-primary" style="flex: 2; padding: 9px;">Reset Password</button>
+                            <button type="button" id="btn-cancel-reset" class="btn btn-secondary" style="flex: 1; padding: 9px;">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 4. Logged-In Active Session View -->
+                <div id="auth-logged-in-view" style="display: none;">
+                    <!-- User Status Bar -->
+                    <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 14px;">👤</span>
+                            <span style="font-size: 12px; font-weight: 600; color: var(--text-primary);" id="session-user-name">User</span>
+                            <span id="session-role-badge" style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); text-transform: uppercase;">ADMIN</span>
+                        </div>
+                        <div style="display: flex; gap: 6px;">
+                            <button type="button" id="btn-toggle-admin-users" class="btn btn-secondary" style="display: none; padding: 4px 8px; font-size: 10px;">👥 Users</button>
+                            <button type="button" id="btn-user-logout" class="btn btn-secondary" style="padding: 4px 8px; font-size: 10px; color: #ef4444;">🚪 Logout</button>
+                        </div>
                     </div>
-                    <div id="saved-devices-list" style="display: flex; flex-direction: column; gap: 8px;">
-                        <!-- Injected dynamically -->
+
+                    <!-- Admin Users Management Panel (collapsible) -->
+                    <div id="admin-users-panel" style="display: none; margin-bottom: 14px; background: var(--bg-main); border: 1px solid var(--accent-cyan); border-radius: var(--radius-md); padding: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <h4 style="color: var(--accent-cyan); font-size: 12px; margin: 0;">👥 User Accounts Management</h4>
+                            <button type="button" id="btn-close-users-panel" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 12px;">✕</button>
+                        </div>
+                        <div id="admin-users-list" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; max-height: 140px; overflow-y: auto;">
+                            <!-- Injected dynamically -->
+                        </div>
+                        <div style="border-top: 1px solid var(--border-color); padding-top: 8px;">
+                            <span style="font-size: 10px; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 4px;">➕ Add New User Account</span>
+                            <div style="display: flex; gap: 6px; margin-bottom: 6px;">
+                                <input type="text" id="new-user-name" placeholder="Username" style="flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 6px; border-radius: var(--radius-md); font-size: 11px;">
+                                <input type="password" id="new-user-pass" placeholder="Password" style="flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 6px; border-radius: var(--radius-md); font-size: 11px;">
+                                <select id="new-user-role" style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 6px; border-radius: var(--radius-md); font-size: 10px;">
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            <button type="button" id="btn-create-sub-user" class="btn btn-primary" style="width: 100%; padding: 6px; font-size: 11px;">Create User Account</button>
+                        </div>
+                    </div>
+
+                    <!-- Form to Add New Device -->
+                    <form id="form-create-device" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 10px;">
+                        <div class="form-group">
+                            <label for="dev-name-input">Device Name / Label</label>
+                            <input type="text" id="dev-name-input" placeholder="e.g. iPhone-Dad or MacBook" required style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px;">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dev-key-input">Surfshark WireGuard Private Key</label>
+                            <div style="display: flex; gap: 6px;">
+                                <input type="text" id="dev-key-input" placeholder="Paste Private Key from Surfshark account..." required style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
+                                <button type="button" id="btn-paste-dev-key" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;" title="Paste from clipboard">📋 Paste</button>
+                            </div>
+                            <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px; display: block; line-height: 1.4;">
+                                💡 کلید اختصاصی را از پنل Surfshark (بخش Manual setup &gt; WireGuard) دریافت و اینجا وارد کنید.
+                            </span>
+                        </div>
+
+                        <div class="sub-actions-row">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="dev-duration-select">Duration / Expiry</label>
+                                <select id="dev-duration-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                                    <option value="30">30 Days</option>
+                                    <option value="7">7 Days (Trial)</option>
+                                    <option value="60">60 Days (2 Months)</option>
+                                    <option value="90">90 Days (3 Months)</option>
+                                    <option value="180">180 Days (6 Months)</option>
+                                    <option value="365">365 Days (1 Year)</option>
+                                    <option value="0">Unlimited (No Expiry)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="dev-region-select">Region / Continent</label>
+                                <select id="dev-region-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                                    <option value="all">🌐 All Continents</option>
+                                    <option value="europe">🇪🇺 Europe</option>
+                                    <option value="asia">🌏 Asia</option>
+                                    <option value="americas">🌎 Americas</option>
+                                    <option value="africa">🌍 Africa</option>
+                                    <option value="oceania">🇦🇺 Oceania</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="button" id="btn-create-dev-sub" class="btn btn-primary" style="margin-top: 4px; padding: 10px;">
+                            ⚡ Save to Cloud &amp; Generate Link
+                        </button>
+                    </form>
+
+                    <!-- Result Card (shown after generation) -->
+                    <div id="dev-result-box" style="display: none; margin-top: 14px; background: var(--bg-main); border: 1px solid var(--accent-cyan); border-radius: var(--radius-md); padding: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <h4 id="dev-res-title" style="color: var(--accent-cyan); margin: 0; font-size: 13px;">New Subscription Ready!</h4>
+                            <span id="dev-res-badge" style="font-size: 10px; background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); padding: 2px 6px; border-radius: 4px;">Active</span>
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 8px;">
+                            <label style="font-size: 10px;">Direct Shadowrocket Subscription Link</label>
+                            <div style="display: flex; gap: 6px;">
+                                <input type="text" id="dev-res-url" readonly style="flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 6px; border-radius: var(--radius-md); font-family: monospace; font-size: 10px;">
+                                <button id="btn-copy-dev-url" class="btn btn-primary" style="padding: 4px 10px; font-size: 11px;">Copy</button>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 10px; background: var(--bg-card); padding: 10px; border-radius: var(--radius-md);">
+                            <div id="dev-qr-container" style="background: white; padding: 6px; border-radius: 6px; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;"></div>
+                            <div style="flex: 1; font-size: 11px; color: var(--text-secondary); line-height: 1.5;">
+                                <strong>Scan with Shadowrocket:</strong>
+                                <p style="margin: 4px 0 0 0;">Open Shadowrocket on your iPhone, tap <strong>[ - ]</strong> (Scan QR), and aim at this code.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cloud Synced Devices Section -->
+                    <div style="margin-top: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <h4 style="font-size: 12px; color: var(--text-secondary); margin: 0;">☁️ Cloud Synced Devices (<span id="saved-dev-count">0</span>)</h4>
+                            <button type="button" id="btn-refresh-cloud-devs" style="background: none; border: none; color: var(--accent-cyan); font-size: 11px; cursor: pointer;">🔄 Refresh</button>
+                        </div>
+                        <div id="saved-devices-list" style="display: flex; flex-direction: column; gap: 8px;">
+                            <div style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 12px;">Loading cloud devices...</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1260,7 +1366,7 @@ html_content = f'''<!DOCTYPE html>
             }});
         }});
 
-        // --- Multi-Device & Expiry Manager Logic ---
+        // --- Multi-Device & Cloud Sync Manager Logic ---
         function escapeHtml(str) {{
             if (!str) return "";
             return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -1268,6 +1374,15 @@ html_content = f'''<!DOCTYPE html>
 
         const DEFAULT_CF_WORKER = "https://surfshark-amneziawg-sub.bsaidian.workers.dev";
         let cfWorkerUrl = localStorage.getItem("surfshark_cf_worker_url") || DEFAULT_CF_WORKER;
+
+        let authSession = null;
+        try {{
+            const rawSession = localStorage.getItem("surfshark_auth_session");
+            if (rawSession) authSession = JSON.parse(rawSession);
+        }} catch (e) {{
+            authSession = null;
+        }}
+
         let managedDevices = [];
         try {{
             managedDevices = JSON.parse(localStorage.getItem("surfshark_managed_devices") || "[]");
@@ -1279,9 +1394,149 @@ html_content = f'''<!DOCTYPE html>
             return cfWorkerUrl.trim().replace(/\/+$/, "") || DEFAULT_CF_WORKER;
         }}
 
-        function saveManagedDevices() {{
-            localStorage.setItem("surfshark_managed_devices", JSON.stringify(managedDevices));
-            renderManagedDevices();
+        function updateMainPageAuthBadge() {{
+            const statusLabel = document.getElementById("user-status-label");
+            const badge = document.getElementById("user-badge");
+            if (!statusLabel || !badge) return;
+
+            if (authSession && authSession.username) {{
+                statusLabel.textContent = "👤 Synced: " + authSession.username;
+                badge.textContent = authSession.role === "admin" ? "Admin 👑" : "User 👤";
+                badge.style.background = "rgba(16, 185, 129, 0.2)";
+                badge.style.color = "#10b981";
+            }} else {{
+                statusLabel.textContent = "Cloudflare Cloud Sync (KV)";
+                badge.textContent = "Open ↗";
+                badge.style.background = "rgba(6, 182, 212, 0.2)";
+                badge.style.color = "var(--accent-cyan)";
+            }}
+        }}
+
+        function updateAuthUI() {{
+            updateMainPageAuthBadge();
+
+            const setupCard = document.getElementById("auth-setup-card");
+            const loginCard = document.getElementById("auth-login-card");
+            const resetCard = document.getElementById("auth-reset-card");
+            const loggedInView = document.getElementById("auth-logged-in-view");
+
+            if (!setupCard || !loginCard || !loggedInView) return;
+
+            if (authSession && authSession.username) {{
+                setupCard.style.display = "none";
+                loginCard.style.display = "none";
+                if (resetCard) resetCard.style.display = "none";
+                loggedInView.style.display = "block";
+
+                const nameEl = document.getElementById("session-user-name");
+                const roleBadge = document.getElementById("session-role-badge");
+                const btnUsers = document.getElementById("btn-toggle-admin-users");
+
+                if (nameEl) nameEl.textContent = authSession.username;
+                if (roleBadge) {{
+                    roleBadge.textContent = (authSession.role || "user").toUpperCase();
+                    roleBadge.style.background = authSession.role === "admin" ? "rgba(6, 182, 212, 0.2)" : "rgba(100, 116, 139, 0.2)";
+                    roleBadge.style.color = authSession.role === "admin" ? "var(--accent-cyan)" : "var(--text-secondary)";
+                }}
+                if (btnUsers) {{
+                    btnUsers.style.display = authSession.role === "admin" ? "inline-block" : "none";
+                }}
+            }} else {{
+                loggedInView.style.display = "none";
+            }}
+        }}
+
+        async function checkAuthStatus() {{
+            const workerBase = getEffectiveWorkerUrl();
+            const setupCard = document.getElementById("auth-setup-card");
+            const loginCard = document.getElementById("auth-login-card");
+            const resetCard = document.getElementById("auth-reset-card");
+            const loggedInView = document.getElementById("auth-logged-in-view");
+
+            if (authSession && authSession.token) {{
+                try {{
+                    const res = await fetch(workerBase + "/api/auth/me", {{
+                        headers: {{ "Authorization": "Bearer " + authSession.token }}
+                    }});
+                    if (res.ok) {{
+                        const d = await res.json();
+                        if (d.authenticated && d.user) {{
+                            authSession.role = d.user.role;
+                            authSession.username = d.user.username;
+                            localStorage.setItem("surfshark_auth_session", JSON.stringify(authSession));
+                            updateAuthUI();
+                            fetchCloudDevices();
+                            return;
+                        }}
+                    }}
+                }} catch (e) {{
+                    console.warn("Could not verify session with worker:", e);
+                    updateAuthUI();
+                    renderManagedDevices();
+                    return;
+                }}
+                authSession = null;
+                localStorage.removeItem("surfshark_auth_session");
+            }}
+
+            // Check if admin is initialized
+            try {{
+                const statusRes = await fetch(workerBase + "/api/auth/status");
+                if (statusRes.ok) {{
+                    const sData = await statusRes.json();
+                    if (!sData.hasAdmin) {{
+                        if (setupCard) setupCard.style.display = "block";
+                        if (loginCard) loginCard.style.display = "none";
+                        if (resetCard) resetCard.style.display = "none";
+                        if (loggedInView) loggedInView.style.display = "none";
+                        const stLabel = document.getElementById("user-status-label");
+                        const badge = document.getElementById("user-badge");
+                        if (stLabel) stLabel.textContent = "Initial Admin Setup Required";
+                        if (badge) {{
+                            badge.textContent = "Setup 🚀";
+                            badge.style.background = "rgba(245, 158, 11, 0.2)";
+                            badge.style.color = "#f59e0b";
+                        }}
+                        return;
+                    }}
+                }}
+            }} catch (e) {{
+                console.warn("Error checking auth status:", e);
+            }}
+
+            if (setupCard) setupCard.style.display = "none";
+            if (loginCard) loginCard.style.display = "block";
+            if (resetCard) resetCard.style.display = "none";
+            if (loggedInView) loggedInView.style.display = "none";
+            updateAuthUI();
+        }}
+
+        async function fetchCloudDevices() {{
+            if (!authSession || !authSession.token) {{
+                renderManagedDevices();
+                return;
+            }}
+
+            try {{
+                const res = await fetch(getEffectiveWorkerUrl() + "/api/devices", {{
+                    headers: {{ "Authorization": "Bearer " + authSession.token }}
+                }});
+                if (res.status === 401) {{
+                    authSession = null;
+                    localStorage.removeItem("surfshark_auth_session");
+                    checkAuthStatus();
+                    return;
+                }}
+                if (res.ok) {{
+                    const data = await res.json();
+                    managedDevices = data.devices || [];
+                    localStorage.setItem("surfshark_managed_devices", JSON.stringify(managedDevices));
+                    renderManagedDevices();
+                }}
+            }} catch (err) {{
+                console.warn("Fetch cloud devices error:", err);
+                renderManagedDevices();
+            }}
         }}
 
         function renderManagedDevices() {{
@@ -1289,7 +1544,7 @@ html_content = f'''<!DOCTYPE html>
             const countEl = document.getElementById("saved-dev-count");
             if (!container) return;
 
-            countEl.textContent = managedDevices.length;
+            if (countEl) countEl.textContent = managedDevices.length;
             if (managedDevices.length === 0) {{
                 container.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 12px; border: 1px dashed var(--border-color); border-radius: var(--radius-md);">No devices added yet. Create one above!</div>';
                 return;
@@ -1316,14 +1571,14 @@ html_content = f'''<!DOCTYPE html>
                         '<div style="display: flex; align-items: center; gap: 6px;">' +
                             '<span style="font-size: 13px;">📱</span>' +
                             '<strong style="font-size: 12px; color: var(--text-primary);">' + escapeHtml(dev.name) + '</strong>' +
-                            '<span style="font-size: 10px; color: var(--text-secondary); text-transform: capitalize;">(' + dev.region + ')</span>' +
+                            '<span style="font-size: 10px; color: var(--text-secondary); text-transform: capitalize;">(' + (dev.region || "all") + ')</span>' +
                         '</div>' +
                         statusBadge +
                     '</div>' +
                     '<div style="display: flex; gap: 6px; margin-top: 4px;">' +
                         '<button type="button" class="btn btn-secondary btn-copy-dev-item" data-index="' + idx + '" style="flex: 1; padding: 4px 8px; font-size: 10px;">📋 Copy Link</button>' +
                         '<button type="button" class="btn btn-secondary btn-qr-dev-item" data-index="' + idx + '" style="padding: 4px 10px; font-size: 10px;">📱 QR</button>' +
-                        '<button type="button" class="btn btn-secondary btn-del-dev-item" data-index="' + idx + '" style="padding: 4px 8px; font-size: 10px; color: #ef4444;">🗑️</button>' +
+                        '<button type="button" class="btn btn-secondary btn-del-dev-item" data-index="' + idx + '" style="padding: 4px 8px; font-size: 10px; color: #ef4444;" title="Delete Device">🗑️</button>' +
                     '</div>' +
                 '</div>';
             }});
@@ -1348,27 +1603,103 @@ html_content = f'''<!DOCTYPE html>
             }});
 
             container.querySelectorAll(".btn-del-dev-item").forEach(btn => {{
-                btn.addEventListener("click", () => {{
+                btn.addEventListener("click", async () => {{
                     const i = parseInt(btn.getAttribute("data-index"), 10);
-                    if (managedDevices[i] && confirm("Delete device " + managedDevices[i].name + "?")) {{
-                        managedDevices.splice(i, 1);
-                        saveManagedDevices();
+                    const dev = managedDevices[i];
+                    if (!dev) return;
+                    if (!confirm("Delete device " + dev.name + "?")) return;
+
+                    if (authSession && authSession.token) {{
+                        try {{
+                            const res = await fetch(getEffectiveWorkerUrl() + "/api/devices?id=" + encodeURIComponent(dev.id), {{
+                                method: "DELETE",
+                                headers: {{ "Authorization": "Bearer " + authSession.token }}
+                            }});
+                            if (res.ok) {{
+                                const d = await res.json();
+                                managedDevices = d.devices || [];
+                                localStorage.setItem("surfshark_managed_devices", JSON.stringify(managedDevices));
+                                renderManagedDevices();
+                                showToast("Device removed from cloud.");
+                                return;
+                            }}
+                        }} catch (e) {{
+                            console.warn("Delete cloud device error:", e);
+                        }}
                     }}
+
+                    managedDevices.splice(i, 1);
+                    localStorage.setItem("surfshark_managed_devices", JSON.stringify(managedDevices));
+                    renderManagedDevices();
+                    showToast("Device removed.");
                 }});
             }});
         }}
 
-        function generateWgPrivateKey() {{
-            const array = new Uint8Array(32);
-            window.crypto.getRandomValues(array);
-            array[0] &= 248;
-            array[31] &= 127;
-            array[31] |= 64;
-            let binary = "";
-            for (let i = 0; i < array.length; i++) {{
-                binary += String.fromCharCode(array[i]);
+        async function fetchAdminUsers() {{
+            const listEl = document.getElementById("admin-users-list");
+            if (!listEl || !authSession || !authSession.token) return;
+
+            listEl.innerHTML = '<div style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 6px;">Loading accounts...</div>';
+
+            try {{
+                const res = await fetch(getEffectiveWorkerUrl() + "/api/users", {{
+                    headers: {{ "Authorization": "Bearer " + authSession.token }}
+                }});
+                if (!res.ok) {{
+                    listEl.innerHTML = '<div style="font-size: 11px; color: #ef4444;">Failed to load user accounts.</div>';
+                    return;
+                }}
+                const data = await res.json();
+                const users = data.users || [];
+                if (users.length === 0) {{
+                    listEl.innerHTML = '<div style="font-size: 11px; color: var(--text-muted);">No users found.</div>';
+                    return;
+                }}
+
+                let html = "";
+                users.forEach(u => {{
+                    const isMe = (u.username === authSession.username);
+                    const roleColor = u.role === "admin" ? "var(--accent-cyan)" : "var(--text-secondary)";
+                    const roleBg = u.role === "admin" ? "rgba(6, 182, 212, 0.2)" : "rgba(100, 116, 139, 0.2)";
+
+                    html += '<div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 6px 10px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">' +
+                        '<div style="display: flex; align-items: center; gap: 6px;">' +
+                            '<span style="font-size: 11px; font-weight: 600; color: var(--text-primary);">' + escapeHtml(u.username) + (isMe ? ' <span style="font-size: 9px; color: var(--text-muted);">(You)</span>' : '') + '</span>' +
+                            '<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: ' + roleBg + '; color: ' + roleColor + '; text-transform: uppercase;">' + escapeHtml(u.role) + '</span>' +
+                        '</div>' +
+                        (isMe ? '' : '<button type="button" class="btn btn-secondary btn-del-sub-user" data-user="' + escapeHtml(u.username) + '" style="padding: 2px 6px; font-size: 10px; color: #ef4444;" title="Delete User">🗑️</button>') +
+                    '</div>';
+                }});
+                listEl.innerHTML = html;
+
+                listEl.querySelectorAll(".btn-del-sub-user").forEach(btn => {{
+                    btn.addEventListener("click", async () => {{
+                        const targetU = btn.getAttribute("data-user");
+                        if (!targetU) return;
+                        if (!confirm("Are you sure you want to delete user " + targetU + " and all their devices?")) return;
+
+                        try {{
+                            const dRes = await fetch(getEffectiveWorkerUrl() + "/api/users?user=" + encodeURIComponent(targetU), {{
+                                method: "DELETE",
+                                headers: {{ "Authorization": "Bearer " + authSession.token }}
+                            }});
+                            const dData = await dRes.json();
+                            if (!dRes.ok || !dData.success) {{
+                                alert(dData.error || "Failed to delete user.");
+                                return;
+                            }}
+                            showToast("User " + targetU + " deleted.");
+                            fetchAdminUsers();
+                        }} catch (err) {{
+                            alert("Network error: " + err.message);
+                        }}
+                    }});
+                }});
+
+            }} catch (err) {{
+                listEl.innerHTML = '<div style="font-size: 11px; color: #ef4444;">Error: ' + escapeHtml(err.message) + '</div>';
             }}
-            return btoa(binary);
         }}
 
         function showDevQr(dev) {{
@@ -1394,121 +1725,408 @@ html_content = f'''<!DOCTYPE html>
             }}
         }}
 
-        const cfInput = document.getElementById("cf-worker-url");
-        if (cfInput) {{
-            cfInput.value = cfWorkerUrl;
+        // Paste Private Key
+        const btnPasteDevKey = document.getElementById("btn-paste-dev-key");
+        if (btnPasteDevKey) {{
+            btnPasteDevKey.addEventListener("click", async () => {{
+                try {{
+                    if (navigator.clipboard && navigator.clipboard.readText) {{
+                        const text = await navigator.clipboard.readText();
+                        if (text && text.trim()) {{
+                            document.getElementById("dev-key-input").value = text.trim();
+                            showToast("Private key pasted from clipboard!");
+                            return;
+                        }}
+                    }}
+                }} catch (e) {{}}
+                document.getElementById("dev-key-input").focus();
+                showToast("Please paste your Surfshark private key");
+            }});
         }}
 
-        document.getElementById("btn-save-worker-url").addEventListener("click", () => {{
-            const val = document.getElementById("cf-worker-url").value.trim();
-            cfWorkerUrl = val;
-            localStorage.setItem("surfshark_cf_worker_url", val);
-            showToast("Cloudflare Worker domain saved!");
-        }});
+        // First-Time Setup Admin
+        const btnSubmitSetup = document.getElementById("btn-submit-setup");
+        if (btnSubmitSetup) {{
+            btnSubmitSetup.addEventListener("click", async () => {{
+                const u = document.getElementById("setup-username").value.trim();
+                const p = document.getElementById("setup-password").value;
+                const rec = document.getElementById("setup-recovery-key").value.trim();
 
-        document.getElementById("btn-paste-dev-key").addEventListener("click", async () => {{
-            try {{
-                if (navigator.clipboard && navigator.clipboard.readText) {{
-                    const text = await navigator.clipboard.readText();
-                    if (text && text.trim()) {{
-                        document.getElementById("dev-key-input").value = text.trim();
-                        showToast("Private key pasted from clipboard!");
+                if (!u || u.length < 3) {{
+                    alert("Username must be at least 3 characters.");
+                    return;
+                }}
+                if (!p || p.length < 4) {{
+                    alert("Password must be at least 4 characters.");
+                    return;
+                }}
+                if (!rec || rec.length < 6) {{
+                    alert("Master Recovery Key must be at least 6 characters.");
+                    return;
+                }}
+
+                btnSubmitSetup.disabled = true;
+                btnSubmitSetup.textContent = "Initializing...";
+
+                try {{
+                    const res = await fetch(getEffectiveWorkerUrl() + "/api/auth/setup", {{
+                        method: "POST",
+                        headers: {{ "Content-Type": "application/json" }},
+                        body: JSON.stringify({{ username: u, password: p, recoveryKey: rec }})
+                    }});
+                    const data = await res.json();
+                    if (!res.ok || !data.success) {{
+                        alert(data.error || "Setup failed.");
                         return;
                     }}
+
+                    authSession = {{ token: data.token, username: data.username, role: data.role }};
+                    localStorage.setItem("surfshark_auth_session", JSON.stringify(authSession));
+                    alert("🎉 Master Admin created successfully!\n\n⚠️ IMPORTANT: Keep your Master Recovery Key safe. You can use it to reset your password if you ever forget it.");
+                    updateAuthUI();
+                    fetchCloudDevices();
+                }} catch (err) {{
+                    alert("Network error: " + err.message);
+                }} finally {{
+                    btnSubmitSetup.disabled = false;
+                    btnSubmitSetup.textContent = "🚀 Initialize Cloud Account";
                 }}
-            }} catch (e) {{}}
-            document.getElementById("dev-key-input").focus();
-            showToast("Please paste your Surfshark private key");
-        }});
+            }});
+        }}
 
-        document.getElementById("btn-create-dev-sub").addEventListener("click", () => {{
-            const name = document.getElementById("dev-name-input").value.trim();
-            const key = document.getElementById("dev-key-input").value.trim();
-            const durationDays = parseInt(document.getElementById("dev-duration-select").value, 10);
-            const region = document.getElementById("dev-region-select").value;
+        // User Login
+        const btnSubmitLogin = document.getElementById("btn-submit-login");
+        if (btnSubmitLogin) {{
+            btnSubmitLogin.addEventListener("click", async () => {{
+                const u = document.getElementById("login-username").value.trim();
+                const p = document.getElementById("login-password").value;
 
-            if (!name) {{
-                alert("Please enter a device name / label.");
-                return;
-            }}
-            if (!key) {{
-                alert("Please enter the WireGuard private key from your Surfshark account.");
-                return;
-            }}
+                if (!u || !p) {{
+                    alert("Please enter username and password.");
+                    return;
+                }}
 
-            const nowSec = Math.floor(Date.now() / 1000);
-            const expSec = durationDays > 0 ? (nowSec + durationDays * 86400) : 0;
-            const workerBase = getEffectiveWorkerUrl();
+                btnSubmitLogin.disabled = true;
+                btnSubmitLogin.textContent = "Logging in...";
 
-            const subUrl = workerBase + "/sub?key=" + encodeURIComponent(key) +
-                           "&name=" + encodeURIComponent(name) +
-                           "&exp=" + expSec +
-                           "&continent=" + encodeURIComponent(region);
-
-            const devObj = {{
-                id: "dev_" + Date.now(),
-                name: name,
-                key: key,
-                durationDays: durationDays,
-                expTimestamp: expSec,
-                region: region,
-                url: subUrl,
-                createdAt: nowSec
-            }};
-
-            managedDevices.unshift(devObj);
-            saveManagedDevices();
-
-            document.getElementById("dev-result-box").style.display = "block";
-            document.getElementById("dev-res-title").textContent = "Subscription for " + name;
-            document.getElementById("dev-res-url").value = subUrl;
-            
-            const daysText = durationDays > 0 ? (durationDays + " Days") : "Unlimited";
-            document.getElementById("dev-res-badge").textContent = daysText;
-
-            const qrBox = document.getElementById("dev-qr-container");
-            if (qrBox) {{
-                qrBox.innerHTML = "";
                 try {{
-                    new QRCode(qrBox, {{
-                        text: subUrl,
-                        width: 90,
-                        height: 90,
-                        colorDark: "#000000",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.M
+                    const res = await fetch(getEffectiveWorkerUrl() + "/api/auth/login", {{
+                        method: "POST",
+                        headers: {{ "Content-Type": "application/json" }},
+                        body: JSON.stringify({{ username: u, password: p }})
                     }});
-                }} catch (e) {{
-                    qrBox.innerHTML = "QR";
+                    const data = await res.json();
+                    if (!res.ok || !data.success) {{
+                        alert(data.error || "Invalid username or password.");
+                        return;
+                    }}
+
+                    authSession = {{ token: data.token, username: data.username, role: data.role }};
+                    localStorage.setItem("surfshark_auth_session", JSON.stringify(authSession));
+                    showToast("Logged in as " + data.username);
+                    updateAuthUI();
+                    fetchCloudDevices();
+                }} catch (err) {{
+                    alert("Network error: " + err.message);
+                }} finally {{
+                    btnSubmitLogin.disabled = false;
+                    btnSubmitLogin.textContent = "🔓 Login";
                 }}
-            }}
+            }});
+        }}
 
-            showToast("Device subscription generated and saved!");
-        }});
+        // Password Reset
+        const linkShowReset = document.getElementById("link-show-reset");
+        if (linkShowReset) {{
+            linkShowReset.addEventListener("click", () => {{
+                const loginCard = document.getElementById("auth-login-card");
+                const resetCard = document.getElementById("auth-reset-card");
+                if (loginCard) loginCard.style.display = "none";
+                if (resetCard) resetCard.style.display = "block";
+            }});
+        }}
 
-        document.getElementById("btn-copy-dev-url").addEventListener("click", () => {{
-            const u = document.getElementById("dev-res-url").value;
-            copyToClipboard(u, "Device subscription URL copied!");
-        }});
+        const btnCancelReset = document.getElementById("btn-cancel-reset");
+        if (btnCancelReset) {{
+            btnCancelReset.addEventListener("click", () => {{
+                const loginCard = document.getElementById("auth-login-card");
+                const resetCard = document.getElementById("auth-reset-card");
+                if (resetCard) resetCard.style.display = "none";
+                if (loginCard) loginCard.style.display = "block";
+            }});
+        }}
 
-        document.getElementById("btn-clear-devices").addEventListener("click", () => {{
-            if (managedDevices.length > 0 && confirm("Clear all saved devices?")) {{
-                managedDevices = [];
-                saveManagedDevices();
-            }}
-        }});
+        const btnSubmitReset = document.getElementById("btn-submit-reset");
+        if (btnSubmitReset) {{
+            btnSubmitReset.addEventListener("click", async () => {{
+                const u = document.getElementById("reset-username").value.trim();
+                const rec = document.getElementById("reset-recovery-key").value.trim();
+                const newP = document.getElementById("reset-new-password").value;
 
-        document.getElementById("btn-open-devices").addEventListener("click", () => {{
-            renderManagedDevices();
-            openModal("modal-devices");
-        }});
-        const btnBar = document.getElementById("btn-open-devices-bar");
-        if (btnBar) {{
-            btnBar.addEventListener("click", () => {{
+                if (!u || !rec || !newP) {{
+                    alert("Please fill in all fields.");
+                    return;
+                }}
+                if (newP.length < 4) {{
+                    alert("New password must be at least 4 characters.");
+                    return;
+                }}
+
+                btnSubmitReset.disabled = true;
+                btnSubmitReset.textContent = "Resetting...";
+
+                try {{
+                    const res = await fetch(getEffectiveWorkerUrl() + "/api/auth/reset", {{
+                        method: "POST",
+                        headers: {{ "Content-Type": "application/json" }},
+                        body: JSON.stringify({{ username: u, recoveryKey: rec, newPassword: newP }})
+                    }});
+                    const data = await res.json();
+                    if (!res.ok || !data.success) {{
+                        alert(data.error || "Password reset failed. Check recovery key.");
+                        return;
+                    }}
+
+                    alert("✅ Password reset successfully! You can now log in with your new password.");
+                    const resetCard = document.getElementById("auth-reset-card");
+                    const loginCard = document.getElementById("auth-login-card");
+                    if (resetCard) resetCard.style.display = "none";
+                    if (loginCard) {{
+                        loginCard.style.display = "block";
+                        const logU = document.getElementById("login-username");
+                        if (logU) logU.value = u;
+                        const logP = document.getElementById("login-password");
+                        if (logP) {{ logP.value = ""; logP.focus(); }}
+                    }}
+                }} catch (err) {{
+                    alert("Network error: " + err.message);
+                }} finally {{
+                    btnSubmitReset.disabled = false;
+                    btnSubmitReset.textContent = "Reset Password";
+                }}
+            }});
+        }}
+
+        // Logout
+        const btnLogout = document.getElementById("btn-user-logout");
+        if (btnLogout) {{
+            btnLogout.addEventListener("click", () => {{
+                authSession = null;
+                localStorage.removeItem("surfshark_auth_session");
+                checkAuthStatus();
+                showToast("Logged out successfully.");
+            }});
+        }}
+
+        // Admin Users Panel Toggles
+        const btnToggleUsers = document.getElementById("btn-toggle-admin-users");
+        if (btnToggleUsers) {{
+            btnToggleUsers.addEventListener("click", () => {{
+                const p = document.getElementById("admin-users-panel");
+                if (!p) return;
+                const isHidden = (p.style.display === "none" || !p.style.display);
+                p.style.display = isHidden ? "block" : "none";
+                if (isHidden) fetchAdminUsers();
+            }});
+        }}
+
+        const btnCloseUsers = document.getElementById("btn-close-users-panel");
+        if (btnCloseUsers) {{
+            btnCloseUsers.addEventListener("click", () => {{
+                const p = document.getElementById("admin-users-panel");
+                if (p) p.style.display = "none";
+            }});
+        }}
+
+        const btnCreateSubUser = document.getElementById("btn-create-sub-user");
+        if (btnCreateSubUser) {{
+            btnCreateSubUser.addEventListener("click", async () => {{
+                const u = document.getElementById("new-user-name").value.trim();
+                const p = document.getElementById("new-user-pass").value;
+                const r = document.getElementById("new-user-role").value;
+
+                if (!u || u.length < 3) {{
+                    alert("Username must be at least 3 characters.");
+                    return;
+                }}
+                if (!p || p.length < 4) {{
+                    alert("Password must be at least 4 characters.");
+                    return;
+                }}
+
+                btnCreateSubUser.disabled = true;
+                btnCreateSubUser.textContent = "Creating...";
+
+                try {{
+                    const res = await fetch(getEffectiveWorkerUrl() + "/api/users", {{
+                        method: "POST",
+                        headers: {{
+                            "Content-Type": "application/json",
+                            "Authorization": "Bearer " + authSession.token
+                        }},
+                        body: JSON.stringify({{ username: u, password: p, role: r }})
+                    }});
+                    const data = await res.json();
+                    if (!res.ok || !data.success) {{
+                        alert(data.error || "Failed to create user.");
+                        return;
+                    }}
+
+                    document.getElementById("new-user-name").value = "";
+                    document.getElementById("new-user-pass").value = "";
+                    showToast("User " + u + " created successfully!");
+                    fetchAdminUsers();
+                }} catch (err) {{
+                    alert("Network error: " + err.message);
+                }} finally {{
+                    btnCreateSubUser.disabled = false;
+                    btnCreateSubUser.textContent = "Create User Account";
+                }}
+            }});
+        }}
+
+        // Refresh Cloud Devices
+        const btnRefreshCloud = document.getElementById("btn-refresh-cloud-devs");
+        if (btnRefreshCloud) {{
+            btnRefreshCloud.addEventListener("click", () => {{
+                fetchCloudDevices();
+                showToast("Refreshing cloud devices...");
+            }});
+        }}
+
+        // Save & Generate Device Subscription
+        const btnCreateDevSub = document.getElementById("btn-create-dev-sub");
+        if (btnCreateDevSub) {{
+            btnCreateDevSub.addEventListener("click", async () => {{
+                const name = document.getElementById("dev-name-input").value.trim();
+                const key = document.getElementById("dev-key-input").value.trim();
+                const durationDays = parseInt(document.getElementById("dev-duration-select").value, 10);
+                const region = document.getElementById("dev-region-select").value;
+
+                if (!name) {{
+                    alert("Please enter a device name / label.");
+                    return;
+                }}
+                if (!key) {{
+                    alert("Please enter the WireGuard private key from your Surfshark account.");
+                    return;
+                }}
+
+                const nowSec = Math.floor(Date.now() / 1000);
+                const expSec = durationDays > 0 ? (nowSec + durationDays * 86400) : 0;
+                const workerBase = getEffectiveWorkerUrl();
+
+                const subUrl = workerBase + "/sub?key=" + encodeURIComponent(key) +
+                               "&name=" + encodeURIComponent(name) +
+                               "&exp=" + expSec +
+                               "&continent=" + encodeURIComponent(region);
+
+                const devObj = {{
+                    id: "dev_" + Date.now(),
+                    name: name,
+                    key: key,
+                    durationDays: durationDays,
+                    expTimestamp: expSec,
+                    region: region,
+                    url: subUrl,
+                    createdAt: nowSec
+                }};
+
+                if (authSession && authSession.token) {{
+                    btnCreateDevSub.disabled = true;
+                    btnCreateDevSub.textContent = "Saving to Cloud...";
+                    try {{
+                        const res = await fetch(workerBase + "/api/devices", {{
+                            method: "POST",
+                            headers: {{
+                                "Content-Type": "application/json",
+                                "Authorization": "Bearer " + authSession.token
+                            }},
+                            body: JSON.stringify(devObj)
+                        }});
+                        if (res.ok) {{
+                            const d = await res.json();
+                            managedDevices = d.devices || [devObj, ...managedDevices];
+                            localStorage.setItem("surfshark_managed_devices", JSON.stringify(managedDevices));
+                        }} else {{
+                            managedDevices.unshift(devObj);
+                            localStorage.setItem("surfshark_managed_devices", JSON.stringify(managedDevices));
+                        }}
+                    }} catch (err) {{
+                        console.warn("Error posting device to cloud:", err);
+                        managedDevices.unshift(devObj);
+                        localStorage.setItem("surfshark_managed_devices", JSON.stringify(managedDevices));
+                    }} finally {{
+                        btnCreateDevSub.disabled = false;
+                        btnCreateDevSub.textContent = "⚡ Save to Cloud & Generate Link";
+                    }}
+                }} else {{
+                    managedDevices.unshift(devObj);
+                    localStorage.setItem("surfshark_managed_devices", JSON.stringify(managedDevices));
+                }}
+
                 renderManagedDevices();
+
+                const resBox = document.getElementById("dev-result-box");
+                if (resBox) {{
+                    resBox.style.display = "block";
+                    document.getElementById("dev-res-title").textContent = "Subscription for " + name;
+                    document.getElementById("dev-res-url").value = subUrl;
+                    const daysText = durationDays > 0 ? (durationDays + " Days") : "Unlimited";
+                    document.getElementById("dev-res-badge").textContent = daysText;
+
+                    const qrBox = document.getElementById("dev-qr-container");
+                    if (qrBox) {{
+                        qrBox.innerHTML = "";
+                        try {{
+                            new QRCode(qrBox, {{
+                                text: subUrl,
+                                width: 90,
+                                height: 90,
+                                colorDark: "#000000",
+                                colorLight: "#ffffff",
+                                correctLevel: QRCode.CorrectLevel.M
+                            }});
+                        }} catch (e) {{
+                            qrBox.innerHTML = "QR";
+                        }}
+                    }}
+                }}
+
+                showToast("Device subscription generated & synced!");
+            }});
+        }}
+
+        // Copy Device URL
+        const btnCopyDevUrl = document.getElementById("btn-copy-dev-url");
+        if (btnCopyDevUrl) {{
+            btnCopyDevUrl.addEventListener("click", () => {{
+                const u = document.getElementById("dev-res-url").value;
+                copyToClipboard(u, "Device subscription URL copied!");
+            }});
+        }}
+
+        // Open Modal Handlers
+        const btnDevModal = document.getElementById("btn-open-devices");
+        if (btnDevModal) {{
+            btnDevModal.addEventListener("click", () => {{
+                checkAuthStatus();
                 openModal("modal-devices");
             }});
         }}
+
+        const btnBar = document.getElementById("btn-open-devices-bar");
+        if (btnBar) {{
+            btnBar.addEventListener("click", () => {{
+                checkAuthStatus();
+                openModal("modal-devices");
+            }});
+        }}
+
+        // Initial Auth & Device Load
+        checkAuthStatus();
+        updateMainPageAuthBadge();
+        renderManagedDevices();
 
         applyFilters();
     }});
