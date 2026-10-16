@@ -202,12 +202,20 @@ class MobileApiHandler(BaseHTTPRequestHandler):
             return
 
         # 5. Live Subscription Endpoint (/sub) for Shadowrocket / Streisand
-        if path == "/sub":
-            working_clusters = [c for c in GLOBAL_STATE.clusters if c.effective_ip]
+        if path == "/sub" or path.startswith("/sub"):
+            continent = query.get("continent", ["All"])[0]
+            # Also handle /sub_europe.txt or /sub_asia.txt
+            if "_" in path:
+                cont_part = path.split("_")[-1].replace(".txt", "").replace("b64", "").strip()
+                match = next((c for c in ("Europe", "Americas", "Asia", "Africa", "Oceania") if c.lower() == cont_part.lower()), None)
+                if match:
+                    continent = match
+
+            working_clusters = [c for c in GLOBAL_STATE.clusters if c.effective_ip and (continent == "All" or c.continent == continent)]
             b64_sub = ConfigBuilder.generate_subscription_base64(
                 working_clusters, GLOBAL_STATE.credentials, GLOBAL_STATE.preset
             )
-            self._send_file(b64_sub.encode("utf-8"), "text/plain; charset=utf-8", "surfshark_subscription.txt")
+            self._send_file(b64_sub.encode("utf-8"), "text/plain; charset=utf-8", f"surfshark_{continent.lower()}_subscription.txt")
             return
 
         # 6. Single Config Download

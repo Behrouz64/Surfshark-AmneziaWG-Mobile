@@ -286,8 +286,19 @@ html_content = f'''<!DOCTYPE html>
             </div>
             <div class="modal-body">
                 <p class="modal-desc">
-                    Paste this subscription link directly into Shadowrocket. It automatically syncs 150+ multi-IP AmneziaWG nodes without needing any computer!
+                    Paste this subscription link directly into Shadowrocket. It automatically syncs 151 multi-IP AmneziaWG nodes without needing any computer!
                 </p>
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="sub-scope-select">Select Region / Continent</label>
+                    <select id="sub-scope-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px; border-radius: var(--radius-md); font-size: 13px; outline: none;">
+                        <option value="all">🌐 Global / All Continents (151 Nodes)</option>
+                        <option value="europe">🇪🇺 Europe (83 Nodes)</option>
+                        <option value="asia">🌏 Asia (32 Nodes)</option>
+                        <option value="americas">🌎 Americas (22 Nodes)</option>
+                        <option value="africa">🌍 Africa (8 Nodes)</option>
+                        <option value="oceania">🇦🇺 Oceania (6 Nodes)</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label>Plain Text Subscription URL</label>
                     <div style="display: flex; gap: 8px;">
@@ -305,11 +316,12 @@ html_content = f'''<!DOCTYPE html>
                 <div class="sub-steps" style="margin-top: 14px; background: var(--bg-main); padding: 12px; border-radius: var(--radius-md); font-size: 12px; border: 1px solid var(--border-color);">
                     <h4 style="margin-bottom: 6px; color: var(--accent-cyan);">How to add in Shadowrocket:</h4>
                     <ol style="padding-left: 18px; line-height: 1.6; color: var(--text-secondary);">
+                        <li>Select your preferred region (or Global) above.</li>
                         <li>Tap <strong>Copy</strong> on either URL above.</li>
                         <li>Open Shadowrocket on your iPhone and tap <strong>+</strong> (top-right).</li>
                         <li>Select Type: <strong>Subscribe</strong>.</li>
                         <li>Paste the URL and tap <strong>Save</strong>.</li>
-                        <li>All 150+ nodes will download and auto-update!</li>
+                        <li>All nodes will download and auto-update!</li>
                     </ol>
                 </div>
             </div>
@@ -911,7 +923,28 @@ html_content = f'''<!DOCTYPE html>
         document.getElementById("btn-resolve-all").addEventListener("click", resolveAllServers);
         document.getElementById("btn-download-zip").addEventListener("click", downloadAllZip);
         document.getElementById("btn-copy-all").addEventListener("click", openBatchModal);
-        document.getElementById("btn-open-sub").addEventListener("click", () => openModal("modal-sub"));
+
+        function updateSubUrls() {{
+            const sel = document.getElementById("sub-scope-select");
+            const scope = sel ? sel.value : "all";
+            const baseUrl = (window.location.origin && window.location.origin !== "null" && window.location.protocol.startsWith("http") && !window.location.origin.includes("github.io"))
+                ? window.location.origin
+                : "https://behrouz64.github.io/Surfshark-AmneziaWG-Mobile";
+            
+            const fileSuffix = scope === "all" ? "" : "_" + scope;
+            const txtUrl = baseUrl + "/sub" + fileSuffix + ".txt";
+            const b64Url = baseUrl + "/sub" + (fileSuffix === "" ? "_base64" : fileSuffix + "_b64") + ".txt";
+            
+            document.getElementById("sub-url-input").value = txtUrl;
+            document.getElementById("sub-b64-input").value = b64Url;
+        }}
+
+        document.getElementById("btn-open-sub").addEventListener("click", () => {{
+            updateSubUrls();
+            openModal("modal-sub");
+        }});
+
+        document.getElementById("sub-scope-select").addEventListener("change", updateSubUrls);
 
         // Subscription Modal Copy buttons
         document.getElementById("btn-copy-sub-url").addEventListener("click", () => {{

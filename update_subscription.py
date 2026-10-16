@@ -142,6 +142,28 @@ def main():
         f.write(b64_payload + "\n")
     print(f"Saved: {sub_b64_path}")
 
+    # Generate separate subscriptions per continent
+    continents = ["Europe", "Americas", "Asia", "Africa", "Oceania"]
+    for cont in continents:
+        cont_nodes = []
+        for s in updated_servers:
+            if s.get("continent") == cont:
+                ips = s.get("resolved_ips", [])
+                for idx, ip in enumerate(ips):
+                    cont_nodes.append(generate_node_url(s, ip, sub_index=idx, total_ips=len(ips)))
+
+        c_name = cont.lower()
+        cont_txt_path = os.path.join(BASE_DIR, f"sub_{c_name}.txt")
+        with open(cont_txt_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(cont_nodes) + "\n")
+
+        b64_cont = base64.b64encode("\n".join(cont_nodes).encode("utf-8")).decode("utf-8")
+        cont_b64_path = os.path.join(BASE_DIR, f"sub_{c_name}_b64.txt")
+        with open(cont_b64_path, "w", encoding="utf-8") as f:
+            f.write(b64_cont + "\n")
+
+        print(f"Saved: sub_{c_name}.txt and sub_{c_name}_b64.txt ({len(cont_nodes)} nodes)")
+
     # Update data/surfshark_servers.json with latest IPs
     data["servers"] = updated_servers
     with open(DATA_FILE, "w", encoding="utf-8") as f:
