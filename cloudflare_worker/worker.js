@@ -90,6 +90,61 @@ export default {
     }
 
     // ==========================================
+    // 0. WEB APP & STATIC PROXY (Cloudflare Edge)
+    // ==========================================
+    if (url.pathname === "/" || url.pathname === "/index.html" || url.pathname === "/app") {
+      const isHtml = (request.headers.get("Accept") || "").includes("text/html");
+      const hasSubParam = params.has("key") || params.has("exp") || params.has("format") || params.has("b64");
+      if (isHtml && !hasSubParam) {
+        try {
+          const upstream = await fetch(`${GITHUB_PAGES_BASE}/index.html`, {
+            cf: { cacheTtl: 180, cacheEverything: true },
+          });
+          if (upstream.ok) {
+            const html = await upstream.text();
+            return new Response(html, {
+              status: 200,
+              headers: {
+                "Content-Type": "text/html; charset=utf-8",
+                "Access-Control-Allow-Origin": "*",
+                "Cache-Control": "public, max-age=180",
+              },
+            });
+          }
+        } catch (e) {
+          // fall through
+        }
+      }
+    }
+
+    // Static Assets Proxy (.txt, .svg, .png, .json)
+    if (
+      url.pathname.endsWith(".txt") ||
+      url.pathname.endsWith(".svg") ||
+      url.pathname.endsWith(".png") ||
+      url.pathname.endsWith(".json")
+    ) {
+      try {
+        const assetResp = await fetch(`${GITHUB_PAGES_BASE}${url.pathname}`, {
+          cf: { cacheTtl: 300, cacheEverything: true },
+        });
+        if (assetResp.ok) {
+          const contentType = assetResp.headers.get("Content-Type") || "text/plain; charset=utf-8";
+          return new Response(assetResp.body, {
+            status: 200,
+            headers: {
+              "Content-Type": contentType,
+              "Access-Control-Allow-Origin": "*",
+              "Cache-Control": "public, max-age=300",
+            },
+          });
+        }
+      } catch (e) {
+        // fall through
+      }
+    }
+
+    // ==========================================
     // 1. API: AUTH STATUS & SETUP (First-time Admin)
     // ==========================================
     if (url.pathname === "/api/auth/status") {
