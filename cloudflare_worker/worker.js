@@ -343,7 +343,7 @@ export default {
     if (cleanContinent === "sa" || cleanContinent === "southamerica") cleanContinent = "south_america";
 
     let sourceFileName = "sub.txt";
-    if (["europe", "north_america", "south_america", "asia", "americas", "africa", "oceania"].includes(cleanContinent)) {
+    if (["europe", "north_america", "south_america", "asia", "americas", "africa", "oceania", "static"].includes(cleanContinent)) {
       sourceFileName = `sub_${cleanContinent}.txt`;
     }
 

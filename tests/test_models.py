@@ -58,6 +58,23 @@ def test_server_cluster_effective_ip():
     assert cluster.effective_ip == "149.154.159.95"
 
 
+def test_server_cluster_static_ip():
+    cluster = ServerCluster.from_dict({
+        "hostname": "de-fra-st001.prod.surfshark.com",
+        "country": "Germany",
+        "city": "Frankfurt am Main (Static #1)",
+        "continent": "Europe",
+        "country_code": "DE",
+        "public_key": "staticKey123=",
+        "resolved_ips": ["45.87.212.179"],
+        "is_static": True,
+    })
+    assert cluster.is_static is True
+    assert "Static" in cluster.city
+    assert cluster.to_dict()["is_static"] is True
+
+
+
 def test_user_credentials():
     creds = UserCredentials()
     assert not creds.is_configured

@@ -24,6 +24,15 @@ with open(os.path.join(BASE_DIR, "static", "style.css"), "r", encoding="utf-8") 
 servers_json_str = json.dumps(servers, ensure_ascii=False)
 default_privkey = ui.get("private_key", "eIAi8RMy6+QScRWERt/+jEedxdqro4FFJO9A8L3ptGU=")
 
+total_servers_cnt = len(servers)
+europe_cnt = len([s for s in servers if s.get("continent") == "Europe"])
+na_cnt = len([s for s in servers if s.get("continent") == "North America"])
+sa_cnt = len([s for s in servers if s.get("continent") == "South America"])
+asia_cnt = len([s for s in servers if s.get("continent") == "Asia"])
+africa_cnt = len([s for s in servers if s.get("continent") == "Africa"])
+oceania_cnt = len([s for s in servers if s.get("continent") == "Oceania"])
+static_cnt = len([s for s in servers if s.get("is_static") or "st0" in s.get("hostname", "")])
+
 html_content = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -184,13 +193,14 @@ html_content = f'''<!DOCTYPE html>
         <!-- Continent Chips & Search -->
         <section class="filter-section">
             <div class="chips-scroll" id="continent-chips">
-                <button class="chip active" data-continent="All">All (76)</button>
-                <button class="chip" data-continent="Europe">Europe (42)</button>
-                <button class="chip" data-continent="North America">North America (9)</button>
-                <button class="chip" data-continent="South America">South America (2)</button>
-                <button class="chip" data-continent="Asia">Asia (16)</button>
-                <button class="chip" data-continent="Africa">Africa (4)</button>
-                <button class="chip" data-continent="Oceania">Oceania (3)</button>
+                <button class="chip active" data-continent="All">All ({total_servers_cnt})</button>
+                <button class="chip" data-continent="Europe">Europe ({europe_cnt})</button>
+                <button class="chip" data-continent="North America">North America ({na_cnt})</button>
+                <button class="chip" data-continent="South America">South America ({sa_cnt})</button>
+                <button class="chip" data-continent="Asia">Asia ({asia_cnt})</button>
+                <button class="chip" data-continent="Africa">Africa ({africa_cnt})</button>
+                <button class="chip" data-continent="Oceania">Oceania ({oceania_cnt})</button>
+                <button class="chip" data-continent="Static">📌 Static IP ({static_cnt})</button>
             </div>
 
             <div class="search-bar-row">
@@ -347,19 +357,20 @@ html_content = f'''<!DOCTYPE html>
             </div>
             <div class="modal-body">
                 <p class="modal-desc">
-                    Paste this subscription link directly into Shadowrocket. It automatically syncs 151 multi-IP AmneziaWG nodes without needing any computer!
+                    Paste this subscription link directly into Shadowrocket. It automatically syncs 187 multi-IP AmneziaWG nodes without needing any computer!
                 </p>
                 <div class="form-group" style="margin-bottom: 12px;">
                     <label for="sub-scope-select">Select Region / Continent</label>
                     <select id="sub-scope-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px; border-radius: var(--radius-md); font-size: 13px; outline: none;">
-                        <option value="all">🌐 Global / All Continents (151 Nodes)</option>
-                        <option value="europe">🇪🇺 Europe (83 Nodes)</option>
-                        <option value="north_america">🌎 North America (18 Nodes)</option>
+                        <option value="all">🌐 Global / All Continents (187 Nodes)</option>
+                        <option value="europe">🇪🇺 Europe (96 Nodes)</option>
+                        <option value="north_america">🌎 North America (23 Nodes)</option>
                         <option value="south_america">🌎 South America (4 Nodes)</option>
-                        <option value="asia">🌏 Asia (32 Nodes)</option>
-                        <option value="americas">🌎 All Americas (22 Nodes)</option>
+                        <option value="asia">🌏 Asia (50 Nodes)</option>
+                        <option value="americas">🌎 All Americas (27 Nodes)</option>
                         <option value="africa">🌍 Africa (8 Nodes)</option>
                         <option value="oceania">🇦🇺 Oceania (6 Nodes)</option>
+                        <option value="static">📌 Static IP (36 Nodes)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -564,6 +575,7 @@ html_content = f'''<!DOCTYPE html>
                                 <option value="asia">🌏 Asia</option>
                                 <option value="africa">🌍 Africa</option>
                                 <option value="oceania">🇦🇺 Oceania</option>
+                                <option value="static">📌 Static IP (All)</option>
                             </select>
                         </div>
 
@@ -998,6 +1010,8 @@ html_content = f'''<!DOCTYPE html>
         if (App.selectedContinent !== "All") {{
             if (App.selectedContinent === "Americas") {{
                 list = list.filter(s => s.continent === "Americas" || s.continent === "North America" || s.continent === "South America");
+            }} else if (App.selectedContinent === "Static") {{
+                list = list.filter(s => s.is_static || (s.city && s.city.includes("Static")) || (s.hostname && s.hostname.includes("st0")));
             }} else {{
                 list = list.filter(s => s.continent === App.selectedContinent);
             }}
@@ -1051,10 +1065,13 @@ html_content = f'''<!DOCTYPE html>
             const deeplink = `shadowrocket://add/${{wgUrl}}`;
 
             let badgeHtml = "";
+            if (s.is_static || (s.city && s.city.includes("Static")) || (s.hostname && s.hostname.includes("st0"))) {{
+                badgeHtml += `<span class="badge" style="background: rgba(255, 171, 0, 0.15); color: #ffab00; border: 1px solid rgba(255, 171, 0, 0.3); font-size: 10px; margin-right: 4px;">📌 Static IP</span>`;
+            }}
             if (s.is_doh_resolved) {{
-                badgeHtml = `<span class="badge badge-resolved">⚡ ${{s.ping_ms}}ms (${{ips.length}} IPs)</span>`;
+                badgeHtml += `<span class="badge badge-resolved">⚡ ${{s.ping_ms}}ms (${{ips.length}} IPs)</span>`;
             }} else {{
-                badgeHtml = `<span class="badge badge-unresolved">Seed (${{ips.length}} IPs)</span>`;
+                badgeHtml += `<span class="badge badge-unresolved">Seed (${{ips.length}} IPs)</span>`;
             }}
 
             const ipPills = ips.map((item, idx) => `

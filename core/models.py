@@ -73,6 +73,7 @@ class ServerCluster:
     resolved_ips: List[str] = field(default_factory=list)
     best_ip: Optional[str] = None
     best_ping: Optional[float] = None
+    is_static: bool = False
     scan_results: List[ScanResult] = field(default_factory=list)
 
     @property
@@ -107,6 +108,7 @@ class ServerCluster:
             "effective_ip": self.effective_ip,
             "flag": self.flag,
             "display_name": self.display_name,
+            "is_static": self.is_static,
             "scan_results": [r.to_dict() for r in self.scan_results],
         }
 
@@ -123,4 +125,5 @@ class ServerCluster:
             resolved_ips=data.get("resolved_ips", []),
             best_ip=data.get("best_ip"),
             best_ping=data.get("best_ping"),
+            is_static=data.get("is_static", False),
         )

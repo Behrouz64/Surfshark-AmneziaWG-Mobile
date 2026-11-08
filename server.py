@@ -192,18 +192,20 @@ class MobileApiHandler(BaseHTTPRequestHandler):
         if path == "/api/servers":
             continent = query.get("continent", ["All"])[0]
 
-            def matches_cont(s_cont: str, q_cont: str) -> bool:
+            def matches_cont(c: ServerCluster, q_cont: str) -> bool:
                 if not q_cont or q_cont.lower() == "all":
                     return True
                 q_norm = q_cont.lower().replace("-", "_").replace(" ", "_")
-                s_norm = s_cont.lower().replace("-", "_").replace(" ", "_")
+                if q_norm == "static":
+                    return bool(c.is_static or "st0" in c.hostname)
+                s_norm = c.continent.lower().replace("-", "_").replace(" ", "_")
                 if q_norm == s_norm:
                     return True
                 if q_norm == "americas" and s_norm in ("north_america", "south_america"):
                     return True
                 return False
 
-            servers = [c for c in GLOBAL_STATE.clusters if matches_cont(c.continent, continent)]
+            servers = [c for c in GLOBAL_STATE.clusters if matches_cont(c, continent)]
             resp = []
             for s in servers:
                 s_dict = s.to_dict()
@@ -219,18 +221,20 @@ class MobileApiHandler(BaseHTTPRequestHandler):
             no_obfs = query.get("obfs", ["1"])[0] == "0" or query.get("noobfs", ["0"])[0] == "1" or query.get("preset", [""])[0] == "none"
             preset_to_use = ObfuscationPreset(name="Pure WireGuard", jc=0, jmin=0, jmax=0, s1=0, s2=0, h1=1, h2=2, h3=3, h4=4) if no_obfs else GLOBAL_STATE.preset
 
-            def matches_cont(s_cont: str, q_cont: str) -> bool:
+            def matches_cont(c: ServerCluster, q_cont: str) -> bool:
                 if not q_cont or q_cont.lower() == "all":
                     return True
                 q_norm = q_cont.lower().replace("-", "_").replace(" ", "_")
-                s_norm = s_cont.lower().replace("-", "_").replace(" ", "_")
+                if q_norm == "static":
+                    return bool(c.is_static or "st0" in c.hostname)
+                s_norm = c.continent.lower().replace("-", "_").replace(" ", "_")
                 if q_norm == s_norm:
                     return True
                 if q_norm == "americas" and s_norm in ("north_america", "south_america"):
                     return True
                 return False
 
-            working_clusters = [c for c in GLOBAL_STATE.clusters if c.effective_ip and matches_cont(c.continent, continent)]
+            working_clusters = [c for c in GLOBAL_STATE.clusters if c.effective_ip and matches_cont(c, continent)]
             b64_sub = ConfigBuilder.generate_subscription_base64(
                 working_clusters, GLOBAL_STATE.credentials, preset_to_use
             )

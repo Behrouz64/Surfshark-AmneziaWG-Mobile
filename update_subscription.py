@@ -142,13 +142,21 @@ def main():
         f.write(b64_payload + "\n")
     print(f"Saved: {sub_b64_path}")
 
-    # Generate separate subscriptions per continent
-    continents = ["Europe", "North America", "South America", "Americas", "Asia", "Africa", "Oceania"]
+    # Generate separate subscriptions per continent & Static IP
+    continents = ["Europe", "North America", "South America", "Americas", "Asia", "Africa", "Oceania", "Static"]
     for cont in continents:
         cont_nodes = []
         for s in updated_servers:
             s_cont = s.get("continent", "")
-            if s_cont == cont or (cont == "Americas" and s_cont in ("North America", "South America")):
+            is_match = False
+            if cont == "Static":
+                is_match = bool(s.get("is_static") or "st0" in s.get("hostname", ""))
+            elif cont == "Americas":
+                is_match = s_cont in ("North America", "South America")
+            else:
+                is_match = (s_cont == cont)
+
+            if is_match:
                 ips = s.get("resolved_ips", [])
                 for idx, ip in enumerate(ips):
                     cont_nodes.append(generate_node_url(s, ip, sub_index=idx, total_ips=len(ips)))
