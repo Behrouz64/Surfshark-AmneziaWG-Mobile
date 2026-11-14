@@ -503,7 +503,11 @@ export default {
       const auth = await verifyAuth(request, env);
       if (!auth) return jsonResponse({ error: "Unauthorized" }, 401);
 
-      const targetUsername = (auth.role === "admin" && params.has("user")) ? params.get("user") : auth.username;
+      if (auth.role !== "admin") {
+        return jsonResponse({ error: "Forbidden: Device management is restricted to Admin only." }, 403);
+      }
+
+      const targetUsername = params.has("user") ? params.get("user") : auth.username;
       const kvKey = `devices:${targetUsername}`;
 
       // GET: Retrieve user devices from Cloudflare KV

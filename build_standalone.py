@@ -162,15 +162,15 @@ html_content = f'''<!DOCTYPE html>
             </button>
 
             <!-- Prominent Multi-User Cloud Management Bar -->
-            <button id="btn-open-devices-bar" class="btn btn-secondary btn-block" style="border-color: rgba(6, 182, 212, 0.45); background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(15, 23, 42, 0.6)); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; text-align: left;" title="Multi-User Cloud Sync &amp; Device Subscriptions">
+            <button id="btn-open-devices-bar" class="btn btn-secondary btn-block" style="border-color: rgba(6, 182, 212, 0.45); background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(15, 23, 42, 0.6)); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; text-align: left;" title="Admin Device &amp; Client Manager">
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 22px;">📱</span>
+                    <span style="font-size: 22px;">👑</span>
                     <div>
-                        <div style="font-weight: 600; color: var(--accent-cyan); font-size: 13px;">Manage Devices &amp; Users</div>
-                        <div id="user-status-label" style="font-size: 11px; color: var(--text-secondary); margin-top: 1px;">Cloudflare Cloud Sync (KV)</div>
+                        <div style="font-weight: 600; color: var(--accent-cyan); font-size: 13px;">مدیریت دیوایس‌ها (ویژه مدیر سیستم)</div>
+                        <div id="user-status-label" style="font-size: 11px; color: var(--text-secondary); margin-top: 1px;">Admin Device &amp; Client Manager</div>
                     </div>
                 </div>
-                <span id="user-badge" style="font-size: 10px; background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); padding: 4px 10px; border-radius: 999px; font-weight: 500;">Open ↗</span>
+                <span id="user-badge" style="font-size: 10px; background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); padding: 4px 10px; border-radius: 999px; font-weight: 500;">ورود ادمین 🔒</span>
             </button>
 
             <div class="btn-group-row">
@@ -406,12 +406,12 @@ html_content = f'''<!DOCTYPE html>
     <div id="modal-devices" class="modal-overlay" style="display: none;">
         <div class="modal-sheet" style="max-height: 85vh; overflow-y: auto;">
             <div class="modal-header">
-                <h2>📱 Cloud Device &amp; User Manager</h2>
+                <h2>👑 مدیریت دیوایس‌ها (ویژه مدیر سیستم)</h2>
                 <button class="modal-close" data-close="modal-devices">✕</button>
             </div>
             <div class="modal-body">
                 <!-- 1. First-Time Setup Card (if no admin registered yet) -->
-                <div id="auth-setup-card" style="display: block; background: var(--bg-main); border: 1px solid var(--accent-cyan); border-radius: var(--radius-md); padding: 14px;">
+                <div id="auth-setup-card" style="display: none; background: var(--bg-main); border: 1px solid var(--accent-cyan); border-radius: var(--radius-md); padding: 14px;">
                     <h3 style="color: var(--accent-cyan); font-size: 14px; margin-bottom: 6px;">👑 First-Time Setup (Create Admin)</h3>
                     <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
                         Create your Master Admin account to manage and synchronize subscriptions across all your devices securely on Cloudflare.
@@ -437,25 +437,28 @@ html_content = f'''<!DOCTYPE html>
                 </div>
 
                 <!-- 2. Login Card -->
-                <div id="auth-login-card" style="display: none; background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px;">
-                    <h3 style="color: var(--accent-cyan); font-size: 14px; margin-bottom: 6px;">🔑 Login to Cloud Manager</h3>
-                    <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">
-                        Login to view and manage your synchronized devices from any Mac or phone.
+                <div id="auth-login-card" style="display: block; background: var(--bg-main); border: 1px solid var(--accent-cyan); border-radius: var(--radius-md); padding: 16px;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="font-size: 20px;">🔒</span>
+                        <h3 style="color: var(--accent-cyan); font-size: 14px; margin: 0;">ورود مدیر سیستم (Admin Access Only)</h3>
+                    </div>
+                    <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
+                        بخش مدیریت دیوایس‌ها، ایجاد سابسکریپشن‌های اختصاصی، تمدید روزها و حجم ترافیک فقط در اختیار ادمین است. جهت دسترسی، لطفاً وارد حساب مدیریت شوید:
                     </p>
                     <form id="form-user-login" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 8px;">
                         <div class="form-group">
-                            <label>Username</label>
+                            <label>نام کاربری مدیر (Username)</label>
                             <input type="text" id="login-username" placeholder="Username" required style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: var(--radius-md); font-size: 12px;">
                         </div>
                         <div class="form-group">
-                            <label>Password</label>
+                            <label>رمز عبور (Password)</label>
                             <input type="password" id="login-password" placeholder="Password" required style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: var(--radius-md); font-size: 12px;">
                         </div>
-                        <button type="button" id="btn-submit-login" class="btn btn-primary" style="margin-top: 4px; padding: 10px;">
-                            🔓 Login
+                        <button type="button" id="btn-submit-login" class="btn btn-primary" style="margin-top: 4px; padding: 10px; font-weight: bold;">
+                            🔓 ورود به پنل مدیریت
                         </button>
                         <div style="text-align: center; margin-top: 6px;">
-                            <a href="javascript:void(0)" id="link-show-reset" style="color: var(--text-muted); font-size: 11px; text-decoration: underline;">Forgot password? Reset with Recovery Key</a>
+                            <a href="javascript:void(0)" id="link-show-reset" style="color: var(--text-muted); font-size: 11px; text-decoration: underline;">فراموشی رمز عبور؟ بازیابی با کلید ریکاوری</a>
                         </div>
                     </form>
                 </div>
@@ -523,19 +526,20 @@ html_content = f'''<!DOCTYPE html>
                             <button type="button" id="btn-create-sub-user" class="btn btn-primary" style="width: 100%; padding: 6px; font-size: 11px;">Create User Account</button>
                         </div>
                     </div>
-                </div>
 
-                <!-- Guest / Offline Mode Notice (when not logged in) -->
-                <div id="auth-guest-bar" style="display: none; background: rgba(15, 23, 42, 0.6); border: 1px dashed var(--border-color); border-radius: var(--radius-md); padding: 8px 12px; margin-bottom: 12px; justify-content: space-between; align-items: center;">
-                    <div style="font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
-                        <span>☁️</span>
-                        <span>حالت ذخیره محلی (آفلاین). برای همگام‌سازی ابری بین دستگاه‌ها:</span>
+                    <!-- Non-Admin Notice (if user role is not admin) -->
+                    <div id="non-admin-warning" style="display: none; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 8px; padding: 14px; text-align: center; margin-bottom: 12px;">
+                        <span style="font-size: 24px;">⛔</span>
+                        <h4 style="color: #ef4444; margin: 6px 0; font-size: 13px;">دسترسی محدود: فقط ادمین</h4>
+                        <p style="font-size: 11px; color: var(--text-secondary); margin: 0; line-height: 1.5;">
+                            مدیریت و صدور دیوایس‌ها منحصراً در اختیار مدیر کل سیستم (Admin) است. حساب کاربری شما به این بخش دسترسی ندارد.
+                        </p>
                     </div>
-                    <button type="button" id="btn-toggle-login-view" class="btn btn-secondary" style="padding: 3px 8px; font-size: 10px; color: var(--accent-cyan);">🔑 ورود به حساب ابری</button>
-                </div>
 
-                <!-- Form to Add New Device -->
-                <form id="form-create-device" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 10px;">
+                    <!-- ADMIN DEVICE MANAGER CONTAINER (Only rendered for Admin) -->
+                    <div id="admin-device-manager-section" style="display: none;">
+                        <!-- Form to Add New Device -->
+                        <form id="form-create-device" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 10px;">
                     <div class="form-group">
                         <label for="dev-name-input">Device Name / Label</label>
                         <input type="text" id="dev-name-input" placeholder="e.g. iPhone-Dad or MacBook" required style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px;">
@@ -667,6 +671,8 @@ html_content = f'''<!DOCTYPE html>
                         <div style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 12px;">Loading cloud devices...</div>
                     </div>
                 </div>
+                    </div> <!-- Close admin-device-manager-section -->
+                </div> <!-- Close auth-logged-in-view -->
             </div>
         </div>
     </div>
@@ -1625,7 +1631,9 @@ html_content = f'''<!DOCTYPE html>
 
         let managedDevices = [];
         try {{
-            managedDevices = JSON.parse(localStorage.getItem("surfshark_managed_devices") || "[]");
+            if (authSession && authSession.role === "admin") {{
+                managedDevices = JSON.parse(localStorage.getItem("surfshark_managed_devices") || "[]");
+            }}
         }} catch (e) {{
             managedDevices = [];
         }}
@@ -1639,14 +1647,14 @@ html_content = f'''<!DOCTYPE html>
             const badge = document.getElementById("user-badge");
             if (!statusLabel || !badge) return;
 
-            if (authSession && authSession.username) {{
-                statusLabel.textContent = "👤 Synced: " + authSession.username;
-                badge.textContent = authSession.role === "admin" ? "Admin 👑" : "User 👤";
+            if (authSession && authSession.username && authSession.role === "admin") {{
+                statusLabel.textContent = "👑 مدیر سیستم: " + authSession.username;
+                badge.textContent = "Admin 🟢";
                 badge.style.background = "rgba(16, 185, 129, 0.2)";
                 badge.style.color = "#10b981";
             }} else {{
-                statusLabel.textContent = "Cloudflare Cloud Sync (KV)";
-                badge.textContent = "Open ↗";
+                statusLabel.textContent = "ورود مدیر برای مدیریت دیوایس‌ها";
+                badge.textContent = "ورود ادمین 🔒";
                 badge.style.background = "rgba(6, 182, 212, 0.2)";
                 badge.style.color = "var(--accent-cyan)";
             }}
@@ -1659,7 +1667,8 @@ html_content = f'''<!DOCTYPE html>
             const loginCard = document.getElementById("auth-login-card");
             const resetCard = document.getElementById("auth-reset-card");
             const loggedInView = document.getElementById("auth-logged-in-view");
-            const guestBar = document.getElementById("auth-guest-bar");
+            const adminDevSection = document.getElementById("admin-device-manager-section");
+            const nonAdminWarn = document.getElementById("non-admin-warning");
 
             if (!setupCard || !loginCard || !loggedInView) return;
 
@@ -1668,7 +1677,6 @@ html_content = f'''<!DOCTYPE html>
                 loginCard.style.display = "none";
                 if (resetCard) resetCard.style.display = "none";
                 loggedInView.style.display = "block";
-                if (guestBar) guestBar.style.display = "none";
 
                 const nameEl = document.getElementById("session-user-name");
                 const roleBadge = document.getElementById("session-role-badge");
@@ -1680,15 +1688,28 @@ html_content = f'''<!DOCTYPE html>
                     roleBadge.style.background = authSession.role === "admin" ? "rgba(6, 182, 212, 0.2)" : "rgba(100, 116, 139, 0.2)";
                     roleBadge.style.color = authSession.role === "admin" ? "var(--accent-cyan)" : "var(--text-secondary)";
                 }}
-                if (btnUsers) {{
-                    btnUsers.style.display = authSession.role === "admin" ? "inline-block" : "none";
+
+                if (authSession.role === "admin") {{
+                    if (adminDevSection) adminDevSection.style.display = "block";
+                    if (nonAdminWarn) nonAdminWarn.style.display = "none";
+                    if (btnUsers) btnUsers.style.display = "inline-block";
+                }} else {{
+                    if (adminDevSection) adminDevSection.style.display = "none";
+                    if (nonAdminWarn) nonAdminWarn.style.display = "block";
+                    if (btnUsers) btnUsers.style.display = "none";
+                    managedDevices = [];
+                    renderManagedDevices();
                 }}
             }} else {{
                 loggedInView.style.display = "none";
-                if (guestBar) guestBar.style.display = "flex";
-                if (setupCard && setupCard.style.display !== "block") {{
+                if (adminDevSection) adminDevSection.style.display = "none";
+                if (setupCard && setupCard.style.display === "block") {{
                     loginCard.style.display = "none";
+                }} else {{
+                    loginCard.style.display = "block";
                 }}
+                managedDevices = [];
+                renderManagedDevices();
             }}
         }}
 
@@ -1698,7 +1719,6 @@ html_content = f'''<!DOCTYPE html>
             const loginCard = document.getElementById("auth-login-card");
             const resetCard = document.getElementById("auth-reset-card");
             const loggedInView = document.getElementById("auth-logged-in-view");
-            const guestBar = document.getElementById("auth-guest-bar");
 
             if (authSession && authSession.token) {{
                 try {{
@@ -1712,18 +1732,20 @@ html_content = f'''<!DOCTYPE html>
                             authSession.username = d.user.username;
                             localStorage.setItem("surfshark_auth_session", JSON.stringify(authSession));
                             updateAuthUI();
-                            fetchCloudDevices();
+                            if (authSession.role === "admin") {{
+                                fetchCloudDevices();
+                            }}
                             return;
                         }}
                     }}
                 }} catch (e) {{
                     console.warn("Could not verify session with worker:", e);
                     updateAuthUI();
-                    renderManagedDevices();
                     return;
                 }}
                 authSession = null;
                 localStorage.removeItem("surfshark_auth_session");
+                localStorage.removeItem("surfshark_managed_devices");
             }}
 
             // Check if admin is initialized
@@ -1736,10 +1758,9 @@ html_content = f'''<!DOCTYPE html>
                         if (loginCard) loginCard.style.display = "none";
                         if (resetCard) resetCard.style.display = "none";
                         if (loggedInView) loggedInView.style.display = "none";
-                        if (guestBar) guestBar.style.display = "none";
                         const stLabel = document.getElementById("user-status-label");
                         const badge = document.getElementById("user-badge");
-                        if (stLabel) stLabel.textContent = "Initial Admin Setup Required";
+                        if (stLabel) stLabel.textContent = "راه‌اندازی اولیه مدیر سیستم (Setup)";
                         if (badge) {{
                             badge.textContent = "Setup 🚀";
                             badge.style.background = "rgba(245, 158, 11, 0.2)";
@@ -1753,16 +1774,15 @@ html_content = f'''<!DOCTYPE html>
             }}
 
             if (setupCard) setupCard.style.display = "none";
-            if (loginCard) loginCard.style.display = "none";
             if (resetCard) resetCard.style.display = "none";
             if (loggedInView) loggedInView.style.display = "none";
-            if (guestBar) guestBar.style.display = "flex";
+            if (loginCard) loginCard.style.display = "block";
             updateAuthUI();
-            renderManagedDevices();
         }}
 
         async function fetchCloudDevices() {{
-            if (!authSession || !authSession.token) {{
+            if (!authSession || !authSession.token || authSession.role !== "admin") {{
+                managedDevices = [];
                 renderManagedDevices();
                 return;
             }}
@@ -1771,15 +1791,18 @@ html_content = f'''<!DOCTYPE html>
                 const res = await fetch(getEffectiveWorkerUrl() + "/api/devices", {{
                     headers: {{ "Authorization": "Bearer " + authSession.token }}
                 }});
-                if (res.status === 401) {{
-                    authSession = null;
-                    localStorage.removeItem("surfshark_auth_session");
-                    checkAuthStatus();
+                if (res.status === 401 || res.status === 403) {{
+                    if (res.status === 401) {{
+                        authSession = null;
+                        localStorage.removeItem("surfshark_auth_session");
+                        localStorage.removeItem("surfshark_managed_devices");
+                        checkAuthStatus();
+                    }}
                     return;
                 }}
                 if (res.ok) {{
                     const data = await res.json();
-                    managedDevices = data.devices || [];
+                    managedDevices = (data.devices || []).map((devItem, i) => normalizeDevice(devItem, i));
                     localStorage.setItem("surfshark_managed_devices", JSON.stringify(managedDevices));
                     renderManagedDevices();
                 }}
@@ -1837,6 +1860,13 @@ html_content = f'''<!DOCTYPE html>
             const countEl = document.getElementById("saved-dev-count");
             if (!container) return;
 
+            // Strict admin-only access check
+            if (!authSession || !authSession.token || authSession.role !== "admin") {{
+                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 12px; border: 1px dashed var(--border-color); border-radius: var(--radius-md);">🔒 مدیریت دیوایس‌ها فقط برای مدیر سیستم (Admin) فعال است.</div>';
+                if (countEl) countEl.textContent = "0";
+                return;
+            }}
+
             // Automatically normalize all devices from past or present
             managedDevices = managedDevices.map((d, i) => normalizeDevice(d, i)).filter(Boolean);
             try {{
@@ -1845,7 +1875,7 @@ html_content = f'''<!DOCTYPE html>
 
             if (countEl) countEl.textContent = managedDevices.length;
             if (managedDevices.length === 0) {{
-                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 12px; border: 1px dashed var(--border-color); border-radius: var(--radius-md);">No devices added yet. Create one above!</div>';
+                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 12px; border: 1px dashed var(--border-color); border-radius: var(--radius-md);">هیچ دیوایسی ثبت نشده است. در فرم بالا دیوایس جدید ایجاد کنید.</div>';
                 return;
             }}
 
@@ -1994,6 +2024,10 @@ html_content = f'''<!DOCTYPE html>
         }}
 
         function openEditDeviceModal(i) {{
+            if (!authSession || !authSession.token || authSession.role !== "admin") {{
+                alert("دسترسی غیرمجاز: ویرایش دیوایس‌ها فقط برای مدیر سیستم مجاز است.");
+                return;
+            }}
             if (i < 0 || !managedDevices[i]) return;
             const dev = normalizeDevice(managedDevices[i], i);
             managedDevices[i] = dev;
@@ -2107,6 +2141,10 @@ html_content = f'''<!DOCTYPE html>
         const btnSaveEditDev = document.getElementById("btn-save-edit-dev");
         if (btnSaveEditDev) {{
             btnSaveEditDev.addEventListener("click", async () => {{
+                if (!authSession || !authSession.token || authSession.role !== "admin") {{
+                    alert("دسترسی غیرمجاز: ذخیره تنظیمات دیوایس فقط برای مدیر سیستم مجاز است.");
+                    return;
+                }}
                 const idx = parseInt(document.getElementById("edit-dev-index").value, 10);
                 if (idx < 0 || !managedDevices[idx]) return;
 
@@ -2511,8 +2549,10 @@ html_content = f'''<!DOCTYPE html>
             btnLogout.addEventListener("click", () => {{
                 authSession = null;
                 localStorage.removeItem("surfshark_auth_session");
+                localStorage.removeItem("surfshark_managed_devices");
+                managedDevices = [];
                 checkAuthStatus();
-                showToast("Logged out successfully.");
+                showToast("با موفقیت از حساب مدیریت خارج شدید.");
             }});
         }}
 
@@ -2596,6 +2636,10 @@ html_content = f'''<!DOCTYPE html>
         const btnCreateDevSub = document.getElementById("btn-create-dev-sub");
         if (btnCreateDevSub) {{
             btnCreateDevSub.addEventListener("click", async () => {{
+                if (!authSession || !authSession.token || authSession.role !== "admin") {{
+                    alert("دسترسی غیرمجاز: صدور دیوایس جدید فقط برای مدیر سیستم مجاز است.");
+                    return;
+                }}
                 const name = document.getElementById("dev-name-input").value.trim();
                 const key = document.getElementById("dev-key-input").value.trim();
                 const obfsChoice = document.getElementById("dev-obfs-select") ? document.getElementById("dev-obfs-select").value : "awg";
@@ -2733,20 +2777,6 @@ html_content = f'''<!DOCTYPE html>
             btnCopyDevUrl.addEventListener("click", () => {{
                 const u = document.getElementById("dev-res-url").value;
                 copyToClipboard(u, "Device subscription URL copied!");
-            }});
-        }}
-
-        // Toggle Login Card for Guest Users
-        const btnToggleLogin = document.getElementById("btn-toggle-login-view");
-        if (btnToggleLogin) {{
-            btnToggleLogin.addEventListener("click", () => {{
-                const loginCard = document.getElementById("auth-login-card");
-                if (loginCard) {{
-                    loginCard.style.display = (loginCard.style.display === "none") ? "block" : "none";
-                    if (loginCard.style.display === "block") {{
-                        loginCard.scrollIntoView({{ behavior: "smooth" }});
-                    }}
-                }}
             }});
         }}
 
