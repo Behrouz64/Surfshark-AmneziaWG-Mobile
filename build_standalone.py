@@ -523,136 +523,148 @@ html_content = f'''<!DOCTYPE html>
                             <button type="button" id="btn-create-sub-user" class="btn btn-primary" style="width: 100%; padding: 6px; font-size: 11px;">Create User Account</button>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Form to Add New Device -->
-                    <form id="form-create-device" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 10px;">
-                        <div class="form-group">
-                            <label for="dev-name-input">Device Name / Label</label>
-                            <input type="text" id="dev-name-input" placeholder="e.g. iPhone-Dad or MacBook" required style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px;">
+                <!-- Guest / Offline Mode Notice (when not logged in) -->
+                <div id="auth-guest-bar" style="display: none; background: rgba(15, 23, 42, 0.6); border: 1px dashed var(--border-color); border-radius: var(--radius-md); padding: 8px 12px; margin-bottom: 12px; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
+                        <span>☁️</span>
+                        <span>حالت ذخیره محلی (آفلاین). برای همگام‌سازی ابری بین دستگاه‌ها:</span>
+                    </div>
+                    <button type="button" id="btn-toggle-login-view" class="btn btn-secondary" style="padding: 3px 8px; font-size: 10px; color: var(--accent-cyan);">🔑 ورود به حساب ابری</button>
+                </div>
+
+                <!-- Form to Add New Device -->
+                <form id="form-create-device" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 10px;">
+                    <div class="form-group">
+                        <label for="dev-name-input">Device Name / Label</label>
+                        <input type="text" id="dev-name-input" placeholder="e.g. iPhone-Dad or MacBook" required style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dev-tier-select" style="color: var(--accent-cyan); font-weight: bold;">نوع سابسکریپشن / Subscription Tier</label>
+                        <select id="dev-tier-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--accent-cyan); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                            <option value="raw">🦈 سرف‌شارک خام (AmneziaWG Direct Nodes)</option>
+                            <option value="family">👨‍👩‍👦 مطب: خانواده (Family Clean - 12 Nodes)</option>
+                            <option value="2hop">⚡ مطب: پرو ۲ تانل آمریکا (2-Hop Direct US - 13 Nodes)</option>
+                            <option value="3hop">🛰 مطب: پرو ۳ تانل ۸ کشور (3-Hop Multi-Country - 64 Nodes)</option>
+                            <option value="pro">👑 مطب: پرو جامع پزشک (Doctor Master Pro - 77 Nodes)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dev-quota-select" style="color: #c084fc; font-weight: bold;">حجم ترافیک مجاز / Traffic Quota Limit</label>
+                        <select id="dev-quota-select" style="width: 100%; background: var(--bg-main); border: 1px solid #c084fc; color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                            <option value="0">♾️ نامحدود (Unlimited)</option>
+                            <option value="10">📦 ۱۰ گیگابایت (10 GB)</option>
+                            <option value="20">📦 ۲۰ گیگابایت (20 GB)</option>
+                            <option value="30">📦 ۳۰ گیگابایت (30 GB)</option>
+                            <option value="50">📦 ۵۰ گیگابایت (50 GB)</option>
+                            <option value="80">📦 ۸۰ گیگابایت (80 GB)</option>
+                            <option value="100">📦 ۱۰۰ گیگابایت (100 GB)</option>
+                            <option value="200">📦 ۲۰۰ گیگابایت (200 GB)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dev-isp-select">بهینه‌سازی اپراتور / Carrier Optimization</label>
+                        <select id="dev-isp-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                            <option value="auto">⚡ هوشمند خودکار (Auto-Detect Carrier)</option>
+                            <option value="mci">📱 همراه اول (MCI Clean IP)</option>
+                            <option value="mtn">📱 ایرانسل (MTN Clean IP)</option>
+                            <option value="rightel">📱 رایتل (Rightel Clean IP)</option>
+                            <option value="wifi">🌐 مخابرات / اینترنت ثابت (Wi-Fi)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dev-key-input">Surfshark WireGuard Private Key</label>
+                        <div style="display: flex; gap: 6px;">
+                            <input type="text" id="dev-key-input" placeholder="Paste Private Key (اختیاری برای کانفیگ‌های مطب)..." style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
+                            <button type="button" id="btn-paste-dev-key" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;" title="Paste from clipboard">📋 Paste</button>
                         </div>
+                        <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px; display: block; line-height: 1.4;">
+                            💡 برای سابسکریپشن‌های مطب (VLESS) پرایوت کی نیاز نیست. برای سرف‌شارک خام می‌توانید کلید اختصاصی وارد کنید.
+                        </span>
+                    </div>
 
-                        <div class="form-group">
-                            <label for="dev-tier-select" style="color: var(--accent-cyan); font-weight: bold;">نوع سابسکریپشن / Subscription Tier</label>
-                            <select id="dev-tier-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--accent-cyan); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
-                                <option value="raw">🦈 سرف‌شارک خام (AmneziaWG Direct Nodes)</option>
-                                <option value="family">👨‍👩‍👦 مطب: خانواده (Family Clean - 12 Nodes)</option>
-                                <option value="2hop">⚡ مطب: پرو ۲ تانل آمریکا (2-Hop Direct US - 13 Nodes)</option>
-                                <option value="3hop">🛰 مطب: پرو ۳ تانل ۸ کشور (3-Hop Multi-Country - 64 Nodes)</option>
-                                <option value="pro">👑 مطب: پرو جامع پزشک (Doctor Master Pro - 77 Nodes)</option>
+                    <div class="sub-actions-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="dev-obfs-select">Obfuscation</label>
+                            <select id="dev-obfs-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                                <option value="awg">🛡️ AmneziaWG (DPI Bypass)</option>
+                                <option value="none">🌐 Pure WireGuard (No Obfs)</option>
                             </select>
                         </div>
-
-                        <div class="form-group">
-                            <label for="dev-quota-select" style="color: #c084fc; font-weight: bold;">حجم ترافیک مجاز / Traffic Quota Limit</label>
-                            <select id="dev-quota-select" style="width: 100%; background: var(--bg-main); border: 1px solid #c084fc; color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
-                                <option value="0">♾️ نامحدود (Unlimited)</option>
-                                <option value="10">📦 ۱۰ گیگابایت (10 GB)</option>
-                                <option value="20">📦 ۲۰ گیگابایت (20 GB)</option>
-                                <option value="30">📦 ۳۰ گیگابایت (30 GB)</option>
-                                <option value="50">📦 ۵۰ گیگابایت (50 GB)</option>
-                                <option value="80">📦 ۸۰ گیگابایت (80 GB)</option>
-                                <option value="100">📦 ۱۰۰ گیگابایت (100 GB)</option>
-                                <option value="200">📦 ۲۰۰ گیگابایت (200 GB)</option>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="dev-duration-select">Duration / Expiry</label>
+                            <select id="dev-duration-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                                <option value="30">30 Days</option>
+                                <option value="7">7 Days (Trial)</option>
+                                <option value="60">60 Days (2 Months)</option>
+                                <option value="90">90 Days (3 Months)</option>
+                                <option value="180">180 Days (6 Months)</option>
+                                <option value="365">365 Days (1 Year)</option>
+                                <option value="0">Unlimited (No Expiry)</option>
                             </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="dev-isp-select">بهینه‌سازی اپراتور / Carrier Optimization</label>
-                            <select id="dev-isp-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
-                                <option value="auto">⚡ هوشمند خودکار (Auto-Detect Carrier)</option>
-                                <option value="mci">📱 همراه اول (MCI Clean IP)</option>
-                                <option value="mtn">📱 ایرانسل (MTN Clean IP)</option>
-                                <option value="rightel">📱 رایتل (Rightel Clean IP)</option>
-                                <option value="wifi">🌐 مخابرات / اینترنت ثابت (Wi-Fi)</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="dev-key-input">Surfshark WireGuard Private Key</label>
-                            <div style="display: flex; gap: 6px;">
-                                <input type="text" id="dev-key-input" placeholder="Paste Private Key from Surfshark account..." required style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
-                                <button type="button" id="btn-paste-dev-key" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;" title="Paste from clipboard">📋 Paste</button>
-                            </div>
-                            <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px; display: block; line-height: 1.4;">
-                                💡 کلید اختصاصی را از پنل Surfshark (بخش Manual setup &gt; WireGuard) دریافت و اینجا وارد کنید.
-                            </span>
-                        </div>
-
-                        <div class="sub-actions-row">
-                            <div class="form-group" style="flex: 1;">
-                                <label for="dev-obfs-select">Obfuscation</label>
-                                <select id="dev-obfs-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
-                                    <option value="awg">🛡️ AmneziaWG (DPI Bypass)</option>
-                                    <option value="none">🌐 Pure WireGuard (No Obfs)</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="flex: 1;">
-                                <label for="dev-duration-select">Duration / Expiry</label>
-                                <select id="dev-duration-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
-                                    <option value="30">30 Days</option>
-                                    <option value="7">7 Days (Trial)</option>
-                                    <option value="60">60 Days (2 Months)</option>
-                                    <option value="90">90 Days (3 Months)</option>
-                                    <option value="180">180 Days (6 Months)</option>
-                                    <option value="365">365 Days (1 Year)</option>
-                                    <option value="0">Unlimited (No Expiry)</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group" style="margin-top: 4px;">
-                            <label for="dev-region-select">Region / Continent</label>
-                            <select id="dev-region-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
-                                <option value="all">🌐 All Continents</option>
-                                <option value="europe">🇪🇺 Europe</option>
-                                <option value="north_america">🌎 North America</option>
-                                <option value="south_america">🌎 South America</option>
-                                <option value="americas">🌎 All Americas</option>
-                                <option value="asia">🌏 Asia</option>
-                                <option value="africa">🌍 Africa</option>
-                                <option value="oceania">🇦🇺 Oceania</option>
-                                <option value="static">📌 Static IP (All)</option>
-                            </select>
-                        </div>
-
-                        <button type="button" id="btn-create-dev-sub" class="btn btn-primary" style="margin-top: 4px; padding: 10px;">
-                            ⚡ Save to Cloud &amp; Generate Link
-                        </button>
-                    </form>
-
-                    <!-- Result Card (shown after generation) -->
-                    <div id="dev-result-box" style="display: none; margin-top: 14px; background: var(--bg-main); border: 1px solid var(--accent-cyan); border-radius: var(--radius-md); padding: 12px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <h4 id="dev-res-title" style="color: var(--accent-cyan); margin: 0; font-size: 13px;">New Subscription Ready!</h4>
-                            <span id="dev-res-badge" style="font-size: 10px; background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); padding: 2px 6px; border-radius: 4px;">Active</span>
-                        </div>
-                        
-                        <div class="form-group" style="margin-bottom: 8px;">
-                            <label style="font-size: 10px;">Direct Shadowrocket Subscription Link</label>
-                            <div style="display: flex; gap: 6px;">
-                                <input type="text" id="dev-res-url" readonly style="flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 6px; border-radius: var(--radius-md); font-family: monospace; font-size: 10px;">
-                                <button id="btn-copy-dev-url" class="btn btn-primary" style="padding: 4px 10px; font-size: 11px;">Copy</button>
-                            </div>
-                        </div>
-
-                        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 10px; background: var(--bg-card); padding: 10px; border-radius: var(--radius-md);">
-                            <div id="dev-qr-container" style="background: white; padding: 6px; border-radius: 6px; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;"></div>
-                            <div style="flex: 1; font-size: 11px; color: var(--text-secondary); line-height: 1.5;">
-                                <strong>Scan with Shadowrocket:</strong>
-                                <p style="margin: 4px 0 0 0;">Open Shadowrocket on your iPhone, tap <strong>[ - ]</strong> (Scan QR), and aim at this code.</p>
-                            </div>
                         </div>
                     </div>
 
-                    <!-- Cloud Synced Devices Section -->
-                    <div style="margin-top: 16px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <h4 style="font-size: 12px; color: var(--text-secondary); margin: 0;">☁️ Cloud Synced Devices (<span id="saved-dev-count">0</span>)</h4>
-                            <button type="button" id="btn-refresh-cloud-devs" style="background: none; border: none; color: var(--accent-cyan); font-size: 11px; cursor: pointer;">🔄 Refresh</button>
+                    <div class="form-group" style="margin-top: 4px;">
+                        <label for="dev-region-select">Region / Continent</label>
+                        <select id="dev-region-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                            <option value="all">🌐 All Continents</option>
+                            <option value="europe">🇪🇺 Europe</option>
+                            <option value="north_america">🌎 North America</option>
+                            <option value="south_america">🌎 South America</option>
+                            <option value="americas">🌎 All Americas</option>
+                            <option value="asia">🌏 Asia</option>
+                            <option value="africa">🌍 Africa</option>
+                            <option value="oceania">🇦🇺 Oceania</option>
+                            <option value="static">📌 Static IP (All)</option>
+                        </select>
+                    </div>
+
+                    <button type="button" id="btn-create-dev-sub" class="btn btn-primary" style="margin-top: 4px; padding: 10px;">
+                        ⚡ Save to Cloud &amp; Generate Link
+                    </button>
+                </form>
+
+                <!-- Result Card (shown after generation) -->
+                <div id="dev-result-box" style="display: none; margin-top: 14px; background: var(--bg-main); border: 1px solid var(--accent-cyan); border-radius: var(--radius-md); padding: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 id="dev-res-title" style="color: var(--accent-cyan); margin: 0; font-size: 13px;">New Subscription Ready!</h4>
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <span id="dev-res-badge" style="font-size: 10px; background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); padding: 2px 6px; border-radius: 4px;">Active</span>
+                            <button type="button" id="btn-edit-current-dev" class="btn btn-secondary" style="padding: 2px 8px; font-size: 10px; color: #38bdf8; font-weight: 600;">✏️ Edit</button>
                         </div>
-                        <div id="saved-devices-list" style="display: flex; flex-direction: column; gap: 8px;">
-                            <div style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 12px;">Loading cloud devices...</div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <label style="font-size: 10px;">Direct Subscription Link</label>
+                        <div style="display: flex; gap: 6px;">
+                            <input type="text" id="dev-res-url" readonly style="flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 6px; border-radius: var(--radius-md); font-family: monospace; font-size: 10px;">
+                            <button id="btn-copy-dev-url" class="btn btn-primary" style="padding: 4px 10px; font-size: 11px;">Copy</button>
                         </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 10px; background: var(--bg-card); padding: 10px; border-radius: var(--radius-md);">
+                        <div id="dev-qr-container" style="background: white; padding: 6px; border-radius: 6px; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;"></div>
+                        <div style="flex: 1; font-size: 11px; color: var(--text-secondary); line-height: 1.5;">
+                            <strong>Scan with V2rayNG / Shadowrocket:</strong>
+                            <p style="margin: 4px 0 0 0;">Open your app, tap <strong>Scan QR</strong>, and aim at this code to import.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cloud Synced Devices Section -->
+                <div style="margin-top: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 style="font-size: 12px; color: var(--text-secondary); margin: 0;">☁️ Cloud Synced Devices (<span id="saved-dev-count">0</span>)</h4>
+                        <button type="button" id="btn-refresh-cloud-devs" style="background: none; border: none; color: var(--accent-cyan); font-size: 11px; cursor: pointer;">🔄 Refresh</button>
+                    </div>
+                    <div id="saved-devices-list" style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 12px;">Loading cloud devices...</div>
                     </div>
                 </div>
             </div>
@@ -660,7 +672,7 @@ html_content = f'''<!DOCTYPE html>
     </div>
 
     <!-- Modal: Edit Device Settings -->
-    <div id="modal-edit-device" class="modal-overlay" style="display: none;">
+    <div id="modal-edit-device" class="modal-overlay" style="display: none; z-index: 1200;">
         <div class="modal-sheet" style="max-height: 88vh; overflow-y: auto;">
             <div class="modal-header">
                 <h2>✏️ ویرایش تنظیمات دیوایس / Edit Device</h2>
@@ -763,9 +775,10 @@ html_content = f'''<!DOCTYPE html>
                     <div class="form-group">
                         <label for="edit-dev-key">Surfshark WireGuard Private Key</label>
                         <div style="display: flex; gap: 6px;">
-                            <input type="text" id="edit-dev-key" required style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
+                            <input type="text" id="edit-dev-key" placeholder="اختیاری برای کانفیگ‌های مطب (VLESS)..." style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
                             <button type="button" id="btn-paste-edit-dev-key" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;">📋 Paste</button>
                         </div>
+                        <span id="edit-dev-key-hint" style="font-size: 10px; color: var(--text-muted); margin-top: 3px; display: block;">💡 برای کانفیگ‌های مطب (VLESS/Reality)، پرایوت کی اختیاری است.</span>
                     </div>
 
                     <!-- 7. Obfuscation -->
@@ -1646,6 +1659,7 @@ html_content = f'''<!DOCTYPE html>
             const loginCard = document.getElementById("auth-login-card");
             const resetCard = document.getElementById("auth-reset-card");
             const loggedInView = document.getElementById("auth-logged-in-view");
+            const guestBar = document.getElementById("auth-guest-bar");
 
             if (!setupCard || !loginCard || !loggedInView) return;
 
@@ -1654,6 +1668,7 @@ html_content = f'''<!DOCTYPE html>
                 loginCard.style.display = "none";
                 if (resetCard) resetCard.style.display = "none";
                 loggedInView.style.display = "block";
+                if (guestBar) guestBar.style.display = "none";
 
                 const nameEl = document.getElementById("session-user-name");
                 const roleBadge = document.getElementById("session-role-badge");
@@ -1670,6 +1685,10 @@ html_content = f'''<!DOCTYPE html>
                 }}
             }} else {{
                 loggedInView.style.display = "none";
+                if (guestBar) guestBar.style.display = "flex";
+                if (setupCard && setupCard.style.display !== "block") {{
+                    loginCard.style.display = "none";
+                }}
             }}
         }}
 
@@ -1679,6 +1698,7 @@ html_content = f'''<!DOCTYPE html>
             const loginCard = document.getElementById("auth-login-card");
             const resetCard = document.getElementById("auth-reset-card");
             const loggedInView = document.getElementById("auth-logged-in-view");
+            const guestBar = document.getElementById("auth-guest-bar");
 
             if (authSession && authSession.token) {{
                 try {{
@@ -1716,6 +1736,7 @@ html_content = f'''<!DOCTYPE html>
                         if (loginCard) loginCard.style.display = "none";
                         if (resetCard) resetCard.style.display = "none";
                         if (loggedInView) loggedInView.style.display = "none";
+                        if (guestBar) guestBar.style.display = "none";
                         const stLabel = document.getElementById("user-status-label");
                         const badge = document.getElementById("user-badge");
                         if (stLabel) stLabel.textContent = "Initial Admin Setup Required";
@@ -1732,10 +1753,12 @@ html_content = f'''<!DOCTYPE html>
             }}
 
             if (setupCard) setupCard.style.display = "none";
-            if (loginCard) loginCard.style.display = "block";
+            if (loginCard) loginCard.style.display = "none";
             if (resetCard) resetCard.style.display = "none";
             if (loggedInView) loggedInView.style.display = "none";
+            if (guestBar) guestBar.style.display = "flex";
             updateAuthUI();
+            renderManagedDevices();
         }}
 
         async function fetchCloudDevices() {{
@@ -1766,10 +1789,59 @@ html_content = f'''<!DOCTYPE html>
             }}
         }}
 
+        function normalizeDevice(dev, idx) {{
+            if (!dev) return null;
+            let uParams = null;
+            try {{
+                if (dev.url) {{
+                    const parsedUrl = new URL(dev.url);
+                    uParams = parsedUrl.searchParams;
+                }}
+            }} catch (e) {{}}
+
+            const name = dev.name || (uParams ? (uParams.get("name") || "") : "") || ("Device-" + (idx + 1));
+            const tier = dev.tier || (uParams ? (uParams.get("tier") || uParams.get("type") || "raw") : "raw");
+            const quota = (dev.quota !== undefined && dev.quota !== null) ? String(dev.quota) : (uParams ? (uParams.get("quota") || uParams.get("quota_gb") || "0") : "0");
+            const region = dev.region || (uParams ? (uParams.get("continent") || uParams.get("region") || "all") : "all");
+            const isp = dev.isp || (uParams ? (uParams.get("isp") || "auto") : "auto");
+            const obfs = dev.obfs || (uParams ? (uParams.get("obfs") === "0" ? "none" : "awg") : "awg");
+            const key = dev.key || (uParams ? (uParams.get("key") || "") : "") || (tier === "raw" ? "{default_privkey}" : "");
+
+            let expSec = 0;
+            if (typeof dev.expTimestamp === "number" && !isNaN(dev.expTimestamp)) {{
+                expSec = dev.expTimestamp;
+            }} else if (dev.expTimestamp) {{
+                expSec = parseInt(dev.expTimestamp, 10) || 0;
+            }} else if (uParams && uParams.get("exp")) {{
+                expSec = parseInt(uParams.get("exp"), 10) || 0;
+            }}
+
+            return {{
+                id: dev.id || ("dev_" + (dev.createdAt || Date.now()) + "_" + idx),
+                name: name,
+                key: key,
+                tier: tier,
+                quota: quota,
+                region: region,
+                isp: isp,
+                obfs: obfs,
+                expTimestamp: expSec,
+                durationDays: dev.durationDays || (expSec > 0 ? Math.ceil((expSec - Math.floor(Date.now() / 1000)) / 86400) : 0),
+                url: dev.url || "",
+                createdAt: dev.createdAt || Math.floor(Date.now() / 1000)
+            }};
+        }}
+
         function renderManagedDevices() {{
             const container = document.getElementById("saved-devices-list");
             const countEl = document.getElementById("saved-dev-count");
             if (!container) return;
+
+            // Automatically normalize all devices from past or present
+            managedDevices = managedDevices.map((d, i) => normalizeDevice(d, i)).filter(Boolean);
+            try {{
+                localStorage.setItem("surfshark_managed_devices", JSON.stringify(managedDevices));
+            }} catch (e) {{}}
 
             if (countEl) countEl.textContent = managedDevices.length;
             if (managedDevices.length === 0) {{
@@ -1781,10 +1853,11 @@ html_content = f'''<!DOCTYPE html>
             let html = "";
             managedDevices.forEach((dev, idx) => {{
                 let statusBadge = "";
-                if (dev.expTimestamp === 0) {{
+                if (!dev.expTimestamp || dev.expTimestamp === 0) {{
                     statusBadge = '<span style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #10b981;">♾️ Unlimited</span>';
                 }} else if (nowSec > dev.expTimestamp) {{
-                    const expDate = new Date(dev.expTimestamp * 1000).toISOString().split("T")[0];
+                    let expDate = "منقضی";
+                    try {{ expDate = new Date(dev.expTimestamp * 1000).toISOString().split("T")[0]; }} catch(e) {{}}
                     statusBadge = '<span style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(239, 68, 68, 0.15); color: #ef4444;">❌ Expired (' + expDate + ')</span>';
                 }} else {{
                     const daysLeft = Math.ceil((dev.expTimestamp - nowSec) / 86400);
@@ -1921,8 +1994,9 @@ html_content = f'''<!DOCTYPE html>
         }}
 
         function openEditDeviceModal(i) {{
-            const dev = managedDevices[i];
-            if (!dev) return;
+            if (i < 0 || !managedDevices[i]) return;
+            const dev = normalizeDevice(managedDevices[i], i);
+            managedDevices[i] = dev;
 
             document.getElementById("edit-dev-index").value = i;
             document.getElementById("edit-dev-id").value = dev.id || ("dev_" + i);
@@ -1952,11 +2026,13 @@ html_content = f'''<!DOCTYPE html>
                 if (!dev.expTimestamp || dev.expTimestamp === 0) {{
                     expInfoEl.innerHTML = 'وضعیت فعلی: <span style="color: #10b981; font-weight: bold;">♾️ اعتبار نامحدود (بدون انقضا)</span>';
                 }} else if (nowSec > dev.expTimestamp) {{
-                    const dStr = new Date(dev.expTimestamp * 1000).toISOString().split("T")[0];
+                    let dStr = "منقضی";
+                    try {{ dStr = new Date(dev.expTimestamp * 1000).toISOString().split("T")[0]; }} catch(e) {{}}
                     expInfoEl.innerHTML = 'وضعیت فعلی: <span style="color: #ef4444; font-weight: bold;">❌ منقضی شده در تاریخ ' + dStr + '</span>';
                 }} else {{
                     const daysLeft = Math.ceil((dev.expTimestamp - nowSec) / 86400);
-                    const dStr = new Date(dev.expTimestamp * 1000).toISOString().split("T")[0];
+                    let dStr = "";
+                    try {{ dStr = new Date(dev.expTimestamp * 1000).toISOString().split("T")[0]; }} catch(e) {{}}
                     expInfoEl.innerHTML = 'وضعیت فعلی: <span style="color: #10b981; font-weight: bold;">⏳ ' + daysLeft + ' روز باقی‌مانده (تا ' + dStr + ')</span>';
                 }}
             }}
@@ -1969,6 +2045,16 @@ html_content = f'''<!DOCTYPE html>
             // Key & Obfs
             document.getElementById("edit-dev-key").value = dev.key || "";
             document.getElementById("edit-dev-obfs").value = dev.obfs || "awg";
+
+            // Update Hint
+            const hintEl = document.getElementById("edit-dev-key-hint");
+            if (hintEl) {{
+                if (dev.tier === "raw") {{
+                    hintEl.textContent = "💡 پرایوت کی وایرگارد سرف‌شارک (اختیاری؛ در صورت خالی بودن از کلید پیش‌فرض استفاده می‌شود).";
+                }} else {{
+                    hintEl.textContent = "💡 این سابسکریپشن بر پایه سرورهای مطب (VLESS/Reality) است و نیازی به پرایوت کی وایرگارد ندارد.";
+                }}
+            }}
 
             // Open Modal
             const modal = document.getElementById("modal-edit-device");
@@ -1985,6 +2071,20 @@ html_content = f'''<!DOCTYPE html>
                 const box = document.getElementById("edit-dev-custom-quota-box");
                 if (box) {{
                     box.style.display = (editQuotaSel.value === "custom") ? "block" : "none";
+                }}
+            }});
+        }}
+
+        const editTierSel = document.getElementById("edit-dev-tier");
+        if (editTierSel) {{
+            editTierSel.addEventListener("change", () => {{
+                const hintEl = document.getElementById("edit-dev-key-hint");
+                if (hintEl) {{
+                    if (editTierSel.value === "raw") {{
+                        hintEl.textContent = "💡 پرایوت کی وایرگارد سرف‌شارک (اختیاری؛ در صورت خالی بودن از کلید پیش‌فرض استفاده می‌شود).";
+                    }} else {{
+                        hintEl.textContent = "💡 این سابسکریپشن بر پایه سرورهای مطب (VLESS/Reality) است و نیازی به پرایوت کی وایرگارد ندارد.";
+                    }}
                 }}
             }});
         }}
@@ -2023,9 +2123,14 @@ html_content = f'''<!DOCTYPE html>
                     alert("نام دیوایس نمی‌تواند خالی باشد.");
                     return;
                 }}
-                if (!newKey) {{
-                    alert("کلید اختصاصی WireGuard نمی‌تواند خالی باشد.");
-                    return;
+
+                let finalKey = newKey;
+                if (!finalKey) {{
+                    if (newTier === "raw") {{
+                        finalKey = "{default_privkey}";
+                    }} else {{
+                        finalKey = "";
+                    }}
                 }}
 
                 // Calculate Quota
@@ -2064,7 +2169,7 @@ html_content = f'''<!DOCTYPE html>
 
                 // Update properties
                 dev.name = newName;
-                dev.key = newKey;
+                dev.key = finalKey;
                 dev.tier = newTier;
                 dev.quota = newQuota;
                 dev.region = newRegion;
@@ -2112,7 +2217,7 @@ html_content = f'''<!DOCTYPE html>
                         }});
                         if (res.ok) {{
                             const d = await res.json();
-                            managedDevices = d.devices || managedDevices;
+                            managedDevices = (d.devices || managedDevices).map((devItem, i) => normalizeDevice(devItem, i));
                             localStorage.setItem("surfshark_managed_devices", JSON.stringify(managedDevices));
                         }}
                     }} catch (err) {{
@@ -2496,25 +2601,29 @@ html_content = f'''<!DOCTYPE html>
                 const obfsChoice = document.getElementById("dev-obfs-select") ? document.getElementById("dev-obfs-select").value : "awg";
                 const durationDays = parseInt(document.getElementById("dev-duration-select").value, 10);
                 const region = document.getElementById("dev-region-select").value;
+                const tierChoice = document.getElementById("dev-tier-select") ? document.getElementById("dev-tier-select").value : "raw";
+                const quotaChoice = document.getElementById("dev-quota-select") ? document.getElementById("dev-quota-select").value : "0";
+                const ispChoice = document.getElementById("dev-isp-select") ? document.getElementById("dev-isp-select").value : "auto";
 
                 if (!name) {{
                     alert("Please enter a device name / label.");
                     return;
                 }}
-                if (!key) {{
-                    alert("Please enter the WireGuard private key from your Surfshark account.");
-                    return;
+
+                let finalKey = key;
+                if (!finalKey) {{
+                    if (tierChoice === "raw") {{
+                        finalKey = "{default_privkey}";
+                    }} else {{
+                        finalKey = "";
+                    }}
                 }}
 
                 const nowSec = Math.floor(Date.now() / 1000);
                 const expSec = durationDays > 0 ? (nowSec + durationDays * 86400) : 0;
                 const workerBase = getEffectiveWorkerUrl();
 
-                const tierChoice = document.getElementById("dev-tier-select") ? document.getElementById("dev-tier-select").value : "raw";
-                const quotaChoice = document.getElementById("dev-quota-select") ? document.getElementById("dev-quota-select").value : "0";
-                const ispChoice = document.getElementById("dev-isp-select") ? document.getElementById("dev-isp-select").value : "auto";
-
-                let subUrl = workerBase + "/sub?key=" + encodeURIComponent(key) +
+                let subUrl = workerBase + "/sub?key=" + encodeURIComponent(finalKey) +
                                "&name=" + encodeURIComponent(name) +
                                "&exp=" + expSec +
                                "&continent=" + encodeURIComponent(region);
@@ -2534,7 +2643,7 @@ html_content = f'''<!DOCTYPE html>
                 const devObj = {{
                     id: "dev_" + Date.now(),
                     name: name,
-                    key: key,
+                    key: finalKey,
                     tier: tierChoice,
                     quota: quotaChoice,
                     isp: ispChoice,
@@ -2560,7 +2669,7 @@ html_content = f'''<!DOCTYPE html>
                         }});
                         if (res.ok) {{
                             const d = await res.json();
-                            managedDevices = d.devices || [devObj, ...managedDevices];
+                            managedDevices = (d.devices || [devObj, ...managedDevices]).map((devItem, i) => normalizeDevice(devItem, i));
                             localStorage.setItem("surfshark_managed_devices", JSON.stringify(managedDevices));
                         }} else {{
                             managedDevices.unshift(devObj);
@@ -2605,6 +2714,13 @@ html_content = f'''<!DOCTYPE html>
                             qrBox.innerHTML = "QR";
                         }}
                     }}
+
+                    const btnEditCurrent = document.getElementById("btn-edit-current-dev");
+                    if (btnEditCurrent) {{
+                        btnEditCurrent.onclick = () => {{
+                            openEditDeviceModal(0);
+                        }};
+                    }}
                 }}
 
                 showToast("Device subscription generated & synced!");
@@ -2617,6 +2733,35 @@ html_content = f'''<!DOCTYPE html>
             btnCopyDevUrl.addEventListener("click", () => {{
                 const u = document.getElementById("dev-res-url").value;
                 copyToClipboard(u, "Device subscription URL copied!");
+            }});
+        }}
+
+        // Toggle Login Card for Guest Users
+        const btnToggleLogin = document.getElementById("btn-toggle-login-view");
+        if (btnToggleLogin) {{
+            btnToggleLogin.addEventListener("click", () => {{
+                const loginCard = document.getElementById("auth-login-card");
+                if (loginCard) {{
+                    loginCard.style.display = (loginCard.style.display === "none") ? "block" : "none";
+                    if (loginCard.style.display === "block") {{
+                        loginCard.scrollIntoView({{ behavior: "smooth" }});
+                    }}
+                }}
+            }});
+        }}
+
+        // Creation Tier Hint Change
+        const devTierSel = document.getElementById("dev-tier-select");
+        if (devTierSel) {{
+            devTierSel.addEventListener("change", () => {{
+                const keyInput = document.getElementById("dev-key-input");
+                if (keyInput) {{
+                    if (devTierSel.value === "raw") {{
+                        keyInput.placeholder = "Surfshark WireGuard Private Key (اختیاری؛ پیش‌فرض فعال است)...";
+                    }} else {{
+                        keyInput.placeholder = "پرایوت کی برای کانفیگ‌های مطب نیاز نیست (اختیاری)...";
+                    }}
+                }}
             }});
         }}
 

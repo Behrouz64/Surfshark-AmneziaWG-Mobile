@@ -516,16 +516,23 @@ export default {
       // POST / PUT: Save or append/update device in Cloudflare KV
       if (request.method === "POST" || request.method === "PUT") {
         const newDev = await request.json();
-        if (!newDev || !newDev.name || !newDev.key) {
-          return jsonResponse({ error: "Invalid device data" }, 400);
+        if (!newDev || !newDev.name) {
+          return jsonResponse({ error: "Invalid device data: name is required" }, 400);
+        }
+        if (!newDev.id) {
+          newDev.id = "dev_" + Date.now();
+        }
+        if (newDev.key === undefined) {
+          newDev.key = "";
         }
 
         const devJson = await env.SURFSHARK_KV.get(kvKey);
         let devices = devJson ? JSON.parse(devJson) : [];
 
-        const existingIdx = devices.findIndex(d => d.id === newDev.id);
+        // Match existing device by id OR by name
+        const existingIdx = devices.findIndex(d => (d.id && d.id === newDev.id) || (d.name && d.name.trim() === newDev.name.trim()));
         if (existingIdx !== -1) {
-          devices[existingIdx] = newDev;
+          devices[existingIdx] = { ...devices[existingIdx], ...newDev };
         } else {
           devices.unshift(newDev);
         }
