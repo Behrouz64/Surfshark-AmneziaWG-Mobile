@@ -748,16 +748,43 @@ html_content = f'''<!DOCTYPE html>
                     <!-- US SERVER 3-HOP NODES SECTION -->
                     <div id="admin-us-nodes-section" style="display: none;">
                         <div style="background: var(--bg-main); border: 1px solid rgba(6, 182, 212, 0.4); border-radius: var(--radius-md); padding: 14px; margin-bottom: 14px;">
-                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
                                 <h3 style="color: var(--accent-cyan); font-size: 14px; margin: 0;">🛰️ US Server 3-Hop Node Exit Catalog</h3>
                                 <button type="button" id="btn-refresh-nodes" class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;">🔄 Refresh</button>
                             </div>
                             <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
-                                Select which exit countries are active on the US server (RackNerd Core). For example, enable <strong>🇯🇵 Japan Static</strong> or disable <strong>🇦🇿 Azerbaijan</strong>. Changes apply instantly to your <strong>Doctor Master Pro (77 Nodes)</strong> and <strong>3-Hop Multi-Country</strong> subscriptions!
+                                Manage live WireGuard exit nodes on the US Server (Surfshark + Proton VPN). Changes apply directly to your <strong>Doctor Master Pro</strong> and <strong>3-Hop Multi-Country</strong> subscriptions.
                             </p>
-                            <div id="us-nodes-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
-                                <div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 12px;">Loading node catalog...</div>
+
+                            <!-- Live Search Input -->
+                            <div style="margin-bottom: 10px;">
+                                <input type="text" id="us-nodes-search" placeholder="🔍 Search country, code, or city (e.g. Proton, Japan, Germany)..." style="width: 100%; box-sizing: border-box; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 8px 12px; font-size: 12px; color: var(--text-primary); outline: none;">
                             </div>
+
+                            <!-- Category Filter Pills Bar -->
+                            <div id="us-nodes-category-pills" style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 10px; -webkit-overflow-scrolling: touch;">
+                                <button type="button" class="btn btn-primary us-cat-pill active" data-cat="all" style="font-size: 10px; padding: 4px 10px; white-space: nowrap; border-radius: 20px;">All Nodes</button>
+                            </div>
+
+                            <!-- Quick Action Presets -->
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; padding: 6px; background: rgba(0,0,0,0.2); border-radius: var(--radius-md);">
+                                <button type="button" id="btn-preset-core-proton" class="btn btn-secondary" style="font-size: 10px; padding: 3px 8px;">⚡ Core + Proton (Recommended)</button>
+                                <button type="button" id="btn-preset-proton-only" class="btn btn-secondary" style="font-size: 10px; padding: 3px 8px;">🛡️ Proton Only (3)</button>
+                                <button type="button" id="btn-select-all-filtered" class="btn btn-secondary" style="font-size: 10px; padding: 3px 8px;">✅ Select Visible</button>
+                                <button type="button" id="btn-deselect-all-filtered" class="btn btn-secondary" style="font-size: 10px; padding: 3px 8px;">❌ Deselect Visible</button>
+                            </div>
+
+                            <!-- Summary & Counter -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 11px; color: var(--text-secondary);">
+                                <span>Active: <strong id="us-nodes-active-count" style="color: var(--accent-cyan);">0</strong> / <span id="us-nodes-total-count">0</span> nodes enabled</span>
+                                <span id="us-nodes-filter-status" style="color: var(--text-muted); font-size: 10px;">Showing: All</span>
+                            </div>
+
+                            <!-- Node Items Container (Grouped by Continent/Category) -->
+                            <div id="us-nodes-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 48vh; overflow-y: auto; padding-right: 4px; margin-bottom: 14px;">
+                                <div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 16px;">Loading node catalog...</div>
+                            </div>
+
                             <button type="button" id="btn-save-nodes-config" class="btn btn-primary btn-block" style="padding: 11px; font-weight: bold; font-size: 13px;">
                                 💾 Save &amp; Apply to US Server
                             </button>
@@ -1951,6 +1978,11 @@ html_content = f'''<!DOCTYPE html>
             }}
         }}
 
+        let allUsServerNodes = [];
+        let usNodesCategories = [];
+        let currentUsNodeCat = "all";
+        let usNodeSearchQuery = "";
+
         async function loadUsServerNodes() {{
             const listEl = document.getElementById("us-nodes-list");
             if (!listEl) return;
@@ -1959,29 +1991,137 @@ html_content = f'''<!DOCTYPE html>
                 const res = await fetch(getEffectiveWorkerUrl() + "/api/nodes");
                 if (!res.ok) throw new Error("Server returned " + res.status);
                 const data = await res.json();
-                const nodes = data.nodes || [];
-                if (nodes.length === 0) {{
-                    listEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 11px;">No nodes returned from server.</div>`;
-                    return;
-                }}
-                listEl.innerHTML = nodes.map(n => `
-                    <label style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); border: 1px solid var(--border-color); padding: 9px 12px; border-radius: var(--radius-md); cursor: pointer; transition: border-color 0.2s;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <input type="checkbox" class="us-node-chk" data-code="${{n.code}}" ${{n.enabled ? "checked" : ""}} style="width: 16px; height: 16px; accent-color: var(--accent-cyan); cursor: pointer;">
-                            <div>
-                                <span style="font-size: 16px; margin-right: 6px;">${{n.flag}}</span>
-                                <strong style="color: var(--text-primary); font-size: 12px;">${{escapeHtml(n.name)}}</strong>
-                                <span style="color: var(--text-muted); font-size: 11px; margin-left: 6px;">(${{escapeHtml(n.desc)}})</span>
-                            </div>
-                        </div>
-                        <span class="badge ${{n.enabled ? 'badge-resolved' : 'badge-unresolved'}}" style="font-size: 10px;">
-                            ${{n.enabled ? '🟢 Active' : '⚪ Disabled'}}
-                        </span>
-                    </label>
-                `).join("");
+                allUsServerNodes = data.nodes || [];
+                usNodesCategories = data.categories || [];
+                renderUsNodesCategories();
+                renderUsServerNodes();
             }} catch (err) {{
                 listEl.innerHTML = `<div style="color: #ef4444; font-size: 11px; padding: 8px;">Failed to load US server nodes: ${{escapeHtml(err.message)}}</div>`;
             }}
+        }}
+
+        function renderUsNodesCategories() {{
+            const pillsBar = document.getElementById("us-nodes-category-pills");
+            if (!pillsBar || !usNodesCategories.length) return;
+            pillsBar.innerHTML = usNodesCategories.map(cat => {{
+                const isActive = cat.id === currentUsNodeCat;
+                return `<button type="button" class="btn ${{isActive ? 'btn-primary' : 'btn-secondary'}} us-cat-pill" data-cat="${{cat.id}}" style="font-size: 10px; padding: 4px 10px; white-space: nowrap; border-radius: 20px;">
+                    ${{escapeHtml(cat.name)}} (${{cat.count}})
+                </button>`;
+            }}).join("");
+
+            pillsBar.querySelectorAll(".us-cat-pill").forEach(btn => {{
+                btn.addEventListener("click", () => {{
+                    currentUsNodeCat = btn.dataset.cat;
+                    renderUsNodesCategories();
+                    renderUsServerNodes();
+                }});
+            }});
+        }}
+
+        function renderUsServerNodes() {{
+            const listEl = document.getElementById("us-nodes-list");
+            const activeCountEl = document.getElementById("us-nodes-active-count");
+            const totalCountEl = document.getElementById("us-nodes-total-count");
+            const filterStatusEl = document.getElementById("us-nodes-filter-status");
+            if (!listEl) return;
+
+            const activeTotal = allUsServerNodes.filter(n => n.enabled).length;
+            if (activeCountEl) activeCountEl.textContent = activeTotal;
+            if (totalCountEl) totalCountEl.textContent = allUsServerNodes.length;
+
+            const q = usNodeSearchQuery.toLowerCase().trim();
+            let filtered = allUsServerNodes.filter(n => {{
+                // Category match
+                if (currentUsNodeCat === "active" && !n.enabled) return false;
+                if (currentUsNodeCat === "proton" && n.provider !== "proton") return false;
+                if (currentUsNodeCat === "core" && (!n.is_core || n.provider === "proton")) return false;
+                if (["Europe", "Americas", "Africa"].includes(currentUsNodeCat) && n.continent !== currentUsNodeCat) return false;
+                if (currentUsNodeCat === "Asia" && !["Asia", "Oceania"].includes(n.continent)) return false;
+
+                // Search query match
+                if (q) {{
+                    const matchName = (n.name || "").toLowerCase().includes(q);
+                    const matchDesc = (n.desc || "").toLowerCase().includes(q);
+                    const matchCode = (n.code || "").toLowerCase().includes(q);
+                    const matchCont = (n.continent || "").toLowerCase().includes(q);
+                    return matchName || matchDesc || matchCode || matchCont;
+                }}
+                return true;
+            }});
+
+            if (filterStatusEl) {{
+                filterStatusEl.textContent = `Showing: ${{filtered.length}} nodes`;
+            }}
+
+            if (filtered.length === 0) {{
+                listEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 20px;">No matching exit nodes found.</div>`;
+                return;
+            }}
+
+            // Group filtered nodes by section
+            const groups = {{}};
+            filtered.forEach(n => {{
+                let grpName = n.continent || "Other";
+                if (n.provider === "proton") grpName = "🛡️ Proton VPN (Proton AG Network)";
+                else if (n.is_core) grpName = `⚡ Featured Core (${{n.continent}})`;
+                else grpName = `🌍 Surfshark — ${{n.continent}}`;
+                groups[grpName] = groups[grpName] || [];
+                groups[grpName].push(n);
+            }});
+
+            let html = "";
+            for (const [grpTitle, grpNodes] of Object.entries(groups)) {{
+                html += `
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden;">
+                    <div style="background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border-color); padding: 7px 12px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 11px; font-weight: bold; color: var(--accent-cyan);">${{escapeHtml(grpTitle)}}</span>
+                        <span style="font-size: 10px; color: var(--text-muted);">${{grpNodes.length}} nodes</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px; padding: 6px;">
+                `;
+
+                grpNodes.forEach(n => {{
+                    const badgeClass = n.provider === "proton" ? "background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4);" : (n.is_core ? "background: rgba(6, 182, 212, 0.2); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.4);" : "background: rgba(255, 255, 255, 0.05); color: var(--text-muted); border: 1px solid var(--border-color);");
+                    const badgeText = n.provider === "proton" ? "Proton" : (n.is_core ? "Core" : "Global");
+
+                    html += `
+                        <label style="display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; border-radius: 6px; cursor: pointer; transition: background 0.15s; background: ${{n.enabled ? 'rgba(6, 182, 212, 0.05)' : 'transparent'}};">
+                            <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
+                                <input type="checkbox" class="us-node-chk" data-code="${{n.code}}" ${{n.enabled ? "checked" : ""}} style="width: 16px; height: 16px; accent-color: var(--accent-cyan); cursor: pointer; flex-shrink: 0;">
+                                <div style="display: flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden;">
+                                    <span style="font-size: 15px; flex-shrink: 0;">${{n.flag}}</span>
+                                    <strong style="color: var(--text-primary); font-size: 12px; white-space: nowrap;">${{escapeHtml(n.name)}}</strong>
+                                    <span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; ${{badgeClass}}">${{badgeText}}</span>
+                                    <span style="color: var(--text-muted); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${{escapeHtml(n.desc)}}</span>
+                                </div>
+                            </div>
+                            <span style="font-size: 10px; font-weight: 500; margin-left: 8px; flex-shrink: 0; color: ${{n.enabled ? '#10b981' : 'var(--text-muted)'}};">
+                                ${{n.enabled ? '🟢 Active' : '⚪ Off'}}
+                            </span>
+                        </label>
+                    `;
+                }});
+
+                html += `
+                    </div>
+                </div>
+                `;
+            }}
+
+            listEl.innerHTML = html;
+
+            // Checkbox change listener
+            listEl.querySelectorAll(".us-node-chk").forEach(chk => {{
+                chk.addEventListener("change", () => {{
+                    const code = chk.dataset.code;
+                    const node = allUsServerNodes.find(item => item.code === code);
+                    if (node) {{
+                        node.enabled = chk.checked;
+                        renderUsServerNodes();
+                    }}
+                }});
+            }});
         }}
 
         function normalizeDevice(dev, idx) {{
@@ -3026,14 +3166,75 @@ html_content = f'''<!DOCTYPE html>
             }});
         }}
 
+        // Live Search Input
+        const usNodesSearch = document.getElementById("us-nodes-search");
+        if (usNodesSearch) {{
+            usNodesSearch.addEventListener("input", (e) => {{
+                usNodeSearchQuery = e.target.value;
+                renderUsServerNodes();
+            }});
+        }}
+
+        // Preset 1: Core + Proton (13 nodes)
+        const btnPresetCoreProton = document.getElementById("btn-preset-core-proton");
+        if (btnPresetCoreProton) {{
+            btnPresetCoreProton.addEventListener("click", () => {{
+                const targetCodes = ["us", "uk", "jp", "ca", "tr", "de", "nl", "al", "ad", "bs", "proton-us", "proton-be", "proton-al"];
+                allUsServerNodes.forEach(n => {{
+                    n.enabled = targetCodes.includes(n.code);
+                }});
+                renderUsNodesCategories();
+                renderUsServerNodes();
+                showToast("⚡ Selected Core + Proton nodes (13 active)");
+            }});
+        }}
+
+        // Preset 2: Proton Only (3 nodes)
+        const btnPresetProtonOnly = document.getElementById("btn-preset-proton-only");
+        if (btnPresetProtonOnly) {{
+            btnPresetProtonOnly.addEventListener("click", () => {{
+                allUsServerNodes.forEach(n => {{
+                    n.enabled = (n.provider === "proton");
+                }});
+                renderUsNodesCategories();
+                renderUsServerNodes();
+                showToast("🛡️ Selected Proton VPN nodes only (3 active)");
+            }});
+        }}
+
+        // Select visible
+        const btnSelectVisible = document.getElementById("btn-select-all-filtered");
+        if (btnSelectVisible) {{
+            btnSelectVisible.addEventListener("click", () => {{
+                const chks = document.querySelectorAll(".us-node-chk");
+                chks.forEach(c => {{
+                    const node = allUsServerNodes.find(n => n.code === c.dataset.code);
+                    if (node) node.enabled = true;
+                }});
+                renderUsNodesCategories();
+                renderUsServerNodes();
+            }});
+        }}
+
+        // Deselect visible
+        const btnDeselectVisible = document.getElementById("btn-deselect-all-filtered");
+        if (btnDeselectVisible) {{
+            btnDeselectVisible.addEventListener("click", () => {{
+                const chks = document.querySelectorAll(".us-node-chk");
+                chks.forEach(c => {{
+                    const node = allUsServerNodes.find(n => n.code === c.dataset.code);
+                    if (node) node.enabled = false;
+                }});
+                renderUsNodesCategories();
+                renderUsServerNodes();
+            }});
+        }}
+
+        // Save & Apply
         const btnSaveNodes = document.getElementById("btn-save-nodes-config");
         if (btnSaveNodes) {{
             btnSaveNodes.addEventListener("click", async () => {{
-                const chks = document.querySelectorAll(".us-node-chk");
-                const enabledNodes = [];
-                chks.forEach(c => {{
-                    if (c.checked) enabledNodes.push(c.dataset.code);
-                }});
+                const enabledNodes = allUsServerNodes.filter(n => n.enabled).map(n => n.code);
                 btnSaveNodes.disabled = true;
                 btnSaveNodes.textContent = "Saving & Syncing to US Server...";
                 try {{
