@@ -555,7 +555,8 @@ export default {
     const expParam = params.get("exp") || "0";
     const continent = (params.get("continent") || params.get("region") || "all").toLowerCase();
     const tier = (params.get("tier") || params.get("type") || "surfshark").toLowerCase();
-    const format = (params.get("format") || (params.get("b64") === "1" ? "base64" : "raw")).toLowerCase();
+    const rawFormatParam = params.get("format") || "";
+    const format = rawFormatParam ? rawFormatParam.toLowerCase() : "base64";
     const selectedIsp = (params.get("isp") || "").toLowerCase();
 
     const nowSeconds = Math.floor(Date.now() / 1000);
