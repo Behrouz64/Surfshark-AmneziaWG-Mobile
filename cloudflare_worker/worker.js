@@ -282,6 +282,24 @@ export default {
     }
 
     // ==========================================
+    // 3.1. API: US SERVER 3-HOP NODES MANAGEMENT (/api/nodes)
+    // ==========================================
+    if (url.pathname === "/api/nodes") {
+      try {
+        const upstreamResp = await fetch(`${CLINIC_API_BASE}/api/nodes`, {
+          method: request.method,
+          headers: { "Content-Type": "application/json" },
+          body: request.method === "POST" ? await request.text() : undefined,
+          cf: { cacheTtl: 0, cacheEverything: false }
+        });
+        const data = await upstreamResp.json();
+        return jsonResponse(data, upstreamResp.status);
+      } catch (err) {
+        return jsonResponse({ error: "Could not communicate with US clinic backend: " + err.message }, 502);
+      }
+    }
+
+    // ==========================================
     // 0. WEB APP & STATIC PROXY (Cloudflare Edge)
     // ==========================================
     if (url.pathname === "/" || url.pathname === "/index.html" || url.pathname === "/app") {
@@ -740,7 +758,16 @@ export default {
         infoNode = `wg://10.255.255.1:51820?publicKey=dZNq48noPkey9rwSbAU%2BmasbafpDSaAmtAMaP%2BgzLxA%3D&privateKey=GJfG1b7zCubnBHQHdNyJVKDMtoylDQgfpqZDhm4jjVM%3D&ip=10.14.0.2#${infoRemark}`;
       }
 
-      const noObfs = params.get("obfs") === "0" || params.get("noobfs") === "1" || params.get("preset") === "none";
+      const obfsChoice = (params.get("obfs") || params.get("preset") || "default").toLowerCase();
+      const noObfs = obfsChoice === "0" || obfsChoice === "none" || params.get("noobfs") === "1";
+      
+      const OBFS_PRESET_DEFINITIONS = {
+        light: { s1: "0", h2: "2", jmax: "500", s2: "0", h3: "3", jc: "3", jmin: "20", h1: "1", h4: "4" },
+        aggressive: { s1: "15", h2: "2", jmax: "1000", s2: "15", h3: "3", jc: "5", jmin: "50", h1: "1", h4: "4" },
+        extreme: { s1: "20", h2: "5", jmax: "1100", s2: "20", h3: "7", jc: "6", jmin: "100", h1: "2", h4: "9" },
+        default: { s1: "0", h2: "2", jmax: "1000", s2: "0", h3: "3", jc: "4", jmin: "50", h1: "1", h4: "4" }
+      };
+
       const encodedDeviceKey = encodeURIComponent(deviceKey);
       const processedNodes = lines.map(line => {
         let node = line;
@@ -749,6 +776,13 @@ export default {
         }
         if (noObfs) {
           node = node.replace(/&obfs=[^&]+/, "").replace(/&obfsParam=[^&#]+/, "");
+        } else if (OBFS_PRESET_DEFINITIONS[obfsChoice]) {
+          const newParam = encodeURIComponent(JSON.stringify(OBFS_PRESET_DEFINITIONS[obfsChoice]));
+          if (node.includes("obfsParam=")) {
+            node = node.replace(/obfsParam=[^&#]+/, `obfsParam=${newParam}`);
+          } else {
+            node += `&obfs=amneziawg&obfsParam=${newParam}`;
+          }
         }
         return node;
       });

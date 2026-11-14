@@ -1202,55 +1202,114 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         </div>
     </div>
 
-    <!-- Modal: Live Subscription Link -->
+    <!-- Modal: Live Subscription Link (WireGuard / VLESS Switcher) -->
     <div id="modal-sub" class="modal-overlay" style="display: none;">
-        <div class="modal-sheet">
+        <div class="modal-sheet" style="max-height: 85vh; overflow-y: auto;">
             <div class="modal-header">
-                <h2>Direct Shadowrocket Subscription</h2>
+                <h2>📡 Smart Subscription Link Generator</h2>
                 <button class="modal-close" data-close="modal-sub">✕</button>
             </div>
             <div class="modal-body">
-                <p class="modal-desc">
-                    Paste this subscription link directly into Shadowrocket. It automatically syncs 187 multi-IP AmneziaWG nodes without needing any computer!
+                <p class="modal-desc" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
+                    Generate instant, auto-updating subscriptions for <strong>WireGuard / AmneziaWG</strong> or <strong>Clinic Hybrid VLESS / Reality</strong>. Compatible with Shadowrocket, v2rayNG, Sing-Box, and Clash.
                 </p>
+
+                <!-- 1. Protocol Switcher -->
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label for="sub-scope-select">Select Region / Continent</label>
-                    <select id="sub-scope-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px; border-radius: var(--radius-md); font-size: 13px; outline: none;">
-                        <option value="all">🌐 Global / All Continents (187 Nodes)</option>
-                        <option value="europe">🇪🇺 Europe (96 Nodes)</option>
-                        <option value="north_america">🌎 North America (23 Nodes)</option>
-                        <option value="south_america">🌎 South America (4 Nodes)</option>
-                        <option value="asia">🌏 Asia (50 Nodes)</option>
-                        <option value="americas">🌎 All Americas (27 Nodes)</option>
-                        <option value="africa">🌍 Africa (8 Nodes)</option>
-                        <option value="oceania">🇦🇺 Oceania (6 Nodes)</option>
-                        <option value="static">📌 Static IP (36 Nodes)</option>
+                    <label for="sub-proto-select" style="color: var(--accent-cyan); font-weight: bold;">Protocol Architecture</label>
+                    <select id="sub-proto-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--accent-cyan); color: var(--text-primary); padding: 10px; border-radius: var(--radius-md); font-size: 13px; outline: none; font-weight: 500;">
+                        <option value="wg" selected>🦈 AmneziaWG / WireGuard (Surfshark Direct Nodes)</option>
+                        <option value="vless">⚡ Clinic Hybrid: VLESS &amp; Reality (Doctor Pro / Multi-Country)</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Plain Text Subscription URL</label>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="sub-url-input" readonly value="https://behrouz64.github.io/Surfshark-AmneziaWG-Mobile/sub.txt" style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
-                        <button id="btn-copy-sub-url" class="btn btn-primary" style="padding: 8px 14px;">Copy</button>
+
+                <!-- 2. WireGuard Options (Visible if proto === wg) -->
+                <div id="sub-wg-container" style="display: block;">
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="sub-obfs-select" style="font-weight: 600; color: #f59e0b;">WireGuard Obfuscation Level</label>
+                        <select id="sub-obfs-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px; border-radius: var(--radius-md); font-size: 13px; outline: none;">
+                            <option value="none">🌐 Pure WireGuard (No Obfuscation / بدون مبهم‌سازی)</option>
+                            <option value="light">🚀 Light / Low Overhead (Fast &amp; Low Ping)</option>
+                            <option value="default" selected>⚡ Standard AmneziaWG (Surfshark Official Default)</option>
+                            <option value="aggressive">🛡️ Aggressive DPI Bypass (Heavy Obfuscation)</option>
+                            <option value="extreme">🔥 Extreme Randomization (High Entropy)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="sub-scope-select">Region / Continent</label>
+                        <select id="sub-scope-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px; border-radius: var(--radius-md); font-size: 13px; outline: none;">
+                            <option value="all" selected>🌐 Global / All Continents (187 Nodes)</option>
+                            <option value="europe">🇪🇺 Europe (96 Nodes)</option>
+                            <option value="north_america">🌎 North America (23 Nodes)</option>
+                            <option value="asia">🌏 Asia (50 Nodes)</option>
+                            <option value="static">📌 Static IP (36 Nodes)</option>
+                            <option value="americas">🌎 All Americas (27 Nodes)</option>
+                            <option value="africa">🌍 Africa (8 Nodes)</option>
+                            <option value="oceania">🇦🇺 Oceania (6 Nodes)</option>
+                            <option value="south_america">🌎 South America (4 Nodes)</option>
+                        </select>
                     </div>
                 </div>
+
+                <!-- 3. VLESS / Reality Options (Visible if proto === vless) -->
+                <div id="sub-vless-container" style="display: none;">
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="sub-tier-select" style="font-weight: 600; color: var(--accent-cyan);">Clinic Subscription Tier</label>
+                        <select id="sub-tier-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px; border-radius: var(--radius-md); font-size: 13px; outline: none;">
+                            <option value="pro" selected>👑 Doctor Master Pro (All 77 Multi-Country + Direct US Nodes)</option>
+                            <option value="3hop">🛰 Pro 3-Hop Multi-Country (64 Multi-Country Nodes: US, UK, JP, CA, TR, DE, etc.)</option>
+                            <option value="2hop">⚡ Pro 2-Hop Direct US (13 Nodes: WS, XHTTP, Reality, Rathole)</option>
+                            <option value="family">👨‍👩‍👦 Family Clean (12 Nodes: Filter-Bypassing for Parents)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label for="sub-isp-select" style="font-weight: 600; color: #10b981;">Carrier Clean-IP Optimization</label>
+                        <select id="sub-isp-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px; border-radius: var(--radius-md); font-size: 13px; outline: none;">
+                            <option value="auto" selected>⚡ Auto-Detect Carrier (Best Latency)</option>
+                            <option value="mci">📱 MCI (همراه اول - IPv4/IPv6 Clean)</option>
+                            <option value="mtn">📱 MTN Irancell (ایرانسل - Port 443 Optimized)</option>
+                            <option value="rightel">📱 Rightel (رایتل)</option>
+                            <option value="wifi">🌐 Fixed Broadband / Wi-Fi (Shatel, Mokhaberat, etc.)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 4. Output Links -->
                 <div class="form-group" style="margin-top: 10px;">
-                    <label>Base64 Subscription URL</label>
+                    <label style="font-weight: bold;">Base64 Subscription URL (Recommended)</label>
                     <div style="display: flex; gap: 8px;">
-                        <input type="text" id="sub-b64-input" readonly value="https://behrouz64.github.io/Surfshark-AmneziaWG-Mobile/sub_base64.txt" style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
-                        <button id="btn-copy-b64-url" class="btn btn-secondary" style="padding: 8px 14px;">Copy</button>
+                        <input type="text" id="sub-b64-input" readonly value="" style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
+                        <button id="btn-copy-b64-url" class="btn btn-primary" style="padding: 8px 14px;">Copy</button>
                     </div>
                 </div>
+
+                <div class="form-group" style="margin-top: 10px;">
+                    <label>Plain-Text Subscription URL</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="sub-url-input" readonly value="" style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
+                        <button id="btn-copy-sub-url" class="btn btn-secondary" style="padding: 8px 14px;">Copy</button>
+                    </div>
+                </div>
+
+                <!-- Action Row -->
+                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                    <button type="button" id="btn-sub-show-qr" class="btn btn-secondary" style="flex: 1; padding: 10px; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                        <span>📱</span> Show QR Code
+                    </button>
+                    <a id="btn-sub-open-sr" href="#" class="btn btn-secondary" style="flex: 1; padding: 10px; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;" title="Open directly in Shadowrocket">
+                        <span>🚀</span> Open in Shadowrocket
+                    </a>
+                </div>
+
                 <div class="sub-steps" style="margin-top: 14px; background: var(--bg-main); padding: 12px; border-radius: var(--radius-md); font-size: 12px; border: 1px solid var(--border-color);">
-                    <h4 style="margin-bottom: 6px; color: var(--accent-cyan);">How to add in Shadowrocket:</h4>
-                    <ol style="padding-left: 18px; line-height: 1.6; color: var(--text-secondary);">
-                        <li>Select your preferred region (or Global) above.</li>
-                        <li>Tap <strong>Copy</strong> on either URL above.</li>
-                        <li>Open Shadowrocket on your iPhone and tap <strong>+</strong> (top-right).</li>
-                        <li>Select Type: <strong>Subscribe</strong>.</li>
-                        <li>Paste the URL and tap <strong>Save</strong>.</li>
-                        <li>All nodes will download and auto-update!</li>
-                    </ol>
+                    <h4 style="margin-bottom: 6px; color: var(--accent-cyan);">Quick Import Guide:</h4>
+                    <ul style="padding-left: 18px; line-height: 1.6; color: var(--text-secondary); margin: 0;">
+                        <li><strong>Shadowrocket (iOS):</strong> Tap <strong>+</strong> &gt; Type: <strong>Subscribe</strong> &gt; Paste URL &gt; <strong>Save</strong>.</li>
+                        <li><strong>v2rayNG (Android):</strong> Tap ☰ &gt; <strong>Subscription Group Settings</strong> &gt; <strong>+</strong> &gt; Paste URL &gt; <strong>Update Subscriptions</strong>.</li>
+                        <li><strong>Sing-Box / Clash:</strong> Append <code>&amp;format=singbox</code> or <code>&amp;format=clash</code>.</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -1393,6 +1452,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                         </p>
                     </div>
 
+                    <!-- Navigation Tabs: Devices vs US Server Nodes -->
+                    <div id="admin-nav-tabs" style="display: flex; gap: 8px; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                        <button type="button" id="tab-btn-devices" class="btn btn-primary" style="padding: 7px 14px; font-size: 12px; font-weight: 600;">
+                            📱 Devices &amp; Subscriptions
+                        </button>
+                        <button type="button" id="tab-btn-us-nodes" class="btn btn-secondary" style="padding: 7px 14px; font-size: 12px; font-weight: 600;">
+                            🛰️ US Server Exit Nodes
+                        </button>
+                    </div>
+
                     <!-- ADMIN DEVICE MANAGER CONTAINER (Only rendered for Admin) -->
                     <div id="admin-device-manager-section" style="display: none;">
                         <!-- Form to Add New Device -->
@@ -1529,6 +1598,25 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     </div>
                 </div>
                     </div> <!-- Close admin-device-manager-section -->
+
+                    <!-- US SERVER 3-HOP NODES SECTION -->
+                    <div id="admin-us-nodes-section" style="display: none;">
+                        <div style="background: var(--bg-main); border: 1px solid rgba(6, 182, 212, 0.4); border-radius: var(--radius-md); padding: 14px; margin-bottom: 14px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                                <h3 style="color: var(--accent-cyan); font-size: 14px; margin: 0;">🛰️ US Server 3-Hop Node Exit Catalog</h3>
+                                <button type="button" id="btn-refresh-nodes" class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;">🔄 Refresh</button>
+                            </div>
+                            <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
+                                Select which exit countries are active on the US server (RackNerd Core). For example, enable <strong>🇯🇵 Japan Static</strong> or disable <strong>🇦🇿 Azerbaijan</strong>. Changes apply instantly to your <strong>Doctor Master Pro (77 Nodes)</strong> and <strong>3-Hop Multi-Country</strong> subscriptions!
+                            </p>
+                            <div id="us-nodes-list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
+                                <div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 12px;">Loading node catalog...</div>
+                            </div>
+                            <button type="button" id="btn-save-nodes-config" class="btn btn-primary btn-block" style="padding: 11px; font-weight: bold; font-size: 13px;">
+                                💾 Save &amp; Apply to US Server
+                            </button>
+                        </div>
+                    </div>
                 </div> <!-- Close auth-logged-in-view -->
             </div>
         </div>
@@ -2356,18 +2444,53 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         document.getElementById("btn-copy-all").addEventListener("click", openBatchModal);
 
         function updateSubUrls() {
-            const sel = document.getElementById("sub-scope-select");
-            const scope = sel ? sel.value : "all";
-            const baseUrl = (window.location.origin && window.location.origin !== "null" && window.location.protocol.startsWith("http") && !window.location.origin.includes("github.io"))
-                ? window.location.origin
-                : "https://behrouz64.github.io/Surfshark-AmneziaWG-Mobile";
-            
-            const fileSuffix = scope === "all" ? "" : "_" + scope;
-            const txtUrl = baseUrl + "/sub" + fileSuffix + ".txt";
-            const b64Url = baseUrl + "/sub" + (fileSuffix === "" ? "_base64" : fileSuffix + "_b64") + ".txt";
-            
-            document.getElementById("sub-url-input").value = txtUrl;
-            document.getElementById("sub-b64-input").value = b64Url;
+            const protoSel = document.getElementById("sub-proto-select");
+            const proto = protoSel ? protoSel.value : "wg";
+            const wgBox = document.getElementById("sub-wg-container");
+            const vlessBox = document.getElementById("sub-vless-container");
+
+            if (proto === "wg") {
+                if (wgBox) wgBox.style.display = "block";
+                if (vlessBox) vlessBox.style.display = "none";
+            } else {
+                if (wgBox) wgBox.style.display = "none";
+                if (vlessBox) vlessBox.style.display = "block";
+            }
+
+            const workerBase = getEffectiveWorkerUrl();
+            let b64Url = "";
+            let rawUrl = "";
+
+            if (proto === "wg") {
+                const scope = document.getElementById("sub-scope-select") ? document.getElementById("sub-scope-select").value : "all";
+                const obfs = document.getElementById("sub-obfs-select") ? document.getElementById("sub-obfs-select").value : "default";
+
+                let qParams = ["format=base64", "continent=" + encodeURIComponent(scope)];
+                if (obfs === "none") qParams.push("obfs=0");
+                else if (obfs !== "default") qParams.push("obfs=" + encodeURIComponent(obfs));
+
+                b64Url = workerBase + "/sub?" + qParams.join("&");
+                rawUrl = workerBase + "/sub?" + qParams.join("&").replace("format=base64", "format=raw");
+            } else {
+                const tier = document.getElementById("sub-tier-select") ? document.getElementById("sub-tier-select").value : "pro";
+                const isp = document.getElementById("sub-isp-select") ? document.getElementById("sub-isp-select").value : "auto";
+
+                let qParams = ["tier=" + encodeURIComponent(tier), "format=base64"];
+                if (isp !== "auto") qParams.push("isp=" + encodeURIComponent(isp));
+
+                b64Url = workerBase + "/sub?" + qParams.join("&");
+                rawUrl = workerBase + "/sub?" + qParams.join("&").replace("format=base64", "format=raw");
+            }
+
+            const b64Input = document.getElementById("sub-b64-input");
+            const rawInput = document.getElementById("sub-url-input");
+            if (b64Input) b64Input.value = b64Url;
+            if (rawInput) rawInput.value = rawUrl;
+
+            const srBtn = document.getElementById("btn-sub-open-sr");
+            if (srBtn) {
+                srBtn.href = "shadowrocket://add/" + encodeURIComponent(b64Url);
+            }
         }
 
         document.getElementById("btn-open-sub").addEventListener("click", () => {
@@ -2375,7 +2498,18 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             openModal("modal-sub");
         });
 
-        document.getElementById("sub-scope-select").addEventListener("change", updateSubUrls);
+        ["sub-proto-select", "sub-obfs-select", "sub-scope-select", "sub-tier-select", "sub-isp-select"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener("change", updateSubUrls);
+        });
+
+        const btnSubQr = document.getElementById("btn-sub-show-qr");
+        if (btnSubQr) {
+            btnSubQr.addEventListener("click", () => {
+                const u = document.getElementById("sub-b64-input").value;
+                if (u) openQrModal(u, "Subscription QR Code");
+            });
+        }
 
         // Subscription Modal Copy buttons
         document.getElementById("btn-copy-sub-url").addEventListener("click", () => {
@@ -2668,6 +2802,39 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             } catch (err) {
                 console.warn("Fetch cloud devices error:", err);
                 renderManagedDevices();
+            }
+        }
+
+        async function loadUsServerNodes() {
+            const listEl = document.getElementById("us-nodes-list");
+            if (!listEl) return;
+            listEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 12px;">🛰️ Querying US Server (RackNerd Core)...</div>`;
+            try {
+                const res = await fetch(getEffectiveWorkerUrl() + "/api/nodes");
+                if (!res.ok) throw new Error("Server returned " + res.status);
+                const data = await res.json();
+                const nodes = data.nodes || [];
+                if (nodes.length === 0) {
+                    listEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 11px;">No nodes returned from server.</div>`;
+                    return;
+                }
+                listEl.innerHTML = nodes.map(n => `
+                    <label style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); border: 1px solid var(--border-color); padding: 9px 12px; border-radius: var(--radius-md); cursor: pointer; transition: border-color 0.2s;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" class="us-node-chk" data-code="${n.code}" ${n.enabled ? "checked" : ""} style="width: 16px; height: 16px; accent-color: var(--accent-cyan); cursor: pointer;">
+                            <div>
+                                <span style="font-size: 16px; margin-right: 6px;">${n.flag}</span>
+                                <strong style="color: var(--text-primary); font-size: 12px;">${escapeHtml(n.name)}</strong>
+                                <span style="color: var(--text-muted); font-size: 11px; margin-left: 6px;">(${escapeHtml(n.desc)})</span>
+                            </div>
+                        </div>
+                        <span class="badge ${n.enabled ? 'badge-resolved' : 'badge-unresolved'}" style="font-size: 10px;">
+                            ${n.enabled ? '🟢 Active' : '⚪ Disabled'}
+                        </span>
+                    </label>
+                `).join("");
+            } catch (err) {
+                listEl.innerHTML = `<div style="color: #ef4444; font-size: 11px; padding: 8px;">Failed to load US server nodes: ${escapeHtml(err.message)}</div>`;
             }
         }
 
@@ -3680,6 +3847,65 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             btnBar.addEventListener("click", () => {
                 checkAuthStatus();
                 openModal("modal-devices");
+            });
+        }
+
+        // Tab switching: Devices vs US Server Nodes
+        const tabBtnDevs = document.getElementById("tab-btn-devices");
+        const tabBtnNodes = document.getElementById("tab-btn-us-nodes");
+        const devSec = document.getElementById("admin-device-manager-section");
+        const nodesSec = document.getElementById("admin-us-nodes-section");
+
+        if (tabBtnDevs && tabBtnNodes) {
+            tabBtnDevs.addEventListener("click", () => {
+                tabBtnDevs.className = "btn btn-primary";
+                tabBtnNodes.className = "btn btn-secondary";
+                if (devSec) devSec.style.display = "block";
+                if (nodesSec) nodesSec.style.display = "none";
+            });
+            tabBtnNodes.addEventListener("click", () => {
+                tabBtnNodes.className = "btn btn-primary";
+                tabBtnDevs.className = "btn btn-secondary";
+                if (devSec) devSec.style.display = "none";
+                if (nodesSec) nodesSec.style.display = "block";
+                loadUsServerNodes();
+            });
+        }
+
+        const btnRefreshNodes = document.getElementById("btn-refresh-nodes");
+        if (btnRefreshNodes) {
+            btnRefreshNodes.addEventListener("click", () => {
+                showToast("Refreshing US server nodes...");
+                loadUsServerNodes();
+            });
+        }
+
+        const btnSaveNodes = document.getElementById("btn-save-nodes-config");
+        if (btnSaveNodes) {
+            btnSaveNodes.addEventListener("click", async () => {
+                const chks = document.querySelectorAll(".us-node-chk");
+                const enabledNodes = [];
+                chks.forEach(c => {
+                    if (c.checked) enabledNodes.push(c.dataset.code);
+                });
+                btnSaveNodes.disabled = true;
+                btnSaveNodes.textContent = "Saving & Syncing to US Server...";
+                try {
+                    const res = await fetch(getEffectiveWorkerUrl() + "/api/nodes", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ enabled_nodes: enabledNodes })
+                    });
+                    const d = await res.json();
+                    if (!res.ok || !d.success) throw new Error(d.error || "Save failed");
+                    showToast("✅ US Server nodes updated! " + enabledNodes.length + " countries active.");
+                    loadUsServerNodes();
+                } catch (e) {
+                    alert("Error saving node settings: " + e.message);
+                } finally {
+                    btnSaveNodes.disabled = false;
+                    btnSaveNodes.textContent = "💾 Save & Apply to US Server";
+                }
             });
         }
 
