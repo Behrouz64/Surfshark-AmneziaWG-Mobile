@@ -532,6 +532,28 @@ html_content = f'''<!DOCTYPE html>
                         </div>
 
                         <div class="form-group">
+                            <label for="dev-tier-select" style="color: var(--accent-cyan); font-weight: bold;">نوع سابسکریپشن / Subscription Tier</label>
+                            <select id="dev-tier-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--accent-cyan); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                                <option value="raw">🦈 سرف‌شارک خام (AmneziaWG Direct Nodes)</option>
+                                <option value="family">👨‍👩‍👦 مطب: خانواده (Family Clean - 12 Nodes)</option>
+                                <option value="2hop">⚡ مطب: پرو ۲ تانل آمریکا (2-Hop Direct US - 13 Nodes)</option>
+                                <option value="3hop">🛰 مطب: پرو ۳ تانل ۸ کشور (3-Hop Multi-Country - 64 Nodes)</option>
+                                <option value="pro">👑 مطب: پرو جامع پزشک (Doctor Master Pro - 77 Nodes)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dev-isp-select">بهینه‌سازی اپراتور / Carrier Optimization</label>
+                            <select id="dev-isp-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                                <option value="auto">⚡ هوشمند خودکار (Auto-Detect Carrier)</option>
+                                <option value="mci">📱 همراه اول (MCI Clean IP)</option>
+                                <option value="mtn">📱 ایرانسل (MTN Clean IP)</option>
+                                <option value="rightel">📱 رایتل (Rightel Clean IP)</option>
+                                <option value="wifi">🌐 مخابرات / اینترنت ثابت (Wi-Fi)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
                             <label for="dev-key-input">Surfshark WireGuard Private Key</label>
                             <div style="display: flex; gap: 6px;">
                                 <input type="text" id="dev-key-input" placeholder="Paste Private Key from Surfshark account..." required style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
@@ -1635,10 +1657,13 @@ html_content = f'''<!DOCTYPE html>
                         '</div>' +
                         statusBadge +
                     '</div>' +
-                    '<div style="display: flex; gap: 6px; margin-top: 4px;">' +
-                        '<button type="button" class="btn btn-secondary btn-copy-dev-item" data-index="' + idx + '" style="flex: 1; padding: 4px 8px; font-size: 10px;">📋 Copy Link</button>' +
-                        '<button type="button" class="btn btn-secondary btn-qr-dev-item" data-index="' + idx + '" style="padding: 4px 10px; font-size: 10px;">📱 QR</button>' +
-                        '<button type="button" class="btn btn-secondary btn-del-dev-item" data-index="' + idx + '" style="padding: 4px 8px; font-size: 10px; color: #ef4444;" title="Delete Device">🗑️</button>' +
+                    '<div style="display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap;">' +
+                        '<button type="button" class="btn btn-secondary btn-copy-dev-item" data-index="' + idx + '" style="flex: 1; min-width: 65px; padding: 4px 6px; font-size: 10px;">📋 Link</button>' +
+                        '<button type="button" class="btn btn-secondary btn-clash-dev-item" data-index="' + idx + '" style="padding: 4px 6px; font-size: 10px; color: #38bdf8;" title="Copy Clash Meta YAML">⚡ Clash</button>' +
+                        '<button type="button" class="btn btn-secondary btn-singbox-dev-item" data-index="' + idx + '" style="padding: 4px 6px; font-size: 10px; color: #a855f7;" title="Copy Sing-Box JSON">📦 SingBox</button>' +
+                        '<button type="button" class="btn btn-secondary btn-conf-dev-item" data-index="' + idx + '" style="padding: 4px 6px; font-size: 10px; color: #eab308;" title="Download WireGuard .conf">📄 Conf</button>' +
+                        '<button type="button" class="btn btn-secondary btn-qr-dev-item" data-index="' + idx + '" style="padding: 4px 8px; font-size: 10px;">📱 QR</button>' +
+                        '<button type="button" class="btn btn-secondary btn-del-dev-item" data-index="' + idx + '" style="padding: 4px 6px; font-size: 10px; color: #ef4444;" title="Delete Device">🗑️</button>' +
                     '</div>' +
                 '</div>';
             }});
@@ -1649,6 +1674,33 @@ html_content = f'''<!DOCTYPE html>
                     const i = parseInt(btn.getAttribute("data-index"), 10);
                     if (managedDevices[i]) {{
                         copyToClipboard(managedDevices[i].url, "Subscription URL for " + managedDevices[i].name + " copied!");
+                    }}
+                }});
+            }});
+
+            container.querySelectorAll(".btn-clash-dev-item").forEach(btn => {{
+                btn.addEventListener("click", () => {{
+                    const i = parseInt(btn.getAttribute("data-index"), 10);
+                    if (managedDevices[i]) {{
+                        copyToClipboard(managedDevices[i].url + "&format=clash", "Clash Meta YAML URL for " + managedDevices[i].name + " copied!");
+                    }}
+                }});
+            }});
+
+            container.querySelectorAll(".btn-singbox-dev-item").forEach(btn => {{
+                btn.addEventListener("click", () => {{
+                    const i = parseInt(btn.getAttribute("data-index"), 10);
+                    if (managedDevices[i]) {{
+                        copyToClipboard(managedDevices[i].url + "&format=singbox", "Sing-Box JSON URL for " + managedDevices[i].name + " copied!");
+                    }}
+                }});
+            }});
+
+            container.querySelectorAll(".btn-conf-dev-item").forEach(btn => {{
+                btn.addEventListener("click", () => {{
+                    const i = parseInt(btn.getAttribute("data-index"), 10);
+                    if (managedDevices[i]) {{
+                        window.open(managedDevices[i].url + "&format=conf", "_blank");
                     }}
                 }});
             }});
@@ -2077,10 +2129,19 @@ html_content = f'''<!DOCTYPE html>
                 const expSec = durationDays > 0 ? (nowSec + durationDays * 86400) : 0;
                 const workerBase = getEffectiveWorkerUrl();
 
+                const tierChoice = document.getElementById("dev-tier-select") ? document.getElementById("dev-tier-select").value : "raw";
+                const ispChoice = document.getElementById("dev-isp-select") ? document.getElementById("dev-isp-select").value : "auto";
+
                 let subUrl = workerBase + "/sub?key=" + encodeURIComponent(key) +
                                "&name=" + encodeURIComponent(name) +
                                "&exp=" + expSec +
                                "&continent=" + encodeURIComponent(region);
+                if (tierChoice && tierChoice !== "raw") {{
+                    subUrl += "&tier=" + encodeURIComponent(tierChoice);
+                }}
+                if (ispChoice && ispChoice !== "auto") {{
+                    subUrl += "&isp=" + encodeURIComponent(ispChoice);
+                }}
                 if (obfsChoice === "none") {{
                     subUrl += "&obfs=0";
                 }}
@@ -2089,6 +2150,8 @@ html_content = f'''<!DOCTYPE html>
                     id: "dev_" + Date.now(),
                     name: name,
                     key: key,
+                    tier: tierChoice,
+                    isp: ispChoice,
                     obfs: obfsChoice,
                     durationDays: durationDays,
                     expTimestamp: expSec,
