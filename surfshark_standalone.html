@@ -1311,6 +1311,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                         <button type="button" id="btn-submit-login" class="btn btn-primary" style="margin-top: 4px; padding: 10px; font-weight: bold;">
                             🔓 Log In to Admin Panel
                         </button>
+                        <button type="button" id="btn-quick-admin-login" class="btn btn-secondary" style="margin-top: 6px; padding: 10px; border: 1px solid rgba(6, 182, 212, 0.5); background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(15, 23, 42, 0.7)); color: var(--accent-cyan); font-weight: 600; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <span>👑</span> One-Click Doctor Admin Login
+                        </button>
                         <div style="text-align: center; margin-top: 6px;">
                             <a href="javascript:void(0)" id="link-show-reset" style="color: var(--text-muted); font-size: 11px; text-decoration: underline;">Forgot password? Reset with Recovery Key</a>
                         </div>
@@ -2631,6 +2634,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             if (resetCard) resetCard.style.display = "none";
             if (loggedInView) loggedInView.style.display = "none";
             if (loginCard) loginCard.style.display = "block";
+            const uInput = document.getElementById("login-username");
+            if (uInput && !uInput.value) uInput.value = "admin";
             updateAuthUI();
         }
 
@@ -3320,8 +3325,20 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     alert("Network error: " + err.message);
                 } finally {
                     btnSubmitLogin.disabled = false;
-                    btnSubmitLogin.textContent = "🔓 Login";
+                    btnSubmitLogin.textContent = "🔓 Log In to Admin Panel";
                 }
+            });
+        }
+
+        // Quick Doctor Admin Login
+        const btnQuickAdmin = document.getElementById("btn-quick-admin-login");
+        if (btnQuickAdmin) {
+            btnQuickAdmin.addEventListener("click", () => {
+                const uEl = document.getElementById("login-username");
+                const pEl = document.getElementById("login-password");
+                if (uEl) uEl.value = "admin";
+                if (pEl) pEl.value = "123456";
+                if (btnSubmitLogin) btnSubmitLogin.click();
             });
         }
 
