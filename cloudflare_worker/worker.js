@@ -513,8 +513,8 @@ export default {
         return jsonResponse({ devices, username: targetUsername });
       }
 
-      // POST: Save or append device to Cloudflare KV
-      if (request.method === "POST") {
+      // POST / PUT: Save or append/update device in Cloudflare KV
+      if (request.method === "POST" || request.method === "PUT") {
         const newDev = await request.json();
         if (!newDev || !newDev.name || !newDev.key) {
           return jsonResponse({ error: "Invalid device data" }, 400);
@@ -553,6 +553,7 @@ export default {
     // ==========================================
     const deviceKey = params.get("key") || "";
     const expParam = params.get("exp") || "0";
+    const quotaParam = params.get("quota") || params.get("quota_gb") || "0";
     const continent = (params.get("continent") || params.get("region") || "all").toLowerCase();
     const tier = (params.get("tier") || params.get("type") || "surfshark").toLowerCase();
     const rawFormatParam = params.get("format") || "";
@@ -562,6 +563,18 @@ export default {
     const nowSeconds = Math.floor(Date.now() / 1000);
     const expTimestamp = parseInt(expParam, 10) || 0;
     const finalExpire = expTimestamp > 0 ? expTimestamp : nowSeconds + 31536000;
+
+    // Traffic quota calculation (in bytes)
+    let quotaGb = parseFloat(String(quotaParam).replace(/[^0-9.]/g, "")) || 0;
+    let totalBytes = 0;
+    if (quotaGb > 0) {
+      totalBytes = Math.floor(quotaGb * 1073741824); // 1 GB = 1024^3 bytes
+    } else {
+      totalBytes = 2147483648000; // ~2000 GB default for unlimited
+    }
+    const uploadBytes = 104857600;   // 100 MB simulated active usage
+    const downloadBytes = 524288000; // 500 MB simulated active usage
+    const userinfoStr = `upload=${uploadBytes}; download=${downloadBytes}; total=${totalBytes}; expire=${finalExpire}`;
 
     // Check expiration
     const isExpired = expTimestamp > 0 && nowSeconds > expTimestamp;
@@ -573,7 +586,7 @@ export default {
       const payload = (format === "base64" || params.get("b64") === "1") ? btoa(alertNode) : alertNode;
       return textResponse(payload, 200, {
         "X-Subscription-Status": "Expired",
-        "Subscription-Userinfo": `upload=1073741824; download=5368709120; total=107374182400; expire=${expTimestamp}`
+        "Subscription-Userinfo": `upload=${totalBytes}; download=0; total=${totalBytes}; expire=${expTimestamp}`
       });
     }
 
@@ -594,7 +607,7 @@ export default {
     if (["family", "2hop", "3hop", "pro"].includes(tier)) {
       const clinicPath = tier === "family" ? "/sub/family" : `/sub/${tier}`;
       try {
-        const clinicResp = await fetch(`${CLINIC_API_BASE}${clinicPath}`, {
+        const clinicResp = await fetch(`${CLINIC_API_BASE}${clinicPath}?quota=${quotaGb}&exp=${finalExpire}`, {
           headers: { "User-Agent": "v2rayNG/1.8.5 Cloudflare-Worker" },
           cf: { cacheTtl: 60, cacheEverything: false }
         });
@@ -610,10 +623,11 @@ export default {
 
           // Standard Profile Headers
           const clinicHeaders = {
-            "Subscription-Userinfo": `upload=1073741824; download=5368709120; total=107374182400; expire=${finalExpire}`,
+            "Subscription-Userinfo": userinfoStr,
             "Profile-Update-Interval": "6",
-            "Profile-Title": btoa(unescape(encodeURIComponent(`KarajLasik-${tier.toUpperCase()}`))),
+            "Profile-Title": btoa(unescape(encodeURIComponent(`KarajLasik-${tier.toUpperCase()}${quotaGb > 0 ? `-${quotaGb}GB` : ""}`))),
             "X-Subscription-Tier": tier,
+            "X-Subscription-Quota-GB": String(quotaGb > 0 ? quotaGb : "Unlimited"),
             "X-Detected-ISP": detectedIsp || "Universal",
             "Cache-Control": "public, max-age=120"
           };
@@ -701,9 +715,10 @@ export default {
 
       // Subscription standard headers
       const standardHeaders = {
-        "Subscription-Userinfo": `upload=1073741824; download=5368709120; total=107374182400; expire=${finalExpire}`,
+        "Subscription-Userinfo": userinfoStr,
         "Profile-Update-Interval": "6",
-        "Profile-Title": btoa(unescape(encodeURIComponent("Surfshark AmneziaWG Cloud"))),
+        "Profile-Title": btoa(unescape(encodeURIComponent(`Surfshark AmneziaWG${quotaGb > 0 ? ` (${quotaGb}GB)` : ""}`))),
+        "X-Subscription-Quota-GB": String(quotaGb > 0 ? quotaGb : "Unlimited"),
         "X-Nodes-Count": String(processedNodes.length),
         "X-Detected-ISP": detectedIsp || "Universal",
         "Cache-Control": "public, max-age=180"

@@ -1397,6 +1397,20 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                         </div>
 
                         <div class="form-group">
+                            <label for="dev-quota-select" style="color: #c084fc; font-weight: bold;">حجم ترافیک مجاز / Traffic Quota Limit</label>
+                            <select id="dev-quota-select" style="width: 100%; background: var(--bg-main); border: 1px solid #c084fc; color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                                <option value="0">♾️ نامحدود (Unlimited)</option>
+                                <option value="10">📦 ۱۰ گیگابایت (10 GB)</option>
+                                <option value="20">📦 ۲۰ گیگابایت (20 GB)</option>
+                                <option value="30">📦 ۳۰ گیگابایت (30 GB)</option>
+                                <option value="50">📦 ۵۰ گیگابایت (50 GB)</option>
+                                <option value="80">📦 ۸۰ گیگابایت (80 GB)</option>
+                                <option value="100">📦 ۱۰۰ گیگابایت (100 GB)</option>
+                                <option value="200">📦 ۲۰۰ گیگابایت (200 GB)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
                             <label for="dev-isp-select">بهینه‌سازی اپراتور / Carrier Optimization</label>
                             <select id="dev-isp-select" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
                                 <option value="auto">⚡ هوشمند خودکار (Auto-Detect Carrier)</option>
@@ -1495,6 +1509,138 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Device Settings -->
+    <div id="modal-edit-device" class="modal-overlay" style="display: none;">
+        <div class="modal-sheet" style="max-height: 88vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2>✏️ ویرایش تنظیمات دیوایس / Edit Device</h2>
+                <button class="modal-close" data-close="modal-edit-device">✕</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-desc" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
+                    تنظیمات دیوایس، تمدید روزها، حجم ترافیک، نوع سابسکریپشن و کلید اختصاصی را تغییر داده و ذخیره کنید.
+                </p>
+                <form id="form-edit-device" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 10px;">
+                    <input type="hidden" id="edit-dev-index" value="-1">
+                    <input type="hidden" id="edit-dev-id" value="">
+
+                    <!-- 1. Device Name -->
+                    <div class="form-group">
+                        <label for="edit-dev-name">Device Name / Label</label>
+                        <input type="text" id="edit-dev-name" required style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px;">
+                    </div>
+
+                    <!-- 2. Subscription Tier -->
+                    <div class="form-group">
+                        <label for="edit-dev-tier" style="color: var(--accent-cyan); font-weight: bold;">نوع سابسکریپشن / Subscription Tier</label>
+                        <select id="edit-dev-tier" style="width: 100%; background: var(--bg-main); border: 1px solid var(--accent-cyan); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                            <option value="raw">🦈 سرف‌شارک خام (AmneziaWG Direct Nodes)</option>
+                            <option value="family">👨‍👩‍👦 مطب: خانواده (Family Clean - 12 Nodes)</option>
+                            <option value="2hop">⚡ مطب: پرو ۲ تانل آمریکا (2-Hop Direct US - 13 Nodes)</option>
+                            <option value="3hop">🛰 مطب: پرو ۳ تانل ۸ کشور (3-Hop Multi-Country - 64 Nodes)</option>
+                            <option value="pro">👑 مطب: پرو جامع پزشک (Doctor Master Pro - 77 Nodes)</option>
+                        </select>
+                    </div>
+
+                    <!-- 3. Traffic Quota Limit -->
+                    <div class="form-group">
+                        <label for="edit-dev-quota" style="color: #c084fc; font-weight: bold;">حجم ترافیک مجاز / Traffic Quota Limit</label>
+                        <select id="edit-dev-quota" style="width: 100%; background: var(--bg-main); border: 1px solid #c084fc; color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                            <option value="0">♾️ نامحدود (Unlimited)</option>
+                            <option value="10">📦 ۱۰ گیگابایت (10 GB)</option>
+                            <option value="20">📦 ۲۰ گیگابایت (20 GB)</option>
+                            <option value="30">📦 ۳۰ گیگابایت (30 GB)</option>
+                            <option value="50">📦 ۵۰ گیگابایت (50 GB)</option>
+                            <option value="80">📦 ۸۰ گیگابایت (80 GB)</option>
+                            <option value="100">📦 ۱۰۰ گیگابایت (100 GB)</option>
+                            <option value="200">📦 ۲۰۰ گیگابایت (200 GB)</option>
+                            <option value="custom">✏️ حجم سفارشی (Custom GB)...</option>
+                        </select>
+                        <div id="edit-dev-custom-quota-box" style="display: none; margin-top: 6px;">
+                            <input type="number" id="edit-dev-custom-quota-val" placeholder="حجم به گیگابایت (مثلا 45)" min="1" max="5000" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 7px; border-radius: var(--radius-md); font-size: 11px;">
+                        </div>
+                    </div>
+
+                    <!-- 4. Duration Extension / Expiry -->
+                    <div class="form-group">
+                        <label for="edit-dev-duration-action" style="color: #34d399; font-weight: bold;">تمدید انقضا / Duration &amp; Expiry</label>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;" id="edit-dev-current-exp-info">
+                            وضعیت فعلی: فعال
+                        </div>
+                        <select id="edit-dev-duration-action" style="width: 100%; background: var(--bg-main); border: 1px solid #34d399; color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                            <option value="keep">حفظ تاریخ انقضای فعلی (Keep Current Expiration)</option>
+                            <option value="add_7">➕ تمدید +۷ روز از الان یا انقضا (+7 Days)</option>
+                            <option value="add_30">➕ تمدید +۳۰ روز (+30 Days)</option>
+                            <option value="add_60">➕ تمدید +۶۰ روز (+60 Days)</option>
+                            <option value="add_90">➕ تمدید +۹۰ روز (+90 Days)</option>
+                            <option value="add_180">➕ تمدید +۱۸۰ روز (۶ ماه)</option>
+                            <option value="add_365">➕ تمدید +۳۶۵ روز (۱ سال)</option>
+                            <option value="set_7">🔄 تنظیم مجدد ۷ روزه از امروز (Reset 7 Days)</option>
+                            <option value="set_30">🔄 تنظیم مجدد ۳۰ روزه از امروز (Reset 30 Days)</option>
+                            <option value="unlimited">♾️ تبدیل به نامحدود (Set Unlimited)</option>
+                        </select>
+                    </div>
+
+                    <!-- 5. Region / Continent & Carrier ISP -->
+                    <div class="sub-actions-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="edit-dev-region">قاره / Region</label>
+                            <select id="edit-dev-region" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                                <option value="all">🌐 All Continents</option>
+                                <option value="europe">🇪🇺 Europe</option>
+                                <option value="north_america">🌎 North America</option>
+                                <option value="south_america">🌎 South America</option>
+                                <option value="americas">🌎 All Americas</option>
+                                <option value="asia">🌏 Asia</option>
+                                <option value="africa">🌍 Africa</option>
+                                <option value="oceania">🇦🇺 Oceania</option>
+                                <option value="static">📌 Static IP (All)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="edit-dev-isp">اپراتور / Carrier</label>
+                            <select id="edit-dev-isp" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                                <option value="auto">⚡ هوشمند (Auto)</option>
+                                <option value="mci">📱 همراه اول (MCI)</option>
+                                <option value="mtn">📱 ایرانسل (MTN)</option>
+                                <option value="rightel">📱 رایتل (Rightel)</option>
+                                <option value="wifi">🌐 اینترنت ثابت (Wi-Fi)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 6. WireGuard Private Key -->
+                    <div class="form-group">
+                        <label for="edit-dev-key">Surfshark WireGuard Private Key</label>
+                        <div style="display: flex; gap: 6px;">
+                            <input type="text" id="edit-dev-key" required style="flex: 1; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-family: monospace; font-size: 11px;">
+                            <button type="button" id="btn-paste-edit-dev-key" class="btn btn-secondary" style="padding: 6px 12px; font-size: 11px;">📋 Paste</button>
+                        </div>
+                    </div>
+
+                    <!-- 7. Obfuscation -->
+                    <div class="form-group">
+                        <label for="edit-dev-obfs">Obfuscation Protocol</label>
+                        <select id="edit-dev-obfs" style="width: 100%; background: var(--bg-main); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px; border-radius: var(--radius-md); font-size: 12px; outline: none;">
+                            <option value="awg">🛡️ AmneziaWG (DPI Bypass)</option>
+                            <option value="none">🌐 Pure WireGuard (No Obfs)</option>
+                        </select>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="sub-actions-row" style="margin-top: 8px;">
+                        <button type="button" id="btn-save-edit-dev" class="btn btn-primary" style="flex: 2; padding: 11px; font-weight: bold;">
+                            💾 ذخیره تغییرات و همگام‌سازی ابری / Save Changes
+                        </button>
+                        <button type="button" class="btn btn-secondary modal-close" data-close="modal-edit-device" style="flex: 1; padding: 11px;">
+                            انصراف
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -2501,22 +2647,39 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     statusBadge = '<span style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: ' + bg + '; color: ' + color + ';">⏳ ' + daysLeft + ' days left</span>';
                 }
 
+                let tierBadge = "";
+                if (dev.tier === "family") tierBadge = '<span style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(59, 130, 246, 0.15); color: #60a5fa;">👨‍👩‍👦 خانواده</span>';
+                else if (dev.tier === "2hop") tierBadge = '<span style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(234, 179, 8, 0.15); color: #facc15;">⚡ ۲ تانل</span>';
+                else if (dev.tier === "3hop") tierBadge = '<span style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(168, 85, 247, 0.15); color: #c084fc;">🛰 ۳ تانل</span>';
+                else if (dev.tier === "pro") tierBadge = '<span style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(236, 72, 153, 0.15); color: #f472b6; font-weight: bold;">👑 پرو جامع</span>';
+                else tierBadge = '<span style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(14, 165, 233, 0.15); color: var(--accent-cyan);">🦈 سرف‌شارک</span>';
+
+                let quotaBadge = "";
+                if (dev.quota && dev.quota !== "0" && dev.quota !== "unlimited") {
+                    quotaBadge = '<span style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(192, 132, 252, 0.15); color: #c084fc; font-weight: 600;">📦 ' + escapeHtml(String(dev.quota)) + ' GB</span>';
+                } else {
+                    quotaBadge = '<span style="font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(16, 185, 129, 0.12); color: #34d399;">♾️ حجم نامحدود</span>';
+                }
+
                 html += '<div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px; display: flex; flex-direction: column; gap: 6px;">' +
-                    '<div style="display: flex; justify-content: space-between; align-items: center;">' +
-                        '<div style="display: flex; align-items: center; gap: 6px;">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">' +
+                        '<div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">' +
                             '<span style="font-size: 13px;">📱</span>' +
                             '<strong style="font-size: 12px; color: var(--text-primary);">' + escapeHtml(dev.name) + '</strong>' +
+                            tierBadge +
+                            quotaBadge +
                             (dev.obfs === "none" ? '<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(234, 179, 8, 0.2); color: #eab308;">🌐 WireGuard</span>' : '<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(59, 130, 246, 0.2); color: #60a5fa;">🛡️ AWG</span>') +
                             '<span style="font-size: 10px; color: var(--text-secondary); text-transform: capitalize;">(' + (dev.region ? escapeHtml(dev.region.replace(/_/g, " ")) : "all") + ')</span>' +
                         '</div>' +
                         statusBadge +
                     '</div>' +
                     '<div style="display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap;">' +
-                        '<button type="button" class="btn btn-secondary btn-copy-dev-item" data-index="' + idx + '" style="flex: 1; min-width: 65px; padding: 4px 6px; font-size: 10px;">📋 Link</button>' +
+                        '<button type="button" class="btn btn-secondary btn-copy-dev-item" data-index="' + idx + '" style="flex: 1; min-width: 60px; padding: 4px 6px; font-size: 10px;">📋 Link</button>' +
+                        '<button type="button" class="btn btn-secondary btn-edit-dev-item" data-index="' + idx + '" style="padding: 4px 8px; font-size: 10px; color: #38bdf8; font-weight: 600;" title="Edit Device Settings">✏️ Edit</button>' +
+                        '<button type="button" class="btn btn-secondary btn-qr-dev-item" data-index="' + idx + '" style="padding: 4px 8px; font-size: 10px;">📱 QR</button>' +
                         '<button type="button" class="btn btn-secondary btn-clash-dev-item" data-index="' + idx + '" style="padding: 4px 6px; font-size: 10px; color: #38bdf8;" title="Copy Clash Meta YAML">⚡ Clash</button>' +
                         '<button type="button" class="btn btn-secondary btn-singbox-dev-item" data-index="' + idx + '" style="padding: 4px 6px; font-size: 10px; color: #a855f7;" title="Copy Sing-Box JSON">📦 SingBox</button>' +
                         '<button type="button" class="btn btn-secondary btn-conf-dev-item" data-index="' + idx + '" style="padding: 4px 6px; font-size: 10px; color: #eab308;" title="Download WireGuard .conf">📄 Conf</button>' +
-                        '<button type="button" class="btn btn-secondary btn-qr-dev-item" data-index="' + idx + '" style="padding: 4px 8px; font-size: 10px;">📱 QR</button>' +
                         '<button type="button" class="btn btn-secondary btn-del-dev-item" data-index="' + idx + '" style="padding: 4px 6px; font-size: 10px; color: #ef4444;" title="Delete Device">🗑️</button>' +
                     '</div>' +
                 '</div>';
@@ -2528,6 +2691,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     const i = parseInt(btn.getAttribute("data-index"), 10);
                     if (managedDevices[i]) {
                         copyToClipboard(managedDevices[i].url, "Subscription URL for " + managedDevices[i].name + " copied!");
+                    }
+                });
+            });
+
+            container.querySelectorAll(".btn-edit-dev-item").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const i = parseInt(btn.getAttribute("data-index"), 10);
+                    if (managedDevices[i]) {
+                        openEditDeviceModal(i);
                     }
                 });
             });
@@ -2599,6 +2771,215 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     renderManagedDevices();
                     showToast("Device removed.");
                 });
+            });
+        }
+
+        function openEditDeviceModal(i) {
+            const dev = managedDevices[i];
+            if (!dev) return;
+
+            document.getElementById("edit-dev-index").value = i;
+            document.getElementById("edit-dev-id").value = dev.id || ("dev_" + i);
+            document.getElementById("edit-dev-name").value = dev.name || "";
+            document.getElementById("edit-dev-tier").value = dev.tier || "raw";
+
+            // Quota
+            const quotaSel = document.getElementById("edit-dev-quota");
+            const customQuotaBox = document.getElementById("edit-dev-custom-quota-box");
+            const customQuotaVal = document.getElementById("edit-dev-custom-quota-val");
+            const qVal = dev.quota ? String(dev.quota) : "0";
+            if (["0", "10", "20", "30", "50", "80", "100", "200"].includes(qVal)) {
+                quotaSel.value = qVal;
+                if (customQuotaBox) customQuotaBox.style.display = "none";
+            } else {
+                quotaSel.value = "custom";
+                if (customQuotaBox) {
+                    customQuotaBox.style.display = "block";
+                    customQuotaVal.value = qVal;
+                }
+            }
+
+            // Expiry info
+            const nowSec = Math.floor(Date.now() / 1000);
+            const expInfoEl = document.getElementById("edit-dev-current-exp-info");
+            if (expInfoEl) {
+                if (!dev.expTimestamp || dev.expTimestamp === 0) {
+                    expInfoEl.innerHTML = 'وضعیت فعلی: <span style="color: #10b981; font-weight: bold;">♾️ اعتبار نامحدود (بدون انقضا)</span>';
+                } else if (nowSec > dev.expTimestamp) {
+                    const dStr = new Date(dev.expTimestamp * 1000).toISOString().split("T")[0];
+                    expInfoEl.innerHTML = 'وضعیت فعلی: <span style="color: #ef4444; font-weight: bold;">❌ منقضی شده در تاریخ ' + dStr + '</span>';
+                } else {
+                    const daysLeft = Math.ceil((dev.expTimestamp - nowSec) / 86400);
+                    const dStr = new Date(dev.expTimestamp * 1000).toISOString().split("T")[0];
+                    expInfoEl.innerHTML = 'وضعیت فعلی: <span style="color: #10b981; font-weight: bold;">⏳ ' + daysLeft + ' روز باقی‌مانده (تا ' + dStr + ')</span>';
+                }
+            }
+            document.getElementById("edit-dev-duration-action").value = "keep";
+
+            // Region & ISP
+            document.getElementById("edit-dev-region").value = dev.region || "all";
+            document.getElementById("edit-dev-isp").value = dev.isp || "auto";
+
+            // Key & Obfs
+            document.getElementById("edit-dev-key").value = dev.key || "";
+            document.getElementById("edit-dev-obfs").value = dev.obfs || "awg";
+
+            // Open Modal
+            const modal = document.getElementById("modal-edit-device");
+            if (modal) {
+                modal.style.display = "flex";
+                document.body.style.overflow = "hidden";
+            }
+        }
+
+        // Edit Modal Events
+        const editQuotaSel = document.getElementById("edit-dev-quota");
+        if (editQuotaSel) {
+            editQuotaSel.addEventListener("change", () => {
+                const box = document.getElementById("edit-dev-custom-quota-box");
+                if (box) {
+                    box.style.display = (editQuotaSel.value === "custom") ? "block" : "none";
+                }
+            });
+        }
+
+        const btnPasteEditKey = document.getElementById("btn-paste-edit-dev-key");
+        if (btnPasteEditKey) {
+            btnPasteEditKey.addEventListener("click", async () => {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    if (text) {
+                        document.getElementById("edit-dev-key").value = text.trim();
+                        showToast("Private key pasted!");
+                    }
+                } catch (e) {
+                    showToast("Failed to read clipboard.");
+                }
+            });
+        }
+
+        const btnSaveEditDev = document.getElementById("btn-save-edit-dev");
+        if (btnSaveEditDev) {
+            btnSaveEditDev.addEventListener("click", async () => {
+                const idx = parseInt(document.getElementById("edit-dev-index").value, 10);
+                if (idx < 0 || !managedDevices[idx]) return;
+
+                const dev = managedDevices[idx];
+                const newName = document.getElementById("edit-dev-name").value.trim();
+                const newKey = document.getElementById("edit-dev-key").value.trim();
+                const newTier = document.getElementById("edit-dev-tier").value;
+                const newRegion = document.getElementById("edit-dev-region").value;
+                const newIsp = document.getElementById("edit-dev-isp").value;
+                const newObfs = document.getElementById("edit-dev-obfs").value;
+                const durAction = document.getElementById("edit-dev-duration-action").value;
+
+                if (!newName) {
+                    alert("نام دیوایس نمی‌تواند خالی باشد.");
+                    return;
+                }
+                if (!newKey) {
+                    alert("کلید اختصاصی WireGuard نمی‌تواند خالی باشد.");
+                    return;
+                }
+
+                // Calculate Quota
+                let newQuota = document.getElementById("edit-dev-quota").value;
+                if (newQuota === "custom") {
+                    const cVal = document.getElementById("edit-dev-custom-quota-val").value.trim();
+                    newQuota = cVal ? cVal : "0";
+                }
+
+                // Calculate Expiration
+                const nowSec = Math.floor(Date.now() / 1000);
+                let newExp = dev.expTimestamp || 0;
+                const baseTime = (dev.expTimestamp && dev.expTimestamp > nowSec) ? dev.expTimestamp : nowSec;
+
+                if (durAction === "keep") {
+                    newExp = dev.expTimestamp || 0;
+                } else if (durAction === "add_7") {
+                    newExp = baseTime + 7 * 86400;
+                } else if (durAction === "add_30") {
+                    newExp = baseTime + 30 * 86400;
+                } else if (durAction === "add_60") {
+                    newExp = baseTime + 60 * 86400;
+                } else if (durAction === "add_90") {
+                    newExp = baseTime + 90 * 86400;
+                } else if (durAction === "add_180") {
+                    newExp = baseTime + 180 * 86400;
+                } else if (durAction === "add_365") {
+                    newExp = baseTime + 365 * 86400;
+                } else if (durAction === "set_7") {
+                    newExp = nowSec + 7 * 86400;
+                } else if (durAction === "set_30") {
+                    newExp = nowSec + 30 * 86400;
+                } else if (durAction === "unlimited") {
+                    newExp = 0;
+                }
+
+                // Update properties
+                dev.name = newName;
+                dev.key = newKey;
+                dev.tier = newTier;
+                dev.quota = newQuota;
+                dev.region = newRegion;
+                dev.isp = newIsp;
+                dev.obfs = newObfs;
+                dev.expTimestamp = newExp;
+                dev.durationDays = newExp > 0 ? Math.ceil((newExp - nowSec) / 86400) : 0;
+                dev.updatedAt = nowSec;
+
+                // Rebuild URL
+                const workerBase = getEffectiveWorkerUrl();
+                let subUrl = workerBase + "/sub?key=" + encodeURIComponent(dev.key) +
+                             "&name=" + encodeURIComponent(dev.name) +
+                             "&exp=" + (dev.expTimestamp || 0) +
+                             "&continent=" + encodeURIComponent(dev.region || "all");
+                if (dev.tier && dev.tier !== "raw") {
+                    subUrl += "&tier=" + encodeURIComponent(dev.tier);
+                }
+                if (dev.isp && dev.isp !== "auto") {
+                    subUrl += "&isp=" + encodeURIComponent(dev.isp);
+                }
+                if (dev.quota && dev.quota !== "0" && dev.quota !== "unlimited") {
+                    subUrl += "&quota=" + encodeURIComponent(dev.quota);
+                }
+                if (dev.obfs === "none") {
+                    subUrl += "&obfs=0";
+                }
+                dev.url = subUrl;
+
+                // Save locally
+                localStorage.setItem("surfshark_managed_devices", JSON.stringify(managedDevices));
+
+                // Sync with Cloudflare KV
+                if (authSession && authSession.token) {
+                    btnSaveEditDev.disabled = true;
+                    btnSaveEditDev.textContent = "Syncing to Cloud...";
+                    try {
+                        const res = await fetch(workerBase + "/api/devices", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": "Bearer " + authSession.token
+                            },
+                            body: JSON.stringify(dev)
+                        });
+                        if (res.ok) {
+                            const d = await res.json();
+                            managedDevices = d.devices || managedDevices;
+                            localStorage.setItem("surfshark_managed_devices", JSON.stringify(managedDevices));
+                        }
+                    } catch (err) {
+                        console.warn("Error updating device on cloud:", err);
+                    } finally {
+                        btnSaveEditDev.disabled = false;
+                        btnSaveEditDev.textContent = "💾 ذخیره تغییرات و همگام‌سازی ابری / Save Changes";
+                    }
+                }
+
+                closeModal("modal-edit-device");
+                renderManagedDevices();
+                showToast("تنظیمات دیوایس " + dev.name + " با موفقیت ذخیره شد.");
             });
         }
 
@@ -2984,6 +3365,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                 const workerBase = getEffectiveWorkerUrl();
 
                 const tierChoice = document.getElementById("dev-tier-select") ? document.getElementById("dev-tier-select").value : "raw";
+                const quotaChoice = document.getElementById("dev-quota-select") ? document.getElementById("dev-quota-select").value : "0";
                 const ispChoice = document.getElementById("dev-isp-select") ? document.getElementById("dev-isp-select").value : "auto";
 
                 let subUrl = workerBase + "/sub?key=" + encodeURIComponent(key) +
@@ -2992,6 +3374,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                                "&continent=" + encodeURIComponent(region);
                 if (tierChoice && tierChoice !== "raw") {
                     subUrl += "&tier=" + encodeURIComponent(tierChoice);
+                }
+                if (quotaChoice && quotaChoice !== "0") {
+                    subUrl += "&quota=" + encodeURIComponent(quotaChoice);
                 }
                 if (ispChoice && ispChoice !== "auto") {
                     subUrl += "&isp=" + encodeURIComponent(ispChoice);
@@ -3005,6 +3390,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                     name: name,
                     key: key,
                     tier: tierChoice,
+                    quota: quotaChoice,
                     isp: ispChoice,
                     obfs: obfsChoice,
                     durationDays: durationDays,
