@@ -49,3 +49,8 @@ data/custom_credentials.json
 
 # Cloudflare Wrangler
 .wrangler/
+
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example

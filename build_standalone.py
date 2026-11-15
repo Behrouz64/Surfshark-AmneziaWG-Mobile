@@ -746,47 +746,47 @@ html_content = f'''<!DOCTYPE html>
                     </div> <!-- Close admin-device-manager-section -->
 
                     <!-- US SERVER 3-HOP NODES SECTION -->
-                    <div id="admin-us-nodes-section" style="display: none;">
-                        <div style="background: var(--bg-main); border: 1px solid rgba(6, 182, 212, 0.4); border-radius: var(--radius-md); padding: 14px; margin-bottom: 14px;">
-                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                                <h3 style="color: var(--accent-cyan); font-size: 14px; margin: 0;">🛰️ US Server 3-Hop Node Exit Catalog</h3>
-                                <button type="button" id="btn-refresh-nodes" class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;">🔄 Refresh</button>
+                    <div id="admin-us-nodes-section" style="display: none; flex-direction: column; gap: 8px;">
+                        <div style="background: var(--bg-main); border: 1px solid rgba(6, 182, 212, 0.35); border-radius: var(--radius-md); padding: 12px 10px; margin-bottom: 8px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                                <h3 style="color: var(--accent-cyan); font-size: 13px; font-weight: 700; margin: 0;">🛰️ US Server 3-Hop Node Catalog</h3>
+                                <button type="button" id="btn-refresh-nodes" class="btn btn-secondary" style="padding: 3px 8px; font-size: 11px;">🔄 Refresh</button>
                             </div>
-                            <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5;">
-                                Manage live WireGuard exit nodes on the US Server (Surfshark + Proton VPN). Changes apply directly to your <strong>Doctor Master Pro</strong> and <strong>3-Hop Multi-Country</strong> subscriptions.
+                            <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.4;">
+                                Toggle live WireGuard exit nodes on US Server. Changes instantly reflect in your <strong>Doctor Pro</strong> and <strong>3-Hop</strong> subscriptions.
                             </p>
 
                             <!-- Live Search Input -->
-                            <div style="margin-bottom: 10px;">
-                                <input type="text" id="us-nodes-search" placeholder="🔍 Search country, code, or city (e.g. Proton, Japan, Germany)..." style="width: 100%; box-sizing: border-box; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 8px 12px; font-size: 12px; color: var(--text-primary); outline: none;">
+                            <div style="margin-bottom: 8px;">
+                                <input type="text" id="us-nodes-search" placeholder="🔍 Search country, city, code, or 'static'..." style="width: 100%; box-sizing: border-box; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 8px 10px; font-size: 12px; color: var(--text-primary); outline: none;">
                             </div>
 
-                            <!-- Category Filter Pills Bar -->
-                            <div id="us-nodes-category-pills" style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 10px; -webkit-overflow-scrolling: touch;">
-                                <button type="button" class="btn btn-primary us-cat-pill active" data-cat="all" style="font-size: 10px; padding: 4px 10px; white-space: nowrap; border-radius: 20px;">All Nodes</button>
+                            <!-- Category Filter Pills Bar (Smooth Horizontal Scroll) -->
+                            <div id="us-nodes-category-pills" style="display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 6px 0; margin-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
+                                <button type="button" class="btn btn-primary us-cat-pill active" data-cat="all" style="font-size: 11px; padding: 4px 11px; white-space: nowrap; border-radius: 999px; flex-shrink: 0;">All Nodes</button>
                             </div>
 
-                            <!-- Quick Action Presets -->
-                            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; padding: 6px; background: rgba(0,0,0,0.2); border-radius: var(--radius-md);">
-                                <button type="button" id="btn-preset-core-proton" class="btn btn-secondary" style="font-size: 10px; padding: 3px 8px;">⚡ Core + Proton (Recommended)</button>
-                                <button type="button" id="btn-preset-static-top" class="btn btn-secondary" style="font-size: 10px; padding: 3px 8px;">📌 Top Static (6)</button>
-                                <button type="button" id="btn-preset-proton-only" class="btn btn-secondary" style="font-size: 10px; padding: 3px 8px;">🛡️ Proton Only (3)</button>
-                                <button type="button" id="btn-select-all-filtered" class="btn btn-secondary" style="font-size: 10px; padding: 3px 8px;">✅ Select Visible</button>
-                                <button type="button" id="btn-deselect-all-filtered" class="btn btn-secondary" style="font-size: 10px; padding: 3px 8px;">❌ Deselect Visible</button>
+                            <!-- Quick Action Presets (Horizontal Scrollable Bar) -->
+                            <div style="display: flex; gap: 6px; overflow-x: auto; padding: 6px 8px; margin-bottom: 10px; background: rgba(0,0,0,0.25); border-radius: var(--radius-md); -webkit-overflow-scrolling: touch; scrollbar-width: none;">
+                                <button type="button" id="btn-preset-core-proton" class="btn btn-secondary" style="font-size: 10px; padding: 4px 9px; white-space: nowrap; flex-shrink: 0;">⚡ Core + Proton</button>
+                                <button type="button" id="btn-preset-static-top" class="btn btn-secondary" style="font-size: 10px; padding: 4px 9px; white-space: nowrap; flex-shrink: 0;">📌 Top Static (6)</button>
+                                <button type="button" id="btn-preset-proton-only" class="btn btn-secondary" style="font-size: 10px; padding: 4px 9px; white-space: nowrap; flex-shrink: 0;">🛡️ Proton Only (3)</button>
+                                <button type="button" id="btn-select-all-filtered" class="btn btn-secondary" style="font-size: 10px; padding: 4px 9px; white-space: nowrap; flex-shrink: 0;">✅ Select All</button>
+                                <button type="button" id="btn-deselect-all-filtered" class="btn btn-secondary" style="font-size: 10px; padding: 4px 9px; white-space: nowrap; flex-shrink: 0;">❌ Deselect All</button>
                             </div>
 
                             <!-- Summary & Counter -->
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 11px; color: var(--text-secondary);">
-                                <span>Active: <strong id="us-nodes-active-count" style="color: var(--accent-cyan);">0</strong> / <span id="us-nodes-total-count">0</span> nodes enabled</span>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 11px; color: var(--text-secondary); padding: 0 2px;">
+                                <span>Active: <strong id="us-nodes-active-count" style="color: var(--accent-cyan);">0</strong> / <span id="us-nodes-total-count">0</span> nodes</span>
                                 <span id="us-nodes-filter-status" style="color: var(--text-muted); font-size: 10px;">Showing: All</span>
                             </div>
 
                             <!-- Node Items Container (Grouped by Continent/Category) -->
-                            <div id="us-nodes-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 48vh; overflow-y: auto; padding-right: 4px; margin-bottom: 14px;">
+                            <div id="us-nodes-list" class="us-nodes-container" style="max-height: 50vh; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-right: 2px; margin-bottom: 10px;">
                                 <div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 16px;">Loading node catalog...</div>
                             </div>
 
-                            <button type="button" id="btn-save-nodes-config" class="btn btn-primary btn-block" style="padding: 11px; font-weight: bold; font-size: 13px;">
+                            <button type="button" id="btn-save-nodes-config" class="btn btn-primary btn-block" style="padding: 12px; font-weight: bold; font-size: 13px; border-radius: var(--radius-md); box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25);">
                                 💾 Save &amp; Apply to US Server
                             </button>
                         </div>
@@ -1512,11 +1512,18 @@ html_content = f'''<!DOCTYPE html>
         openModal("modal-qr");
     }}
 
+    let _lockedScrollY = 0;
     function openModal(id) {{
         const m = document.getElementById(id);
         if (m) {{
-            m.style.display = "flex";
+            _lockedScrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+            document.documentElement.classList.add("modal-open");
+            document.body.classList.add("modal-open");
+            document.body.style.position = "fixed";
+            document.body.style.top = `-${{_lockedScrollY}}px`;
+            document.body.style.width = "100%";
             document.body.style.overflow = "hidden";
+            m.style.display = "flex";
         }}
     }}
 
@@ -1524,7 +1531,16 @@ html_content = f'''<!DOCTYPE html>
         const m = document.getElementById(id);
         if (m) {{
             m.style.display = "none";
-            document.body.style.overflow = "";
+            const anyOpen = Array.from(document.querySelectorAll(".modal-overlay")).some(el => el.style.display === "flex");
+            if (!anyOpen) {{
+                document.documentElement.classList.remove("modal-open");
+                document.body.classList.remove("modal-open");
+                document.body.style.position = "";
+                document.body.style.top = "";
+                document.body.style.width = "";
+                document.body.style.overflow = "";
+                window.scrollTo(0, _lockedScrollY);
+            }}
         }}
     }}
 
@@ -1772,8 +1788,7 @@ html_content = f'''<!DOCTYPE html>
         }});
         document.querySelectorAll(".modal-overlay").forEach(overlay => {{
             overlay.addEventListener("click", (e) => {{
-                if (e.target === overlay) overlay.style.display = "none";
-                document.body.style.overflow = "";
+                if (e.target === overlay) closeModal(overlay.id);
             }});
         }});
 
@@ -2004,10 +2019,12 @@ html_content = f'''<!DOCTYPE html>
         function renderUsNodesCategories() {{
             const pillsBar = document.getElementById("us-nodes-category-pills");
             if (!pillsBar || !usNodesCategories.length) return;
+            const activeCount = allUsServerNodes.filter(n => n.enabled).length;
             pillsBar.innerHTML = usNodesCategories.map(cat => {{
                 const isActive = cat.id === currentUsNodeCat;
-                return `<button type="button" class="btn ${{isActive ? 'btn-primary' : 'btn-secondary'}} us-cat-pill" data-cat="${{cat.id}}" style="font-size: 10px; padding: 4px 10px; white-space: nowrap; border-radius: 20px;">
-                    ${{escapeHtml(cat.name)}} (${{cat.count}})
+                const count = (cat.id === "active") ? activeCount : cat.count;
+                return `<button type="button" class="btn ${{isActive ? 'btn-primary' : 'btn-secondary'}} us-cat-pill" data-cat="${{cat.id}}" style="font-size: 11px; padding: 4px 11px; white-space: nowrap; border-radius: 999px; flex-shrink: 0;">
+                    ${{escapeHtml(cat.name)}} (${{count}})
                 </button>`;
             }}).join("");
 
@@ -2060,7 +2077,7 @@ html_content = f'''<!DOCTYPE html>
             }}
 
             if (filtered.length === 0) {{
-                listEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 20px;">No matching exit nodes found.</div>`;
+                listEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 24px;">No matching exit nodes found.</div>`;
                 return;
             }}
 
@@ -2080,42 +2097,47 @@ html_content = f'''<!DOCTYPE html>
             let html = "";
             for (const [grpTitle, grpNodes] of Object.entries(groups)) {{
                 html += `
-                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden;">
-                    <div style="background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border-color); padding: 7px 12px; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 11px; font-weight: bold; color: var(--accent-cyan);">${{escapeHtml(grpTitle)}}</span>
-                        <span style="font-size: 10px; color: var(--text-muted);">${{grpNodes.length}} nodes</span>
+                <div class="us-node-group">
+                    <div class="us-node-group-header">
+                        <span>${{escapeHtml(grpTitle)}}</span>
+                        <span class="us-node-group-count">${{grpNodes.length}} nodes</span>
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: 4px; padding: 6px;">
+                    <div class="us-node-group-list">
                 `;
 
                 grpNodes.forEach(n => {{
                     let badgesHtml = "";
                     if (n.is_static) {{
-                        badgesHtml += `<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); font-weight: 600;">📌 Static</span>`;
+                        badgesHtml += `<span class="us-node-badge static">📌 Static</span>`;
                     }}
                     if (n.provider === "proton") {{
-                        badgesHtml += `<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4);">Proton</span>`;
+                        badgesHtml += `<span class="us-node-badge proton">Proton</span>`;
                     }} else if (n.is_core && !n.is_static) {{
-                        badgesHtml += `<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(6, 182, 212, 0.2); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.4);">Core</span>`;
+                        badgesHtml += `<span class="us-node-badge core">Core</span>`;
                     }} else if (!n.is_static) {{
-                        badgesHtml += `<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(255, 255, 255, 0.05); color: var(--text-muted); border: 1px solid var(--border-color);">Global</span>`;
+                        badgesHtml += `<span class="us-node-badge global">Global</span>`;
                     }}
 
+                    const hostOrIp = (n.endpoint || "").split(":")[0] || "";
+
                     html += `
-                        <label style="display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; border-radius: 6px; cursor: pointer; transition: background 0.15s; background: ${{n.enabled ? 'rgba(6, 182, 212, 0.05)' : 'transparent'}};">
-                            <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
-                                <input type="checkbox" class="us-node-chk" data-code="${{n.code}}" ${{n.enabled ? "checked" : ""}} style="width: 16px; height: 16px; accent-color: var(--accent-cyan); cursor: pointer; flex-shrink: 0;">
-                                <div style="display: flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden;">
-                                    <span style="font-size: 15px; flex-shrink: 0;">${{n.flag}}</span>
-                                    <strong style="color: var(--text-primary); font-size: 12px; white-space: nowrap;">${{escapeHtml(n.name)}}</strong>
-                                    ${{badgesHtml}}
-                                    <span style="color: var(--text-muted); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${{escapeHtml(n.desc)}}</span>
+                        <div class="us-node-card ${{n.enabled ? 'active' : ''}}" data-code="${{n.code}}">
+                            <div class="us-node-card-row-top">
+                                <div class="us-node-card-left">
+                                    <input type="checkbox" class="us-node-chk" data-code="${{n.code}}" ${{n.enabled ? "checked" : ""}}>
+                                    <span class="us-node-flag">${{n.flag}}</span>
+                                    <strong class="us-node-name">${{escapeHtml(n.name)}}</strong>
+                                    <div class="us-node-badges">${{badgesHtml}}</div>
                                 </div>
+                                <span class="us-node-status ${{n.enabled ? 'active' : 'inactive'}}">
+                                    ${{n.enabled ? '🟢 Active' : '⚪ Off'}}
+                                </span>
                             </div>
-                            <span style="font-size: 10px; font-weight: 500; margin-left: 8px; flex-shrink: 0; color: ${{n.enabled ? '#10b981' : 'var(--text-muted)'}};">
-                                ${{n.enabled ? '🟢 Active' : '⚪ Off'}}
-                            </span>
-                        </label>
+                            <div class="us-node-card-row-bottom">
+                                <span class="us-node-desc">${{escapeHtml(n.desc)}}</span>
+                                <span class="us-node-endpoint">${{escapeHtml(hostOrIp)}}</span>
+                            </div>
+                        </div>
                     `;
                 }});
 
@@ -2125,17 +2147,31 @@ html_content = f'''<!DOCTYPE html>
                 `;
             }}
 
+            const prevScroll = listEl.scrollTop;
             listEl.innerHTML = html;
+            listEl.scrollTop = prevScroll;
 
-            // Checkbox change listener
-            listEl.querySelectorAll(".us-node-chk").forEach(chk => {{
-                chk.addEventListener("change", () => {{
-                    const code = chk.dataset.code;
+            // Interactive Card Click (Toggles state cleanly without scroll resets)
+            listEl.querySelectorAll(".us-node-card").forEach(card => {{
+                card.addEventListener("click", () => {{
+                    const code = card.dataset.code;
                     const node = allUsServerNodes.find(item => item.code === code);
-                    if (node) {{
-                        node.enabled = chk.checked;
-                        renderUsServerNodes();
+                    if (!node) return;
+
+                    node.enabled = !node.enabled;
+                    card.classList.toggle("active", node.enabled);
+                    const chk = card.querySelector(".us-node-chk");
+                    if (chk) chk.checked = node.enabled;
+                    const st = card.querySelector(".us-node-status");
+                    if (st) {{
+                        st.textContent = node.enabled ? "🟢 Active" : "⚪ Off";
+                        st.className = "us-node-status " + (node.enabled ? "active" : "inactive");
                     }}
+
+                    // Update Top Counter & Category Pill dynamically
+                    const currentActive = allUsServerNodes.filter(n => n.enabled).length;
+                    if (activeCountEl) activeCountEl.textContent = currentActive;
+                    renderUsNodesCategories();
                 }});
             }});
         }}
@@ -3236,8 +3272,8 @@ html_content = f'''<!DOCTYPE html>
         const btnSelectVisible = document.getElementById("btn-select-all-filtered");
         if (btnSelectVisible) {{
             btnSelectVisible.addEventListener("click", () => {{
-                const chks = document.querySelectorAll(".us-node-chk");
-                chks.forEach(c => {{
+                const cards = document.querySelectorAll(".us-node-card");
+                cards.forEach(c => {{
                     const node = allUsServerNodes.find(n => n.code === c.dataset.code);
                     if (node) node.enabled = true;
                 }});
@@ -3250,8 +3286,8 @@ html_content = f'''<!DOCTYPE html>
         const btnDeselectVisible = document.getElementById("btn-deselect-all-filtered");
         if (btnDeselectVisible) {{
             btnDeselectVisible.addEventListener("click", () => {{
-                const chks = document.querySelectorAll(".us-node-chk");
-                chks.forEach(c => {{
+                const cards = document.querySelectorAll(".us-node-card");
+                cards.forEach(c => {{
                     const node = allUsServerNodes.find(n => n.code === c.dataset.code);
                     if (node) node.enabled = false;
                 }});
