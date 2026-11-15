@@ -1,7 +1,7 @@
 {
   "proton-us": {
     "code": "proton-us",
-    "flag": "🇺🇸",
+    "flag": "\ud83c\uddfa\ud83c\uddf8",
     "name": "Proton-US",
     "desc": "United States - Secaucus, NJ #131 (NetShield=2)",
     "continent": "Proton VPN",
@@ -15,11 +15,12 @@
     "uuid": "22222222-0050-4000-8000-000000000050",
     "email": "pro-proton-us@karajlasik.ir",
     "is_core": true,
-    "default_enabled": true
+    "default_enabled": true,
+    "is_static": false
   },
   "proton-be": {
     "code": "proton-be",
-    "flag": "🇧🇪",
+    "flag": "\ud83c\udde7\ud83c\uddea",
     "name": "Proton-BE",
     "desc": "Belgium - Brussels #31 (Proton AG)",
     "continent": "Proton VPN",
@@ -33,11 +34,12 @@
     "uuid": "22222222-0051-4000-8000-000000000051",
     "email": "pro-proton-be@karajlasik.ir",
     "is_core": true,
-    "default_enabled": true
+    "default_enabled": true,
+    "is_static": false
   },
   "proton-al": {
     "code": "proton-al",
-    "flag": "🇦🇱",
+    "flag": "\ud83c\udde6\ud83c\uddf1",
     "name": "Proton-AL",
     "desc": "Albania - Tirana #38 (NetShield=0)",
     "continent": "Proton VPN",
@@ -51,53 +53,624 @@
     "uuid": "22222222-0052-4000-8000-000000000052",
     "email": "pro-proton-al@karajlasik.ir",
     "is_core": true,
+    "default_enabled": true,
+    "is_static": false
+  },
+  "de": {
+    "code": "de",
+    "flag": "\ud83c\udde9\ud83c\uddea",
+    "name": "DE-ST01",
+    "desc": "Germany \u2014 Frankfurt am Main (Static #1)",
+    "city": "Frankfurt am Main (Static #1)",
+    "country": "Germany",
+    "continent": "Europe",
+    "provider": "surfshark",
+    "endpoint": "45.87.212.179:51820",
+    "pubkey": "kj90Cy2gkEYrHn487636hOfto2EBWEddUngRdrziylM=",
+    "uuid": "22222222-0010-4000-8000-000000000010",
+    "email": "pro-de@karajlasik.ir",
+    "is_core": true,
+    "is_static": true,
     "default_enabled": true
   },
-  "us": {
-    "code": "us",
-    "flag": "🇺🇸",
-    "name": "US-ST",
-    "desc": "United States (NYC Static)",
-    "continent": "Americas",
+  "de-st02": {
+    "code": "de-st02",
+    "flag": "\ud83c\udde9\ud83c\uddea",
+    "name": "DE-ST02",
+    "desc": "Germany \u2014 Frankfurt am Main (Static #2)",
+    "city": "Frankfurt am Main (Static #2)",
+    "country": "Germany",
+    "continent": "Europe",
     "provider": "surfshark",
-    "endpoint": "us-nyc-st001.prod.surfshark.com:51820",
-    "pubkey": "7UmSjyjD6Sf4AnjYpBQGQYx9IGYa/sM8mZOQ+yJ5REo=",
-    "uuid": "22222222-0001-4000-8000-000000000001",
-    "email": "pro-us@karajlasik.ir",
+    "endpoint": "45.87.212.181:51820",
+    "pubkey": "HnYgO+mu04A2VjWiJiPh5TXFHJpWdcnmzCA1ExC991g=",
+    "uuid": "22222222-0202-4000-8000-000000000202",
+    "email": "pro-de-st02@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "de-st03": {
+    "code": "de-st03",
+    "flag": "\ud83c\udde9\ud83c\uddea",
+    "name": "DE-ST03",
+    "desc": "Germany \u2014 Frankfurt am Main (Static #3)",
+    "city": "Frankfurt am Main (Static #3)",
+    "country": "Germany",
+    "continent": "Europe",
+    "provider": "surfshark",
+    "endpoint": "45.87.212.183:51820",
+    "pubkey": "OkHRRG05U3WOYWL5x4+6SGHCQlHH0NxkJyi9aM2gDSo=",
+    "uuid": "22222222-0203-4000-8000-000000000203",
+    "email": "pro-de-st03@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "de-st04": {
+    "code": "de-st04",
+    "flag": "\ud83c\udde9\ud83c\uddea",
+    "name": "DE-ST04",
+    "desc": "Germany \u2014 Frankfurt am Main (Static #4)",
+    "city": "Frankfurt am Main (Static #4)",
+    "country": "Germany",
+    "continent": "Europe",
+    "provider": "surfshark",
+    "endpoint": "195.181.174.226:51820",
+    "pubkey": "0e0/gpN0k62p3s9SxSWL8PRhLx3PJZqNxMsK9OfTk0M=",
+    "uuid": "22222222-0204-4000-8000-000000000204",
+    "email": "pro-de-st04@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "de-st05": {
+    "code": "de-st05",
+    "flag": "\ud83c\udde9\ud83c\uddea",
+    "name": "DE-ST05",
+    "desc": "Germany \u2014 Frankfurt am Main (Static #5)",
+    "city": "Frankfurt am Main (Static #5)",
+    "country": "Germany",
+    "continent": "Europe",
+    "provider": "surfshark",
+    "endpoint": "195.181.174.228:51820",
+    "pubkey": "CbBv1dSpGADT0Lo23noLP3VNCe+U4C/NzcG/HSdDtwg=",
+    "uuid": "22222222-0205-4000-8000-000000000205",
+    "email": "pro-de-st05@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "de-st06": {
+    "code": "de-st06",
+    "flag": "\ud83c\udde9\ud83c\uddea",
+    "name": "DE-ST06",
+    "desc": "Germany \u2014 Frankfurt am Main (Static #6)",
+    "city": "Frankfurt am Main (Static #6)",
+    "country": "Germany",
+    "continent": "Europe",
+    "provider": "surfshark",
+    "endpoint": "169.150.209.214:51820",
+    "pubkey": "es0zPcbI1T5Vqrzjxl8QdaEKYVE7GDfV8ayR8jmvpRM=",
+    "uuid": "22222222-0206-4000-8000-000000000206",
+    "email": "pro-de-st06@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "de-st07": {
+    "code": "de-st07",
+    "flag": "\ud83c\udde9\ud83c\uddea",
+    "name": "DE-ST07",
+    "desc": "Germany \u2014 Frankfurt am Main (Static #7)",
+    "city": "Frankfurt am Main (Static #7)",
+    "country": "Germany",
+    "continent": "Europe",
+    "provider": "surfshark",
+    "endpoint": "149.34.246.35:51820",
+    "pubkey": "cyiOxJryKyqB3cdwXjL7ILCUy3KVBPrOXSbFtasEeF8=",
+    "uuid": "22222222-0207-4000-8000-000000000207",
+    "email": "pro-de-st07@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "jp-st14": {
+    "code": "jp-st14",
+    "flag": "\ud83c\uddef\ud83c\uddf5",
+    "name": "JP-ST14",
+    "desc": "Japan \u2014 Tokyo (Static #14)",
+    "city": "Tokyo (Static #14)",
+    "country": "Japan",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "37.19.205.187:51820",
+    "pubkey": "YAi7pHzk1O+kVP2dmXTht/qj5kZ/M04N8EbNYG3vw2I=",
+    "uuid": "22222222-0208-4000-8000-000000000208",
+    "email": "pro-jp-st14@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "jp-st15": {
+    "code": "jp-st15",
+    "flag": "\ud83c\uddef\ud83c\uddf5",
+    "name": "JP-ST15",
+    "desc": "Japan \u2014 Tokyo (Static #15)",
+    "city": "Tokyo (Static #15)",
+    "country": "Japan",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "138.199.22.153:51820",
+    "pubkey": "nRaQb3Sa6SPDMW6QC0C6mC949iSTfKY4uytfyfZm8n0=",
+    "uuid": "22222222-0209-4000-8000-000000000209",
+    "email": "pro-jp-st15@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "jp-st16": {
+    "code": "jp-st16",
+    "flag": "\ud83c\uddef\ud83c\uddf5",
+    "name": "JP-ST16",
+    "desc": "Japan \u2014 Tokyo (Static #16)",
+    "city": "Tokyo (Static #16)",
+    "country": "Japan",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "37.19.205.177:51820",
+    "pubkey": "2Fn9Do6+JKXV8mDZpB3DfWmaJHZwDXE/3GpckVKGzC8=",
+    "uuid": "22222222-0210-4000-8000-000000000210",
+    "email": "pro-jp-st16@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "jp-st17": {
+    "code": "jp-st17",
+    "flag": "\ud83c\uddef\ud83c\uddf5",
+    "name": "JP-ST17",
+    "desc": "Japan \u2014 Tokyo (Static #17)",
+    "city": "Tokyo (Static #17)",
+    "country": "Japan",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "37.19.205.179:51820",
+    "pubkey": "T5aWKn3n64TkxqGqOv0ynTxY/w4ktVjc8AePLkDIM2Q=",
+    "uuid": "22222222-0211-4000-8000-000000000211",
+    "email": "pro-jp-st17@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "jp-st18": {
+    "code": "jp-st18",
+    "flag": "\ud83c\uddef\ud83c\uddf5",
+    "name": "JP-ST18",
+    "desc": "Japan \u2014 Tokyo (Static #18)",
+    "city": "Tokyo (Static #18)",
+    "country": "Japan",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "37.19.205.182:51820",
+    "pubkey": "kRIGOWrV9eCe0FmFIFwtawoRjzZVCaQs+7FDfPRoAkU=",
+    "uuid": "22222222-0212-4000-8000-000000000212",
+    "email": "pro-jp-st18@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "jp-st19": {
+    "code": "jp-st19",
+    "flag": "\ud83c\uddef\ud83c\uddf5",
+    "name": "JP-ST19",
+    "desc": "Japan \u2014 Tokyo (Static #19)",
+    "city": "Tokyo (Static #19)",
+    "country": "Japan",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "37.19.205.184:51820",
+    "pubkey": "RV46b4hNW5tn2I+REE4kJ36rKf5+nDVNE/SYM16XqDw=",
+    "uuid": "22222222-0213-4000-8000-000000000213",
+    "email": "pro-jp-st19@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "jp-st20": {
+    "code": "jp-st20",
+    "flag": "\ud83c\uddef\ud83c\uddf5",
+    "name": "JP-ST20",
+    "desc": "Japan \u2014 Tokyo (Static #20)",
+    "city": "Tokyo (Static #20)",
+    "country": "Japan",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "37.19.205.167:51820",
+    "pubkey": "vEPOb23yMjJ37NF/KSXPKCL56LZO4UCulS3XbP+TKFs=",
+    "uuid": "22222222-0214-4000-8000-000000000214",
+    "email": "pro-jp-st20@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "jp": {
+    "code": "jp",
+    "flag": "\ud83c\uddef\ud83c\uddf5",
+    "name": "JP-ST21",
+    "desc": "Japan \u2014 Tokyo (Static #21)",
+    "city": "Tokyo (Static #21)",
+    "country": "Japan",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "37.19.205.169:51820",
+    "pubkey": "821FvIHfdxW+gFPj8QNtEe2BgzSb5ryQxTNeRP+I6WE=",
+    "uuid": "22222222-0009-4000-8000-000000000009",
+    "email": "pro-jp@karajlasik.ir",
     "is_core": true,
+    "is_static": true,
     "default_enabled": true
+  },
+  "jp-st22": {
+    "code": "jp-st22",
+    "flag": "\ud83c\uddef\ud83c\uddf5",
+    "name": "JP-ST22",
+    "desc": "Japan \u2014 Tokyo (Static #22)",
+    "city": "Tokyo (Static #22)",
+    "country": "Japan",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "37.19.205.162:51820",
+    "pubkey": "nOobAMCxM7p0filChMAW6abz3BWDGzUFDB1Xyza0nCc=",
+    "uuid": "22222222-0216-4000-8000-000000000216",
+    "email": "pro-jp-st22@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "jp-st23": {
+    "code": "jp-st23",
+    "flag": "\ud83c\uddef\ud83c\uddf5",
+    "name": "JP-ST23",
+    "desc": "Japan \u2014 Tokyo (Static #23)",
+    "city": "Tokyo (Static #23)",
+    "country": "Japan",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "37.19.205.164:51820",
+    "pubkey": "cwEDkT+qAO1+yQJGe8r7ajc69oXqUYGbMHp1L+lHkHM=",
+    "uuid": "22222222-0217-4000-8000-000000000217",
+    "email": "pro-jp-st23@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "jp-st24": {
+    "code": "jp-st24",
+    "flag": "\ud83c\uddef\ud83c\uddf5",
+    "name": "JP-ST24",
+    "desc": "Japan \u2014 Tokyo (Static #24)",
+    "city": "Tokyo (Static #24)",
+    "country": "Japan",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "89.187.161.2:51820",
+    "pubkey": "4wdPRcmcFo2/pRi4zaXSKFZkR4rE54dCvgFDnomsEAs=",
+    "uuid": "22222222-0218-4000-8000-000000000218",
+    "email": "pro-jp-st24@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "jp-st25": {
+    "code": "jp-st25",
+    "flag": "\ud83c\uddef\ud83c\uddf5",
+    "name": "JP-ST25",
+    "desc": "Japan \u2014 Tokyo (Static #25)",
+    "city": "Tokyo (Static #25)",
+    "country": "Japan",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "89.187.161.4:51820",
+    "pubkey": "IpGp7fS8+qpTPq24EN9NqOdvAjOTfyC/cI8DB5kndFY=",
+    "uuid": "22222222-0219-4000-8000-000000000219",
+    "email": "pro-jp-st25@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "nl": {
+    "code": "nl",
+    "flag": "\ud83c\uddf3\ud83c\uddf1",
+    "name": "NL-ST01",
+    "desc": "Netherlands \u2014 Amsterdam (Static #1)",
+    "city": "Amsterdam (Static #1)",
+    "country": "Netherlands",
+    "continent": "Europe",
+    "provider": "surfshark",
+    "endpoint": "81.19.209.51:51820",
+    "pubkey": "6nnixEne6MUyAmsjhA/1O7evl+STAL00AoLcY5+Hb1Y=",
+    "uuid": "22222222-0011-4000-8000-000000000011",
+    "email": "pro-nl@karajlasik.ir",
+    "is_core": true,
+    "is_static": true,
+    "default_enabled": true
+  },
+  "sg-st05": {
+    "code": "sg-st05",
+    "flag": "\ud83c\uddf8\ud83c\uddec",
+    "name": "SG-ST05",
+    "desc": "Singapore \u2014 Singapore (Static #5)",
+    "city": "Singapore (Static #5)",
+    "country": "Singapore",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "138.199.60.175:51820",
+    "pubkey": "d9+f+QTkJH5vYt5dah62rKQLVIudeMERjEssTg3txnQ=",
+    "uuid": "22222222-0221-4000-8000-000000000221",
+    "email": "pro-sg-st05@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "sg-st06": {
+    "code": "sg-st06",
+    "flag": "\ud83c\uddf8\ud83c\uddec",
+    "name": "SG-ST06",
+    "desc": "Singapore \u2014 Singapore (Static #6)",
+    "city": "Singapore (Static #6)",
+    "country": "Singapore",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "138.199.60.177:51820",
+    "pubkey": "r5IE8U+/CmPJBQFULLUPwfE4AESkUU7Z4wWBOpHvFyA=",
+    "uuid": "22222222-0222-4000-8000-000000000222",
+    "email": "pro-sg-st06@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "sg-st07": {
+    "code": "sg-st07",
+    "flag": "\ud83c\uddf8\ud83c\uddec",
+    "name": "SG-ST07",
+    "desc": "Singapore \u2014 Singapore (Static #7)",
+    "city": "Singapore (Static #7)",
+    "country": "Singapore",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "138.199.60.170:51820",
+    "pubkey": "4geWIYI3+Zn7GmtzJ4D9/QIhRjWGpWwIhqssT3Yl9RE=",
+    "uuid": "22222222-0223-4000-8000-000000000223",
+    "email": "pro-sg-st07@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "sg-st08": {
+    "code": "sg-st08",
+    "flag": "\ud83c\uddf8\ud83c\uddec",
+    "name": "SG-ST08",
+    "desc": "Singapore \u2014 Singapore (Static #8)",
+    "city": "Singapore (Static #8)",
+    "country": "Singapore",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "138.199.60.172:51820",
+    "pubkey": "6GvYCh8LaRnbp3OwvNB2BPCaNOjGYKGwfen6eVUP6hc=",
+    "uuid": "22222222-0224-4000-8000-000000000224",
+    "email": "pro-sg-st08@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "sg-st09": {
+    "code": "sg-st09",
+    "flag": "\ud83c\uddf8\ud83c\uddec",
+    "name": "SG-ST09",
+    "desc": "Singapore \u2014 Singapore (Static #9)",
+    "city": "Singapore (Static #9)",
+    "country": "Singapore",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "138.199.60.180:51820",
+    "pubkey": "sk0YuJx8nO9hhJnQz5rn1aboekY7Hdl9ZfebCSXBGAY=",
+    "uuid": "22222222-0225-4000-8000-000000000225",
+    "email": "pro-sg-st09@karajlasik.ir",
+    "is_core": true,
+    "is_static": true,
+    "default_enabled": true
+  },
+  "sg-st10": {
+    "code": "sg-st10",
+    "flag": "\ud83c\uddf8\ud83c\uddec",
+    "name": "SG-ST10",
+    "desc": "Singapore \u2014 Singapore (Static #10)",
+    "city": "Singapore (Static #10)",
+    "country": "Singapore",
+    "continent": "Asia",
+    "provider": "surfshark",
+    "endpoint": "138.199.60.182:51820",
+    "pubkey": "eL2WOQ130amedxlJ50x71eZUI3QWg8wuqwgqc9vjSRo=",
+    "uuid": "22222222-0226-4000-8000-000000000226",
+    "email": "pro-sg-st10@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
   },
   "uk": {
     "code": "uk",
-    "flag": "🇬🇧",
-    "name": "UK-ST",
-    "desc": "United Kingdom (London Static)",
+    "flag": "\ud83c\uddec\ud83c\udde7",
+    "name": "UK-ST01",
+    "desc": "United Kingdom \u2014 London (Static #1)",
+    "city": "London (Static #1)",
+    "country": "United Kingdom",
     "continent": "Europe",
     "provider": "surfshark",
-    "endpoint": "uk-lon-st001.prod.surfshark.com:51820",
+    "endpoint": "217.146.82.83:51820",
     "pubkey": "G+Jv9y9nMXdTIe92fXG4cYAKpsyIHmMwYSujCL+1uCo=",
     "uuid": "22222222-0002-4000-8000-000000000002",
     "email": "pro-uk@karajlasik.ir",
     "is_core": true,
+    "is_static": true,
     "default_enabled": true
   },
-  "jp": {
-    "code": "jp",
-    "flag": "🇯🇵",
-    "name": "JP-ST",
-    "desc": "Japan (Tokyo Static #21)",
-    "continent": "Asia",
+  "uk-st02": {
+    "code": "uk-st02",
+    "flag": "\ud83c\uddec\ud83c\udde7",
+    "name": "UK-ST02",
+    "desc": "United Kingdom \u2014 London (Static #2)",
+    "city": "London (Static #2)",
+    "country": "United Kingdom",
+    "continent": "Europe",
     "provider": "surfshark",
-    "endpoint": "37.19.205.169:51820",
-    "pubkey": "3mK9w2o7D4a0Xq8eXj5pYg6lV1zT7sR3uM2nP0kL4bE=",
-    "uuid": "22222222-0009-4000-8000-000000000009",
-    "email": "pro-jp@karajlasik.ir",
+    "endpoint": "185.134.22.80:51820",
+    "pubkey": "+zZlWRDv4SAZ1j1DpyZKBzFVM7yV0hgBNKf8/nG2hWo=",
+    "uuid": "22222222-0228-4000-8000-000000000228",
+    "email": "pro-uk-st02@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "uk-st03": {
+    "code": "uk-st03",
+    "flag": "\ud83c\uddec\ud83c\udde7",
+    "name": "UK-ST03",
+    "desc": "United Kingdom \u2014 London (Static #3)",
+    "city": "London (Static #3)",
+    "country": "United Kingdom",
+    "continent": "Europe",
+    "provider": "surfshark",
+    "endpoint": "185.134.22.92:51820",
+    "pubkey": "/Ae1VALCWv/m+TU80A+1NB7NLffdSGKyCgpgW9NRNEI=",
+    "uuid": "22222222-0229-4000-8000-000000000229",
+    "email": "pro-uk-st03@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "uk-st04": {
+    "code": "uk-st04",
+    "flag": "\ud83c\uddec\ud83c\udde7",
+    "name": "UK-ST04",
+    "desc": "United Kingdom \u2014 London (Static #4)",
+    "city": "London (Static #4)",
+    "country": "United Kingdom",
+    "continent": "Europe",
+    "provider": "surfshark",
+    "endpoint": "185.44.76.186:51820",
+    "pubkey": "G+gdwCKtJUgSce/FwjMSh0xeEhvk55jjbqhBnTYgg3o=",
+    "uuid": "22222222-0230-4000-8000-000000000230",
+    "email": "pro-uk-st04@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "uk-st05": {
+    "code": "uk-st05",
+    "flag": "\ud83c\uddec\ud83c\udde7",
+    "name": "UK-ST05",
+    "desc": "United Kingdom \u2014 London (Static #5)",
+    "city": "London (Static #5)",
+    "country": "United Kingdom",
+    "continent": "Europe",
+    "provider": "surfshark",
+    "endpoint": "185.44.76.188:51820",
+    "pubkey": "QWhiKTxKWp9wo3blPDcMdA1Y/Vn69u2d8WQKQMTuoWw=",
+    "uuid": "22222222-0231-4000-8000-000000000231",
+    "email": "pro-uk-st05@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "us": {
+    "code": "us",
+    "flag": "\ud83c\uddfa\ud83c\uddf8",
+    "name": "US-ST01",
+    "desc": "United States \u2014 New York (Static #1)",
+    "city": "New York (Static #1)",
+    "country": "United States",
+    "continent": "Americas",
+    "provider": "surfshark",
+    "endpoint": "92.119.177.19:51820",
+    "pubkey": "7UmSjyjD6Sf4AnjYpBQGQYx9IGYa/sM8mZOQ+yJ5REo=",
+    "uuid": "22222222-0001-4000-8000-000000000001",
+    "email": "pro-us@karajlasik.ir",
     "is_core": true,
+    "is_static": true,
     "default_enabled": true
+  },
+  "us-st02": {
+    "code": "us-st02",
+    "flag": "\ud83c\uddfa\ud83c\uddf8",
+    "name": "US-ST02",
+    "desc": "United States \u2014 New York (Static #2)",
+    "city": "New York (Static #2)",
+    "country": "United States",
+    "continent": "Americas",
+    "provider": "surfshark",
+    "endpoint": "92.119.177.21:51820",
+    "pubkey": "PWjVpuAt3zKbKrxc30uiq2jOzKAVEZU402isK6Bunwc=",
+    "uuid": "22222222-0233-4000-8000-000000000233",
+    "email": "pro-us-st02@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "us-st03": {
+    "code": "us-st03",
+    "flag": "\ud83c\uddfa\ud83c\uddf8",
+    "name": "US-ST03",
+    "desc": "United States \u2014 New York (Static #3)",
+    "city": "New York (Static #3)",
+    "country": "United States",
+    "continent": "Americas",
+    "provider": "surfshark",
+    "endpoint": "92.119.177.23:51820",
+    "pubkey": "nuqSzswFHh7PK/NdEmfXIe/UYgZlc+L7shI5e6OMUH4=",
+    "uuid": "22222222-0234-4000-8000-000000000234",
+    "email": "pro-us-st03@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "us-st04": {
+    "code": "us-st04",
+    "flag": "\ud83c\uddfa\ud83c\uddf8",
+    "name": "US-ST04",
+    "desc": "United States \u2014 New York (Static #4)",
+    "city": "New York (Static #4)",
+    "country": "United States",
+    "continent": "Americas",
+    "provider": "surfshark",
+    "endpoint": "193.148.18.51:51820",
+    "pubkey": "RQ3ZRcXYnTl5lRjTuEolYsTfBRFtIeiZirFkBdcKw14=",
+    "uuid": "22222222-0235-4000-8000-000000000235",
+    "email": "pro-us-st04@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
+  },
+  "us-st05": {
+    "code": "us-st05",
+    "flag": "\ud83c\uddfa\ud83c\uddf8",
+    "name": "US-ST05",
+    "desc": "United States \u2014 New York (Static #5)",
+    "city": "New York (Static #5)",
+    "country": "United States",
+    "continent": "Americas",
+    "provider": "surfshark",
+    "endpoint": "193.148.18.53:51820",
+    "pubkey": "5/AGlscGX/hFpNuAq06M+gIP1HUxfbox+0Pi4M9ybjE=",
+    "uuid": "22222222-0236-4000-8000-000000000236",
+    "email": "pro-us-st05@karajlasik.ir",
+    "is_core": false,
+    "is_static": true,
+    "default_enabled": false
   },
   "ca": {
     "code": "ca",
-    "flag": "🇨🇦",
+    "flag": "\ud83c\udde8\ud83c\udde6",
     "name": "CA",
     "desc": "Canada (Toronto)",
     "continent": "Americas",
@@ -107,11 +680,12 @@
     "uuid": "22222222-0003-4000-8000-000000000003",
     "email": "pro-ca@karajlasik.ir",
     "is_core": true,
-    "default_enabled": true
+    "default_enabled": true,
+    "is_static": false
   },
   "tr": {
     "code": "tr",
-    "flag": "🇹🇷",
+    "flag": "\ud83c\uddf9\ud83c\uddf7",
     "name": "TR",
     "desc": "Turkey (Istanbul)",
     "continent": "Europe",
@@ -121,39 +695,12 @@
     "uuid": "22222222-0004-4000-8000-000000000004",
     "email": "pro-tr@karajlasik.ir",
     "is_core": true,
-    "default_enabled": true
-  },
-  "de": {
-    "code": "de",
-    "flag": "🇩🇪",
-    "name": "DE",
-    "desc": "Germany (Frankfurt)",
-    "continent": "Europe",
-    "provider": "surfshark",
-    "endpoint": "de-fra-st001.prod.surfshark.com:51820",
-    "pubkey": "k4Yf58iVd1V54vDpB4pbrz8QafNn3y5P9Yc/kQvy4TA=",
-    "uuid": "22222222-0010-4000-8000-000000000010",
-    "email": "pro-de@karajlasik.ir",
-    "is_core": true,
-    "default_enabled": true
-  },
-  "nl": {
-    "code": "nl",
-    "flag": "🇳🇱",
-    "name": "NL",
-    "desc": "Netherlands (Amsterdam)",
-    "continent": "Europe",
-    "provider": "surfshark",
-    "endpoint": "nl-ams-st001.prod.surfshark.com:51820",
-    "pubkey": "w8Yf58iVd1V54vDpB4pbrz8QafNn3y5P9Yc/kQvy4TA=",
-    "uuid": "22222222-0011-4000-8000-000000000011",
-    "email": "pro-nl@karajlasik.ir",
-    "is_core": true,
-    "default_enabled": true
+    "default_enabled": true,
+    "is_static": false
   },
   "al": {
     "code": "al",
-    "flag": "🇦🇱",
+    "flag": "\ud83c\udde6\ud83c\uddf1",
     "name": "AL",
     "desc": "Albania (Tirana)",
     "continent": "Europe",
@@ -163,11 +710,12 @@
     "uuid": "22222222-0005-4000-8000-000000000005",
     "email": "pro-al@karajlasik.ir",
     "is_core": true,
-    "default_enabled": true
+    "default_enabled": true,
+    "is_static": false
   },
   "ad": {
     "code": "ad",
-    "flag": "🇦🇩",
+    "flag": "\ud83c\udde6\ud83c\udde9",
     "name": "AD",
     "desc": "Andorra (Andorra la Vella)",
     "continent": "Europe",
@@ -177,11 +725,12 @@
     "uuid": "22222222-0006-4000-8000-000000000006",
     "email": "pro-ad@karajlasik.ir",
     "is_core": true,
-    "default_enabled": true
+    "default_enabled": true,
+    "is_static": false
   },
   "bs": {
     "code": "bs",
-    "flag": "🇧🇸",
+    "flag": "\ud83c\udde7\ud83c\uddf8",
     "name": "BS",
     "desc": "Bahamas (Nassau)",
     "continent": "Americas",
@@ -191,11 +740,12 @@
     "uuid": "22222222-0007-4000-8000-000000000007",
     "email": "pro-bs@karajlasik.ir",
     "is_core": true,
-    "default_enabled": true
+    "default_enabled": true,
+    "is_static": false
   },
   "az": {
     "code": "az",
-    "flag": "🇦🇿",
+    "flag": "\ud83c\udde6\ud83c\uddff",
     "name": "AZ",
     "desc": "Azerbaijan (Baku)",
     "continent": "Asia",
@@ -205,11 +755,12 @@
     "uuid": "22222222-0008-4000-8000-000000000008",
     "email": "pro-az@karajlasik.ir",
     "is_core": true,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "gb": {
     "code": "gb",
-    "flag": "🇬🇧",
+    "flag": "\ud83c\uddec\ud83c\udde7",
     "name": "GB",
     "desc": "United Kingdom (London)",
     "continent": "Europe",
@@ -219,11 +770,12 @@
     "uuid": "22222222-0101-4000-8000-000000000101",
     "email": "pro-gb@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "fr": {
     "code": "fr",
-    "flag": "🇫🇷",
+    "flag": "\ud83c\uddeb\ud83c\uddf7",
     "name": "FR",
     "desc": "France (Paris)",
     "continent": "Europe",
@@ -233,11 +785,12 @@
     "uuid": "22222222-0102-4000-8000-000000000102",
     "email": "pro-fr@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "ch": {
     "code": "ch",
-    "flag": "🇨🇭",
+    "flag": "\ud83c\udde8\ud83c\udded",
     "name": "CH",
     "desc": "Switzerland (Zurich)",
     "continent": "Europe",
@@ -247,11 +800,12 @@
     "uuid": "22222222-0103-4000-8000-000000000103",
     "email": "pro-ch@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "se": {
     "code": "se",
-    "flag": "🇸🇪",
+    "flag": "\ud83c\uddf8\ud83c\uddea",
     "name": "SE",
     "desc": "Sweden (Stockholm)",
     "continent": "Europe",
@@ -261,11 +815,12 @@
     "uuid": "22222222-0104-4000-8000-000000000104",
     "email": "pro-se@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "no": {
     "code": "no",
-    "flag": "🇳🇴",
+    "flag": "\ud83c\uddf3\ud83c\uddf4",
     "name": "NO",
     "desc": "Norway (Oslo)",
     "continent": "Europe",
@@ -275,11 +830,12 @@
     "uuid": "22222222-0105-4000-8000-000000000105",
     "email": "pro-no@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "fi": {
     "code": "fi",
-    "flag": "🇫🇮",
+    "flag": "\ud83c\uddeb\ud83c\uddee",
     "name": "FI",
     "desc": "Finland (Helsinki)",
     "continent": "Europe",
@@ -289,11 +845,12 @@
     "uuid": "22222222-0106-4000-8000-000000000106",
     "email": "pro-fi@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "dk": {
     "code": "dk",
-    "flag": "🇩🇰",
+    "flag": "\ud83c\udde9\ud83c\uddf0",
     "name": "DK",
     "desc": "Denmark (Copenhagen)",
     "continent": "Europe",
@@ -303,11 +860,12 @@
     "uuid": "22222222-0107-4000-8000-000000000107",
     "email": "pro-dk@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "be": {
     "code": "be",
-    "flag": "🇧🇪",
+    "flag": "\ud83c\udde7\ud83c\uddea",
     "name": "BE",
     "desc": "Belgium (Brussels)",
     "continent": "Europe",
@@ -317,11 +875,12 @@
     "uuid": "22222222-0108-4000-8000-000000000108",
     "email": "pro-be@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "ie": {
     "code": "ie",
-    "flag": "🇮🇪",
+    "flag": "\ud83c\uddee\ud83c\uddea",
     "name": "IE",
     "desc": "Ireland (Dublin)",
     "continent": "Europe",
@@ -331,11 +890,12 @@
     "uuid": "22222222-0109-4000-8000-000000000109",
     "email": "pro-ie@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "it": {
     "code": "it",
-    "flag": "🇮🇹",
+    "flag": "\ud83c\uddee\ud83c\uddf9",
     "name": "IT",
     "desc": "Italy (Rome)",
     "continent": "Europe",
@@ -345,11 +905,12 @@
     "uuid": "22222222-0110-4000-8000-000000000110",
     "email": "pro-it@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "es": {
     "code": "es",
-    "flag": "🇪🇸",
+    "flag": "\ud83c\uddea\ud83c\uddf8",
     "name": "ES",
     "desc": "Spain (Madrid)",
     "continent": "Europe",
@@ -359,11 +920,12 @@
     "uuid": "22222222-0111-4000-8000-000000000111",
     "email": "pro-es@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "pt": {
     "code": "pt",
-    "flag": "🇵🇹",
+    "flag": "\ud83c\uddf5\ud83c\uddf9",
     "name": "PT",
     "desc": "Portugal (Lisbon)",
     "continent": "Europe",
@@ -373,11 +935,12 @@
     "uuid": "22222222-0112-4000-8000-000000000112",
     "email": "pro-pt@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "at": {
     "code": "at",
-    "flag": "🇦🇹",
+    "flag": "\ud83c\udde6\ud83c\uddf9",
     "name": "AT",
     "desc": "Austria (Vienna)",
     "continent": "Europe",
@@ -387,11 +950,12 @@
     "uuid": "22222222-0113-4000-8000-000000000113",
     "email": "pro-at@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "pl": {
     "code": "pl",
-    "flag": "🇵🇱",
+    "flag": "\ud83c\uddf5\ud83c\uddf1",
     "name": "PL",
     "desc": "Poland (Warsaw)",
     "continent": "Europe",
@@ -401,11 +965,12 @@
     "uuid": "22222222-0114-4000-8000-000000000114",
     "email": "pro-pl@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "cz": {
     "code": "cz",
-    "flag": "🇨🇿",
+    "flag": "\ud83c\udde8\ud83c\uddff",
     "name": "CZ",
     "desc": "Czech Republic (Prague)",
     "continent": "Europe",
@@ -415,11 +980,12 @@
     "uuid": "22222222-0115-4000-8000-000000000115",
     "email": "pro-cz@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "sk": {
     "code": "sk",
-    "flag": "🇸🇰",
+    "flag": "\ud83c\uddf8\ud83c\uddf0",
     "name": "SK",
     "desc": "Slovakia (Bratislava)",
     "continent": "Europe",
@@ -429,11 +995,12 @@
     "uuid": "22222222-0116-4000-8000-000000000116",
     "email": "pro-sk@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "hu": {
     "code": "hu",
-    "flag": "🇭🇺",
+    "flag": "\ud83c\udded\ud83c\uddfa",
     "name": "HU",
     "desc": "Hungary (Budapest)",
     "continent": "Europe",
@@ -443,11 +1010,12 @@
     "uuid": "22222222-0117-4000-8000-000000000117",
     "email": "pro-hu@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "ro": {
     "code": "ro",
-    "flag": "🇷🇴",
+    "flag": "\ud83c\uddf7\ud83c\uddf4",
     "name": "RO",
     "desc": "Romania (Bucharest)",
     "continent": "Europe",
@@ -457,11 +1025,12 @@
     "uuid": "22222222-0118-4000-8000-000000000118",
     "email": "pro-ro@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "bg": {
     "code": "bg",
-    "flag": "🇧🇬",
+    "flag": "\ud83c\udde7\ud83c\uddec",
     "name": "BG",
     "desc": "Bulgaria (Sofia)",
     "continent": "Europe",
@@ -471,11 +1040,12 @@
     "uuid": "22222222-0119-4000-8000-000000000119",
     "email": "pro-bg@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "gr": {
     "code": "gr",
-    "flag": "🇬🇷",
+    "flag": "\ud83c\uddec\ud83c\uddf7",
     "name": "GR",
     "desc": "Greece (Athens)",
     "continent": "Europe",
@@ -485,11 +1055,12 @@
     "uuid": "22222222-0120-4000-8000-000000000120",
     "email": "pro-gr@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "cy": {
     "code": "cy",
-    "flag": "🇨🇾",
+    "flag": "\ud83c\udde8\ud83c\uddfe",
     "name": "CY",
     "desc": "Cyprus (Nicosia)",
     "continent": "Europe",
@@ -499,11 +1070,12 @@
     "uuid": "22222222-0121-4000-8000-000000000121",
     "email": "pro-cy@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "hr": {
     "code": "hr",
-    "flag": "🇭🇷",
+    "flag": "\ud83c\udded\ud83c\uddf7",
     "name": "HR",
     "desc": "Croatia (Zagreb)",
     "continent": "Europe",
@@ -513,11 +1085,12 @@
     "uuid": "22222222-0122-4000-8000-000000000122",
     "email": "pro-hr@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "si": {
     "code": "si",
-    "flag": "🇸🇮",
+    "flag": "\ud83c\uddf8\ud83c\uddee",
     "name": "SI",
     "desc": "Slovenia (Ljubljana)",
     "continent": "Europe",
@@ -527,11 +1100,12 @@
     "uuid": "22222222-0123-4000-8000-000000000123",
     "email": "pro-si@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "rs": {
     "code": "rs",
-    "flag": "🇷🇸",
+    "flag": "\ud83c\uddf7\ud83c\uddf8",
     "name": "RS",
     "desc": "Serbia (Belgrade)",
     "continent": "Europe",
@@ -541,11 +1115,12 @@
     "uuid": "22222222-0124-4000-8000-000000000124",
     "email": "pro-rs@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "ba": {
     "code": "ba",
-    "flag": "🇧🇦",
+    "flag": "\ud83c\udde7\ud83c\udde6",
     "name": "BA",
     "desc": "Bosnia and Herzegovina (Sarajevo)",
     "continent": "Europe",
@@ -555,11 +1130,12 @@
     "uuid": "22222222-0125-4000-8000-000000000125",
     "email": "pro-ba@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "mk": {
     "code": "mk",
-    "flag": "🇲🇰",
+    "flag": "\ud83c\uddf2\ud83c\uddf0",
     "name": "MK",
     "desc": "North Macedonia (Skopje)",
     "continent": "Europe",
@@ -569,11 +1145,12 @@
     "uuid": "22222222-0126-4000-8000-000000000126",
     "email": "pro-mk@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "ee": {
     "code": "ee",
-    "flag": "🇪🇪",
+    "flag": "\ud83c\uddea\ud83c\uddea",
     "name": "EE",
     "desc": "Estonia (Tallinn)",
     "continent": "Europe",
@@ -583,11 +1160,12 @@
     "uuid": "22222222-0127-4000-8000-000000000127",
     "email": "pro-ee@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "lv": {
     "code": "lv",
-    "flag": "🇱🇻",
+    "flag": "\ud83c\uddf1\ud83c\uddfb",
     "name": "LV",
     "desc": "Latvia (Riga)",
     "continent": "Europe",
@@ -597,11 +1175,12 @@
     "uuid": "22222222-0128-4000-8000-000000000128",
     "email": "pro-lv@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "lt": {
     "code": "lt",
-    "flag": "🇱🇹",
+    "flag": "\ud83c\uddf1\ud83c\uddf9",
     "name": "LT",
     "desc": "Lithuania (Vilnius)",
     "continent": "Europe",
@@ -611,11 +1190,12 @@
     "uuid": "22222222-0129-4000-8000-000000000129",
     "email": "pro-lt@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "md": {
     "code": "md",
-    "flag": "🇲🇩",
+    "flag": "\ud83c\uddf2\ud83c\udde9",
     "name": "MD",
     "desc": "Moldova (Chisinau)",
     "continent": "Europe",
@@ -625,11 +1205,12 @@
     "uuid": "22222222-0130-4000-8000-000000000130",
     "email": "pro-md@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "ua": {
     "code": "ua",
-    "flag": "🇺🇦",
+    "flag": "\ud83c\uddfa\ud83c\udde6",
     "name": "UA",
     "desc": "Ukraine (Kyiv)",
     "continent": "Europe",
@@ -639,11 +1220,12 @@
     "uuid": "22222222-0131-4000-8000-000000000131",
     "email": "pro-ua@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "is": {
     "code": "is",
-    "flag": "🇮🇸",
+    "flag": "\ud83c\uddee\ud83c\uddf8",
     "name": "IS",
     "desc": "Iceland (Reykjavik)",
     "continent": "Europe",
@@ -653,11 +1235,12 @@
     "uuid": "22222222-0132-4000-8000-000000000132",
     "email": "pro-is@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "lu": {
     "code": "lu",
-    "flag": "🇱🇺",
+    "flag": "\ud83c\uddf1\ud83c\uddfa",
     "name": "LU",
     "desc": "Luxembourg (Steinsel)",
     "continent": "Europe",
@@ -667,11 +1250,12 @@
     "uuid": "22222222-0133-4000-8000-000000000133",
     "email": "pro-lu@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "am": {
     "code": "am",
-    "flag": "🇦🇲",
+    "flag": "\ud83c\udde6\ud83c\uddf2",
     "name": "AM",
     "desc": "Armenia (Yerevan)",
     "continent": "Asia",
@@ -681,11 +1265,12 @@
     "uuid": "22222222-0134-4000-8000-000000000134",
     "email": "pro-am@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "ge": {
     "code": "ge",
-    "flag": "🇬🇪",
+    "flag": "\ud83c\uddec\ud83c\uddea",
     "name": "GE",
     "desc": "Georgia (Tbilisi)",
     "continent": "Asia",
@@ -695,11 +1280,12 @@
     "uuid": "22222222-0135-4000-8000-000000000135",
     "email": "pro-ge@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "kz": {
     "code": "kz",
-    "flag": "🇰🇿",
+    "flag": "\ud83c\uddf0\ud83c\uddff",
     "name": "KZ",
     "desc": "Kazakhstan (Oral)",
     "continent": "Asia",
@@ -709,11 +1295,12 @@
     "uuid": "22222222-0136-4000-8000-000000000136",
     "email": "pro-kz@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "ae": {
     "code": "ae",
-    "flag": "🇦🇪",
+    "flag": "\ud83c\udde6\ud83c\uddea",
     "name": "AE",
     "desc": "United Arab Emirates (Dubai)",
     "continent": "Asia",
@@ -723,11 +1310,12 @@
     "uuid": "22222222-0137-4000-8000-000000000137",
     "email": "pro-ae@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "il": {
     "code": "il",
-    "flag": "🇮🇱",
+    "flag": "\ud83c\uddee\ud83c\uddf1",
     "name": "IL",
     "desc": "Israel (Tel Aviv)",
     "continent": "Asia",
@@ -737,11 +1325,12 @@
     "uuid": "22222222-0138-4000-8000-000000000138",
     "email": "pro-il@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "sg": {
     "code": "sg",
-    "flag": "🇸🇬",
+    "flag": "\ud83c\uddf8\ud83c\uddec",
     "name": "SG",
     "desc": "Singapore (Singapore)",
     "continent": "Asia",
@@ -751,11 +1340,12 @@
     "uuid": "22222222-0139-4000-8000-000000000139",
     "email": "pro-sg@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "kr": {
     "code": "kr",
-    "flag": "🇰🇷",
+    "flag": "\ud83c\uddf0\ud83c\uddf7",
     "name": "KR",
     "desc": "South Korea (Seoul)",
     "continent": "Asia",
@@ -765,11 +1355,12 @@
     "uuid": "22222222-0140-4000-8000-000000000140",
     "email": "pro-kr@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "hk": {
     "code": "hk",
-    "flag": "🇭🇰",
+    "flag": "\ud83c\udded\ud83c\uddf0",
     "name": "HK",
     "desc": "Hong Kong (Hong Kong)",
     "continent": "Asia",
@@ -779,11 +1370,12 @@
     "uuid": "22222222-0141-4000-8000-000000000141",
     "email": "pro-hk@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "tw": {
     "code": "tw",
-    "flag": "🇹🇼",
+    "flag": "\ud83c\uddf9\ud83c\uddfc",
     "name": "TW",
     "desc": "Taiwan (Taipei)",
     "continent": "Asia",
@@ -793,11 +1385,12 @@
     "uuid": "22222222-0142-4000-8000-000000000142",
     "email": "pro-tw@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "my": {
     "code": "my",
-    "flag": "🇲🇾",
+    "flag": "\ud83c\uddf2\ud83c\uddfe",
     "name": "MY",
     "desc": "Malaysia (Kuala Lumpur)",
     "continent": "Asia",
@@ -807,11 +1400,12 @@
     "uuid": "22222222-0143-4000-8000-000000000143",
     "email": "pro-my@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "th": {
     "code": "th",
-    "flag": "🇹🇭",
+    "flag": "\ud83c\uddf9\ud83c\udded",
     "name": "TH",
     "desc": "Thailand (Bangkok)",
     "continent": "Asia",
@@ -821,11 +1415,12 @@
     "uuid": "22222222-0144-4000-8000-000000000144",
     "email": "pro-th@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "au": {
     "code": "au",
-    "flag": "🇦🇺",
+    "flag": "\ud83c\udde6\ud83c\uddfa",
     "name": "AU",
     "desc": "Australia (Sydney)",
     "continent": "Oceania",
@@ -835,11 +1430,12 @@
     "uuid": "22222222-0145-4000-8000-000000000145",
     "email": "pro-au@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "nz": {
     "code": "nz",
-    "flag": "🇳🇿",
+    "flag": "\ud83c\uddf3\ud83c\uddff",
     "name": "NZ",
     "desc": "New Zealand (Auckland)",
     "continent": "Oceania",
@@ -849,11 +1445,12 @@
     "uuid": "22222222-0146-4000-8000-000000000146",
     "email": "pro-nz@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "br": {
     "code": "br",
-    "flag": "🇧🇷",
+    "flag": "\ud83c\udde7\ud83c\uddf7",
     "name": "BR",
     "desc": "Brazil (Sao Paulo)",
     "continent": "Americas",
@@ -863,11 +1460,12 @@
     "uuid": "22222222-0147-4000-8000-000000000147",
     "email": "pro-br@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "cl": {
     "code": "cl",
-    "flag": "🇨🇱",
+    "flag": "\ud83c\udde8\ud83c\uddf1",
     "name": "CL",
     "desc": "Chile (Santiago)",
     "continent": "Americas",
@@ -877,11 +1475,12 @@
     "uuid": "22222222-0148-4000-8000-000000000148",
     "email": "pro-cl@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "mx": {
     "code": "mx",
-    "flag": "🇲🇽",
+    "flag": "\ud83c\uddf2\ud83c\uddfd",
     "name": "MX",
     "desc": "Mexico (Queretaro)",
     "continent": "Americas",
@@ -891,11 +1490,12 @@
     "uuid": "22222222-0149-4000-8000-000000000149",
     "email": "pro-mx@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "za": {
     "code": "za",
-    "flag": "🇿🇦",
+    "flag": "\ud83c\uddff\ud83c\udde6",
     "name": "ZA",
     "desc": "South Africa (Johannesburg)",
     "continent": "Africa",
@@ -905,11 +1505,12 @@
     "uuid": "22222222-0150-4000-8000-000000000150",
     "email": "pro-za@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "eg": {
     "code": "eg",
-    "flag": "🇪🇬",
+    "flag": "\ud83c\uddea\ud83c\uddec",
     "name": "EG",
     "desc": "Egypt (Cairo)",
     "continent": "Africa",
@@ -919,11 +1520,12 @@
     "uuid": "22222222-0151-4000-8000-000000000151",
     "email": "pro-eg@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "ng": {
     "code": "ng",
-    "flag": "🇳🇬",
+    "flag": "\ud83c\uddf3\ud83c\uddec",
     "name": "NG",
     "desc": "Nigeria (Lagos)",
     "continent": "Africa",
@@ -933,11 +1535,12 @@
     "uuid": "22222222-0152-4000-8000-000000000152",
     "email": "pro-ng@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "ma": {
     "code": "ma",
-    "flag": "🇲🇦",
+    "flag": "\ud83c\uddf2\ud83c\udde6",
     "name": "MA",
     "desc": "Morocco (Rabat)",
     "continent": "Africa",
@@ -947,11 +1550,12 @@
     "uuid": "22222222-0153-4000-8000-000000000153",
     "email": "pro-ma@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "kh": {
     "code": "kh",
-    "flag": "🇰🇭",
+    "flag": "\ud83c\uddf0\ud83c\udded",
     "name": "KH",
     "desc": "Cambodia (Phnom Penh)",
     "continent": "Asia",
@@ -961,11 +1565,12 @@
     "uuid": "22222222-0154-4000-8000-000000000154",
     "email": "pro-kh@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "mn": {
     "code": "mn",
-    "flag": "🇲🇳",
+    "flag": "\ud83c\uddf2\ud83c\uddf3",
     "name": "MN",
     "desc": "Mongolia (Ulaanbaatar)",
     "continent": "Asia",
@@ -975,11 +1580,12 @@
     "uuid": "22222222-0155-4000-8000-000000000155",
     "email": "pro-mn@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   },
   "mm": {
     "code": "mm",
-    "flag": "🇲🇲",
+    "flag": "\ud83c\uddf2\ud83c\uddf2",
     "name": "MM",
     "desc": "Myanmar (Naypyidaw)",
     "continent": "Asia",
@@ -989,6 +1595,7 @@
     "uuid": "22222222-0156-4000-8000-000000000156",
     "email": "pro-mm@karajlasik.ir",
     "is_core": false,
-    "default_enabled": false
+    "default_enabled": false,
+    "is_static": false
   }
 }

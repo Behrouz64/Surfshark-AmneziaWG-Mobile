@@ -769,6 +769,7 @@ html_content = f'''<!DOCTYPE html>
                             <!-- Quick Action Presets -->
                             <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; padding: 6px; background: rgba(0,0,0,0.2); border-radius: var(--radius-md);">
                                 <button type="button" id="btn-preset-core-proton" class="btn btn-secondary" style="font-size: 10px; padding: 3px 8px;">⚡ Core + Proton (Recommended)</button>
+                                <button type="button" id="btn-preset-static-top" class="btn btn-secondary" style="font-size: 10px; padding: 3px 8px;">📌 Top Static (6)</button>
                                 <button type="button" id="btn-preset-proton-only" class="btn btn-secondary" style="font-size: 10px; padding: 3px 8px;">🛡️ Proton Only (3)</button>
                                 <button type="button" id="btn-select-all-filtered" class="btn btn-secondary" style="font-size: 10px; padding: 3px 8px;">✅ Select Visible</button>
                                 <button type="button" id="btn-deselect-all-filtered" class="btn btn-secondary" style="font-size: 10px; padding: 3px 8px;">❌ Deselect Visible</button>
@@ -2034,6 +2035,7 @@ html_content = f'''<!DOCTYPE html>
             let filtered = allUsServerNodes.filter(n => {{
                 // Category match
                 if (currentUsNodeCat === "active" && !n.enabled) return false;
+                if (currentUsNodeCat === "static" && !n.is_static) return false;
                 if (currentUsNodeCat === "proton" && n.provider !== "proton") return false;
                 if (currentUsNodeCat === "core" && (!n.is_core || n.provider === "proton")) return false;
                 if (["Europe", "Americas", "Africa"].includes(currentUsNodeCat) && n.continent !== currentUsNodeCat) return false;
@@ -2045,7 +2047,10 @@ html_content = f'''<!DOCTYPE html>
                     const matchDesc = (n.desc || "").toLowerCase().includes(q);
                     const matchCode = (n.code || "").toLowerCase().includes(q);
                     const matchCont = (n.continent || "").toLowerCase().includes(q);
-                    return matchName || matchDesc || matchCode || matchCont;
+                    const matchCountry = (n.country || "").toLowerCase().includes(q);
+                    const matchCity = (n.city || "").toLowerCase().includes(q);
+                    const matchStatic = q === "static" && n.is_static;
+                    return matchName || matchDesc || matchCode || matchCont || matchCountry || matchCity || matchStatic;
                 }}
                 return true;
             }});
@@ -2064,6 +2069,8 @@ html_content = f'''<!DOCTYPE html>
             filtered.forEach(n => {{
                 let grpName = n.continent || "Other";
                 if (n.provider === "proton") grpName = "🛡️ Proton VPN (Proton AG Network)";
+                else if (currentUsNodeCat === "static") grpName = `📌 Static IP — ${{n.country || n.continent}}`;
+                else if (n.is_static) grpName = `📌 Static IP (${{n.country || n.continent}})`;
                 else if (n.is_core) grpName = `⚡ Featured Core (${{n.continent}})`;
                 else grpName = `🌍 Surfshark — ${{n.continent}}`;
                 groups[grpName] = groups[grpName] || [];
@@ -2082,8 +2089,17 @@ html_content = f'''<!DOCTYPE html>
                 `;
 
                 grpNodes.forEach(n => {{
-                    const badgeClass = n.provider === "proton" ? "background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4);" : (n.is_core ? "background: rgba(6, 182, 212, 0.2); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.4);" : "background: rgba(255, 255, 255, 0.05); color: var(--text-muted); border: 1px solid var(--border-color);");
-                    const badgeText = n.provider === "proton" ? "Proton" : (n.is_core ? "Core" : "Global");
+                    let badgesHtml = "";
+                    if (n.is_static) {{
+                        badgesHtml += `<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); font-weight: 600;">📌 Static</span>`;
+                    }}
+                    if (n.provider === "proton") {{
+                        badgesHtml += `<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4);">Proton</span>`;
+                    }} else if (n.is_core && !n.is_static) {{
+                        badgesHtml += `<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(6, 182, 212, 0.2); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.4);">Core</span>`;
+                    }} else if (!n.is_static) {{
+                        badgesHtml += `<span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; background: rgba(255, 255, 255, 0.05); color: var(--text-muted); border: 1px solid var(--border-color);">Global</span>`;
+                    }}
 
                     html += `
                         <label style="display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; border-radius: 6px; cursor: pointer; transition: background 0.15s; background: ${{n.enabled ? 'rgba(6, 182, 212, 0.05)' : 'transparent'}};">
@@ -2092,7 +2108,7 @@ html_content = f'''<!DOCTYPE html>
                                 <div style="display: flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden;">
                                     <span style="font-size: 15px; flex-shrink: 0;">${{n.flag}}</span>
                                     <strong style="color: var(--text-primary); font-size: 12px; white-space: nowrap;">${{escapeHtml(n.name)}}</strong>
-                                    <span style="font-size: 9px; padding: 1px 5px; border-radius: 4px; ${{badgeClass}}">${{badgeText}}</span>
+                                    ${{badgesHtml}}
                                     <span style="color: var(--text-muted); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${{escapeHtml(n.desc)}}</span>
                                 </div>
                             </div>
@@ -3186,6 +3202,20 @@ html_content = f'''<!DOCTYPE html>
                 renderUsNodesCategories();
                 renderUsServerNodes();
                 showToast("⚡ Selected Core + Proton nodes (13 active)");
+            }});
+        }}
+
+        // Preset: Top Static IPs (6 nodes)
+        const btnPresetStaticTop = document.getElementById("btn-preset-static-top");
+        if (btnPresetStaticTop) {{
+            btnPresetStaticTop.addEventListener("click", () => {{
+                const targetCodes = ["us", "uk", "jp", "de", "nl", "sg-st09"];
+                allUsServerNodes.forEach(n => {{
+                    n.enabled = targetCodes.includes(n.code);
+                }});
+                renderUsNodesCategories();
+                renderUsServerNodes();
+                showToast("📌 Selected Top Static IP nodes (6 active)");
             }});
         }}
 
