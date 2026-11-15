@@ -11,6 +11,89 @@ with open(os.path.join(BASE_DIR, "data", "surfshark_servers.json"), "r", encodin
 servers = catalog["servers"]
 ui = catalog.get("user_interface", {})
 
+# Load nodes catalog for node_code matching
+nodes_catalog_path = os.path.join(BASE_DIR, "nodes_catalog.json")
+nodes_cat = {}
+if os.path.exists(nodes_catalog_path):
+    with open(nodes_catalog_path, "r", encoding="utf-8") as f:
+        nodes_cat = json.load(f)
+
+cat_by_pubkey = {v.get("pubkey"): k for k, v in nodes_cat.items() if v.get("pubkey")}
+
+# Append Proton VPN exit nodes to catalog servers
+proton_servers = [
+    {
+        "continent": "Proton VPN",
+        "country": "United States",
+        "country_code": "US",
+        "city": "Secaucus, NJ #131",
+        "hostname": "205.142.240.210",
+        "port": 51820,
+        "public_key": "/HvEnSU5JaswyBC/YFs74eGLXqLdzsaFeVT8SD1KYAc=",
+        "resolved_ips": ["205.142.240.210"],
+        "secure_core": False,
+        "port_forward": False,
+        "server_name": "Proton-US",
+        "provider": "proton",
+        "node_code": "proton-us",
+        "is_static": False
+    },
+    {
+        "continent": "Proton VPN",
+        "country": "Belgium",
+        "country_code": "BE",
+        "city": "Brussels #31",
+        "hostname": "91.90.123.50",
+        "port": 51820,
+        "public_key": "ehajSjB9QTlhy30zbemS7ypGrQ+5Ej71jJ/+52JRkGI=",
+        "resolved_ips": ["91.90.123.50"],
+        "secure_core": False,
+        "port_forward": False,
+        "server_name": "Proton-BE",
+        "provider": "proton",
+        "node_code": "proton-be",
+        "is_static": False
+    },
+    {
+        "continent": "Proton VPN",
+        "country": "Albania",
+        "country_code": "AL",
+        "city": "Tirana #38",
+        "hostname": "31.171.153.98",
+        "port": 51820,
+        "public_key": "BJB4IShqTaljRHgR7diKU0t4TAfvmFYUgJ+GfT1cfi4=",
+        "resolved_ips": ["31.171.153.98"],
+        "secure_core": False,
+        "port_forward": False,
+        "server_name": "Proton-AL",
+        "provider": "proton",
+        "node_code": "proton-al",
+        "is_static": False
+    }
+]
+
+existing_hosts = set(s.get("hostname") for s in servers)
+for ps in proton_servers:
+    if ps["hostname"] not in existing_hosts:
+        servers.append(ps)
+
+for s in servers:
+    if "node_code" in s and s["node_code"]:
+        continue
+    pk = s.get("public_key")
+    code = cat_by_pubkey.get(pk)
+    if not code:
+        h = s.get("hostname", "").split(".")[0]
+        if h in nodes_cat:
+            code = h
+    if not code:
+        cc = s.get("country_code", "").lower()
+        if cc in nodes_cat:
+            code = cc
+        elif cc == "gb" and "uk" in nodes_cat:
+            code = "uk"
+    s["node_code"] = code or s.get("country_code", "").lower()
+
 # Read helper scripts
 with open(os.path.join(BASE_DIR, "static", "qrcode.min.js"), "r", encoding="utf-8") as f:
     qrcode_js = f.read()
@@ -32,6 +115,7 @@ asia_cnt = len([s for s in servers if s.get("continent") == "Asia"])
 africa_cnt = len([s for s in servers if s.get("continent") == "Africa"])
 oceania_cnt = len([s for s in servers if s.get("continent") == "Oceania"])
 static_cnt = len([s for s in servers if s.get("is_static") or "st0" in s.get("hostname", "")])
+proton_cnt = len([s for s in servers if s.get("provider") == "proton" or s.get("continent") == "Proton VPN"])
 
 html_content = f'''<!DOCTYPE html>
 <html lang="en">
@@ -113,7 +197,7 @@ html_content = f'''<!DOCTYPE html>
                 <h1 class="app-title">Surfshark AWG Mobile</h1>
                 <div style="display: flex; align-items: center; gap: 6px;">
                     <p class="app-subtitle" style="margin: 0;">Standalone DoH &amp; Shadowrocket Importer</p>
-                    <span style="font-size: 9px; padding: 1px 6px; border-radius: 999px; background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); font-weight: 600;">v5.5 Layout Fixed</span>
+                    <span style="font-size: 9px; padding: 1px 6px; border-radius: 999px; background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); font-weight: 600;">v5.6 Node Actions</span>
                 </div>
             </div>
         </div>
@@ -204,6 +288,7 @@ html_content = f'''<!DOCTYPE html>
                 <button class="chip" data-continent="Africa">Africa ({africa_cnt})</button>
                 <button class="chip" data-continent="Oceania">Oceania ({oceania_cnt})</button>
                 <button class="chip" data-continent="Static">📌 Static IP ({static_cnt})</button>
+                <button class="chip" data-continent="Proton">🛡️ Proton ({proton_cnt})</button>
             </div>
 
             <div class="search-bar-row">
@@ -992,6 +1077,23 @@ html_content = f'''<!DOCTYPE html>
         }}
     }}
 
+    function escapeHtml(str) {{
+        if (!str) return "";
+        return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }}
+
+    const DEFAULT_CF_WORKER = "https://surfshark-amneziawg-sub.bsaidian.workers.dev";
+    function getEffectiveWorkerUrl() {{
+        try {{
+            const custom = localStorage.getItem("surfshark_cf_worker_url");
+            return (custom || DEFAULT_CF_WORKER).trim().replace(/\/+$/, "");
+        }} catch (e) {{
+            return DEFAULT_CF_WORKER;
+        }}
+    }}
+
+    let activeUsNodeCodes = new Set(["us", "uk", "jp", "ca", "tr", "de", "nl", "al", "ad", "bs", "proton-us", "proton-be", "proton-al"]);
+
     // State
     const App = {{
         servers: [],
@@ -1223,11 +1325,13 @@ html_content = f'''<!DOCTYPE html>
 
     // Config & Link Builders
     function buildRemark(srv, targetIp = null, index = 0, total = 1) {{
+        const icon = (srv.provider === "proton" || srv.continent === "Proton VPN") ? "🛡️" : "🦈";
+        const brand = (srv.provider === "proton" || srv.continent === "Proton VPN") ? "Proton" : "Surfshark";
         const loc = srv.city || srv.country;
         const ip = targetIp || srv.effective_ip || srv.hostname;
         const suffix = total > 1 ? ` #${{index + 1}}` : "";
         const pingStr = srv.ping_ms ? ` — ${{srv.ping_ms}}ms` : "";
-        return `🦈 ${{srv.flag}} ${{srv.country}} — ${{loc}}${{suffix}} (${{ip}})${{pingStr}}`;
+        return `${{icon}} ${{srv.flag}} ${{brand}} ${{srv.country}} — ${{loc}}${{suffix}} (${{ip}})${{pingStr}}`;
     }}
 
     function buildWireguardUrl(srv, targetIp = null, index = 0, total = 1) {{
@@ -1321,6 +1425,8 @@ html_content = f'''<!DOCTYPE html>
                 list = list.filter(s => s.continent === "Americas" || s.continent === "North America" || s.continent === "South America");
             }} else if (App.selectedContinent === "Static") {{
                 list = list.filter(s => s.is_static || (s.city && s.city.includes("Static")) || (s.hostname && s.hostname.includes("st0")));
+            }} else if (App.selectedContinent === "Proton") {{
+                list = list.filter(s => s.provider === "proton" || s.continent === "Proton VPN");
             }} else {{
                 list = list.filter(s => s.continent === App.selectedContinent);
             }}
@@ -1373,9 +1479,17 @@ html_content = f'''<!DOCTYPE html>
             const wgUrl = buildWireguardUrl(s, primaryIp, 0, ips.length);
             const deeplink = `shadowrocket://add/${{wgUrl}}`;
 
+            const nodeCode = s.node_code || (s.country_code ? s.country_code.toLowerCase() : "");
+            const isNodeActive = activeUsNodeCodes.has(nodeCode);
+
             let badgeHtml = "";
-            if (s.is_static || (s.city && s.city.includes("Static")) || (s.hostname && s.hostname.includes("st0"))) {{
+            if (s.provider === "proton" || s.continent === "Proton VPN") {{
+                badgeHtml += `<span class="badge" style="background: rgba(168, 85, 247, 0.18); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.35); font-size: 10px; margin-right: 4px;">🛡️ Proton</span>`;
+            }} else if (s.is_static || (s.city && s.city.includes("Static")) || (s.hostname && s.hostname.includes("st0"))) {{
                 badgeHtml += `<span class="badge" style="background: rgba(255, 171, 0, 0.15); color: #ffab00; border: 1px solid rgba(255, 171, 0, 0.3); font-size: 10px; margin-right: 4px;">📌 Static IP</span>`;
+            }}
+            if (isNodeActive) {{
+                badgeHtml = `<span class="badge badge-node-active" data-code="${{nodeCode}}" style="background: rgba(16, 185, 129, 0.18); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); font-size: 10px; margin-right: 4px; font-weight: 600;">🛰️ US Node</span>` + badgeHtml;
             }}
             if (s.is_doh_resolved) {{
                 badgeHtml += `<span class="badge badge-resolved">⚡ ${{s.ping_ms}}ms (${{ips.length}} IPs)</span>`;
@@ -1390,7 +1504,7 @@ html_content = f'''<!DOCTYPE html>
             `).join("");
 
             return `
-                <div class="server-card ${{s.is_doh_resolved ? 'working' : ''}}">
+                <div class="server-card ${{s.is_doh_resolved ? 'working' : ''}}" data-node-code="${{nodeCode}}">
                     <div class="server-card-top">
                         <div class="server-location">
                             <span class="server-flag">${{s.flag}}</span>
@@ -1414,6 +1528,9 @@ html_content = f'''<!DOCTYPE html>
                         <button class="btn-card-action btn-download-conf" data-idx="${{s._idx}}">
                             <span>💾</span> .conf
                         </button>
+                        <button type="button" class="btn-card-action btn-toggle-node ${{isNodeActive ? 'active-node' : ''}}" data-code="${{nodeCode}}" data-name="${{escapeHtml(s.country)}} - ${{escapeHtml(s.city)}}" title="${{isNodeActive ? 'Active in US Server 3-Hop Nodes (Click to Remove)' : 'Click to Add as US Server 3-Hop Node'}}">
+                            <span>${{isNodeActive ? '✅' : '➕'}}</span> ${{isNodeActive ? 'Active' : 'Node'}}
+                        </button>
                     </div>
                 </div>
             `;
@@ -1436,6 +1553,14 @@ html_content = f'''<!DOCTYPE html>
                 downloadConfFile(s);
             }});
         }});
+
+        container.querySelectorAll(".btn-toggle-node").forEach(b => {{
+            b.addEventListener("click", () => {{
+                const code = b.dataset.code;
+                const name = b.dataset.name;
+                toggleNodeFromMainPage(code, name, b);
+            }});
+        }});
     }}
 
     // Export Utilities
@@ -1451,6 +1576,101 @@ html_content = f'''<!DOCTYPE html>
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         showToast(`Downloaded ${{s.country}} .conf`);
+    }}
+
+    // Direct Toggle Node from Main Page
+    async function toggleNodeFromMainPage(code, name, btn) {{
+        if (!code) return;
+        const wasActive = activeUsNodeCodes.has(code);
+        const willBeActive = !wasActive;
+
+        btn.disabled = true;
+        const origHtml = btn.innerHTML;
+        btn.innerHTML = `<span>⏳</span> ...`;
+
+        try {{
+            if (willBeActive) {{
+                activeUsNodeCodes.add(code);
+            }} else {{
+                activeUsNodeCodes.delete(code);
+            }}
+
+            if (typeof allUsServerNodes !== "undefined" && Array.isArray(allUsServerNodes)) {{
+                const n = allUsServerNodes.find(item => item.code === code);
+                if (n) n.enabled = willBeActive;
+            }}
+
+            const enabledList = Array.from(activeUsNodeCodes);
+            const res = await fetch(getEffectiveWorkerUrl() + "/api/nodes", {{
+                method: "POST",
+                headers: {{ "Content-Type": "application/json" }},
+                body: JSON.stringify({{ enabled_nodes: enabledList }})
+            }});
+
+            const d = await res.json();
+            if (!res.ok || !d.success) {{
+                throw new Error(d.error || "Failed to sync with US server");
+            }}
+
+            syncMainPageNodeButtons();
+
+            if (willBeActive) {{
+                showToast(`✅ ${{name}} added to US Server 3-Hop! (${{activeUsNodeCodes.size}} active)`);
+            }} else {{
+                showToast(`➖ ${{name}} removed from US Server 3-Hop. (${{activeUsNodeCodes.size}} active)`);
+            }}
+
+            if (typeof renderUsServerNodes === "function") {{
+                renderUsServerNodes();
+            }}
+            if (typeof renderUsNodesCategories === "function") {{
+                renderUsNodesCategories();
+            }}
+        }} catch (err) {{
+            if (wasActive) {{
+                activeUsNodeCodes.add(code);
+            }} else {{
+                activeUsNodeCodes.delete(code);
+            }}
+            if (typeof allUsServerNodes !== "undefined" && Array.isArray(allUsServerNodes)) {{
+                const n = allUsServerNodes.find(item => item.code === code);
+                if (n) n.enabled = wasActive;
+            }}
+            btn.innerHTML = origHtml;
+            showToast(`❌ Error saving node: ${{err.message}}`);
+        }} finally {{
+            btn.disabled = false;
+        }}
+    }}
+
+    function syncMainPageNodeButtons() {{
+        document.querySelectorAll(".btn-toggle-node").forEach(b => {{
+            const code = b.dataset.code;
+            const isAct = activeUsNodeCodes.has(code);
+            b.className = `btn-card-action btn-toggle-node ${{isAct ? 'active-node' : ''}}`;
+            b.innerHTML = `<span>${{isAct ? '✅' : '➕'}}</span> ${{isAct ? 'Active' : 'Node'}}`;
+            b.title = isAct ? 'Active in US Server 3-Hop Nodes (Click to Remove)' : 'Click to Add as US Server 3-Hop Node';
+        }});
+        document.querySelectorAll(".server-card").forEach(card => {{
+            const code = card.dataset.nodeCode;
+            let badge = card.querySelector(".badge-node-active");
+            const isAct = activeUsNodeCodes.has(code);
+            if (isAct) {{
+                if (!badge) {{
+                    const topDiv = card.querySelector(".server-card-top > div:last-child");
+                    if (topDiv) {{
+                        const span = document.createElement("span");
+                        span.className = "badge badge-node-active";
+                        span.dataset.code = code;
+                        span.style.cssText = "background: rgba(16, 185, 129, 0.18); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); font-size: 10px; margin-right: 4px; font-weight: 600;";
+                        span.textContent = "🛰️ US Node";
+                        topDiv.prepend(span);
+                    }}
+                }}
+            }} else {{
+                if (badge) badge.remove();
+            }}
+        }});
     }}
 
     async function downloadAllZip() {{
@@ -1590,7 +1810,8 @@ html_content = f'''<!DOCTYPE html>
             flag: getFlagEmoji(s.country_code),
             effective_ip: (s.resolved_ips && s.resolved_ips[0]) || s.hostname,
             ping_ms: null,
-            is_doh_resolved: false
+            is_doh_resolved: false,
+            node_code: s.node_code || (s.country_code ? s.country_code.toLowerCase() : "")
         }}));
 
         document.getElementById("stat-total").textContent = App.servers.length;
@@ -2026,6 +2247,8 @@ html_content = f'''<!DOCTYPE html>
                 const data = await res.json();
                 allUsServerNodes = data.nodes || [];
                 usNodesCategories = data.categories || [];
+                activeUsNodeCodes = new Set(allUsServerNodes.filter(n => n.enabled).map(n => n.code));
+                syncMainPageNodeButtons();
                 renderUsNodesCategories();
                 renderUsServerNodes();
             }} catch (err) {{
@@ -3350,6 +3573,8 @@ html_content = f'''<!DOCTYPE html>
                     const d = await res.json();
                     if (!res.ok || !d.success) throw new Error(d.error || "Save failed");
                     showToast("✅ US Server nodes updated! " + enabledNodes.length + " countries active.");
+                    activeUsNodeCodes = new Set(enabledNodes);
+                    syncMainPageNodeButtons();
                     loadUsServerNodes();
                 }} catch (e) {{
                     alert("Error saving node settings: " + e.message);
@@ -3366,6 +3591,19 @@ html_content = f'''<!DOCTYPE html>
         renderManagedDevices();
 
         applyFilters();
+
+        // Background load active nodes to sync main page buttons on startup
+        fetch(getEffectiveWorkerUrl() + "/api/nodes")
+            .then(r => r.json())
+            .then(d => {{
+                if (d && d.nodes) {{
+                    allUsServerNodes = d.nodes;
+                    usNodesCategories = d.categories || [];
+                    activeUsNodeCodes = new Set(d.nodes.filter(n => n.enabled).map(n => n.code));
+                    syncMainPageNodeButtons();
+                }}
+            }})
+            .catch(err => console.warn("Background nodes fetch:", err));
     }});
     </script>
 </body>

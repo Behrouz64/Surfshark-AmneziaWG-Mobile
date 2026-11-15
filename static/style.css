@@ -571,17 +571,18 @@ body {
 
 /* Server Card Actions */
 .server-card-actions {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 8px;
-    padding-top: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-top: 6px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .btn-sr-add {
+    flex: 1 1 100%;
     background: linear-gradient(135deg, #2563eb, #38bdf8);
     color: #ffffff;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     padding: 8px 10px;
     border-radius: var(--radius-md);
@@ -592,19 +593,22 @@ body {
     gap: 6px;
     box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
     transition: transform 0.15s ease;
+    margin-bottom: 2px;
 }
 
 .btn-sr-add:active {
-    transform: scale(0.95);
+    transform: scale(0.97);
 }
 
 .btn-card-action {
+    flex: 1 1 calc(25% - 6px);
+    min-width: 58px;
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
     color: var(--text-secondary);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
-    padding: 8px 6px;
+    padding: 7px 4px;
     border-radius: var(--radius-md);
     cursor: pointer;
     display: flex;
@@ -613,12 +617,51 @@ body {
     gap: 4px;
     text-decoration: none;
     transition: all 0.15s ease;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .btn-card-action:active {
     background: var(--border-light);
     color: var(--text-primary);
-    transform: scale(0.95);
+    transform: scale(0.96);
+}
+
+.btn-toggle-node {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.btn-toggle-node.active-node {
+    background: rgba(16, 185, 129, 0.16) !important;
+    border-color: rgba(16, 185, 129, 0.5) !important;
+    color: #10b981 !important;
+}
+
+.btn-toggle-node.active-node:hover {
+    background: rgba(16, 185, 129, 0.28) !important;
+    border-color: #10b981 !important;
+}
+
+@media (min-width: 600px) {
+    .server-card-actions {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr 1fr 1fr 1.1fr;
+        gap: 8px;
+    }
+    .btn-sr-add {
+        flex: none;
+        margin-bottom: 0;
+        font-size: 13px;
+    }
+    .btn-card-action {
+        flex: none;
+        min-width: 0;
+        font-size: 12px;
+        padding: 8px 6px;
+    }
 }
 
 /* Empty State */
