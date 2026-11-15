@@ -111,7 +111,10 @@ html_content = f'''<!DOCTYPE html>
             <img src="icon-192.png" alt="App Icon" style="width: 34px; height: 34px; border-radius: 9px; border: 1px solid rgba(6, 182, 212, 0.4); box-shadow: 0 0 12px rgba(6, 182, 212, 0.2);" onerror="this.outerHTML='<div class=\'logo-icon\'>🦈</div>'">
             <div>
                 <h1 class="app-title">Surfshark AWG Mobile</h1>
-                <p class="app-subtitle">Standalone DoH &amp; Shadowrocket Importer</p>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <p class="app-subtitle" style="margin: 0;">Standalone DoH &amp; Shadowrocket Importer</p>
+                    <span style="font-size: 9px; padding: 1px 6px; border-radius: 999px; background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); font-weight: 600;">v5.4 Updated</span>
+                </div>
             </div>
         </div>
         <div class="header-actions">
@@ -1768,6 +1771,20 @@ html_content = f'''<!DOCTYPE html>
                 }});
             }}
         }});
+
+        // Force Hard Reload & Cache Purge
+        const btnPurgeCache = document.getElementById("btn-force-reload-app");
+        if (btnPurgeCache) {{
+            btnPurgeCache.addEventListener("click", () => {{
+                if (window.caches) {{
+                    caches.keys().then(names => {{
+                        for (let name of names) caches.delete(name);
+                    }});
+                }}
+                const cleanUrl = window.location.origin + window.location.pathname + "?_t=" + Date.now();
+                window.location.replace(cleanUrl);
+            }});
+        }}
 
         document.getElementById("btn-reset-settings").addEventListener("click", () => {{
             localStorage.removeItem("surfshark_awg_settings");
