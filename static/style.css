@@ -717,30 +717,59 @@ html.modal-open, body.modal-open {
 
 /* US Server Exit Nodes Mobile-Optimized Layout */
 .us-nodes-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding-bottom: 6px;
+    display: block !important;
+    width: 100%;
+    box-sizing: border-box;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(6, 182, 212, 0.4) rgba(0, 0, 0, 0.2);
+}
+
+.us-nodes-container::-webkit-scrollbar {
+    width: 5px;
+}
+
+.us-nodes-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.us-nodes-container::-webkit-scrollbar-thumb {
+    background: rgba(6, 182, 212, 0.4);
+    border-radius: 4px;
+}
+
+.us-nodes-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(6, 182, 212, 0.7);
 }
 
 .us-node-group {
+    display: block !important;
+    width: 100%;
+    box-sizing: border-box;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    overflow: hidden;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    flex-shrink: 0 !important;
+    min-height: -webkit-fit-content;
+    min-height: fit-content;
 }
 
 .us-node-group-header {
     background: rgba(255, 255, 255, 0.03);
     border-bottom: 1px solid var(--border-color);
-    padding: 8px 12px;
+    padding: 9px 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 11px;
     font-weight: 700;
     color: var(--accent-cyan);
+    min-height: 38px;
+    box-sizing: border-box;
+    border-top-left-radius: var(--radius-md);
+    border-top-right-radius: var(--radius-md);
 }
 
 .us-node-group-count {
@@ -752,23 +781,29 @@ html.modal-open, body.modal-open {
 .us-node-group-list {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 6px;
+    gap: 6px;
+    padding: 8px;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .us-node-card {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 9px 12px;
+    gap: 5px;
+    padding: 10px 12px;
     border-radius: 8px;
     cursor: pointer;
     background: var(--bg-main);
     border: 1px solid var(--border-color);
-    transition: background 0.15s ease, border-color 0.15s ease;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
     user-select: none;
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0 !important;
+    min-height: 52px;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .us-node-card:active {
@@ -896,6 +931,33 @@ html.modal-open, body.modal-open {
     font-size: 10px;
     color: var(--text-muted);
     flex-shrink: 0;
+}
+
+#us-nodes-category-pills,
+#us-nodes-presets-bar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(6, 182, 212, 0.4) transparent;
+}
+
+#us-nodes-category-pills::-webkit-scrollbar,
+#us-nodes-presets-bar::-webkit-scrollbar {
+    height: 4px;
+}
+
+#us-nodes-category-pills::-webkit-scrollbar-track,
+#us-nodes-presets-bar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#us-nodes-category-pills::-webkit-scrollbar-thumb,
+#us-nodes-presets-bar::-webkit-scrollbar-thumb {
+    background: rgba(6, 182, 212, 0.4);
+    border-radius: 4px;
+}
+
+#us-nodes-category-pills::-webkit-scrollbar-thumb:hover,
+#us-nodes-presets-bar::-webkit-scrollbar-thumb:hover {
+    background: rgba(6, 182, 212, 0.75);
 }
 
 .modal-close {

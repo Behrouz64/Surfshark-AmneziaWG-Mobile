@@ -113,7 +113,7 @@ html_content = f'''<!DOCTYPE html>
                 <h1 class="app-title">Surfshark AWG Mobile</h1>
                 <div style="display: flex; align-items: center; gap: 6px;">
                     <p class="app-subtitle" style="margin: 0;">Standalone DoH &amp; Shadowrocket Importer</p>
-                    <span style="font-size: 9px; padding: 1px 6px; border-radius: 999px; background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); font-weight: 600;">v5.4 Updated</span>
+                    <span style="font-size: 9px; padding: 1px 6px; border-radius: 999px; background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); font-weight: 600;">v5.5 Layout Fixed</span>
                 </div>
             </div>
         </div>
@@ -765,12 +765,12 @@ html_content = f'''<!DOCTYPE html>
                             </div>
 
                             <!-- Category Filter Pills Bar (Smooth Horizontal Scroll) -->
-                            <div id="us-nodes-category-pills" style="display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 6px 0; margin-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
+                            <div id="us-nodes-category-pills" style="display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 6px 0; margin-bottom: 8px; -webkit-overflow-scrolling: touch;">
                                 <button type="button" class="btn btn-primary us-cat-pill active" data-cat="all" style="font-size: 11px; padding: 4px 11px; white-space: nowrap; border-radius: 999px; flex-shrink: 0;">All Nodes</button>
                             </div>
 
                             <!-- Quick Action Presets (Horizontal Scrollable Bar) -->
-                            <div style="display: flex; gap: 6px; overflow-x: auto; padding: 6px 8px; margin-bottom: 10px; background: rgba(0,0,0,0.25); border-radius: var(--radius-md); -webkit-overflow-scrolling: touch; scrollbar-width: none;">
+                            <div id="us-nodes-presets-bar" style="display: flex; gap: 6px; overflow-x: auto; padding: 6px 8px; margin-bottom: 10px; background: rgba(0,0,0,0.25); border-radius: var(--radius-md); -webkit-overflow-scrolling: touch;">
                                 <button type="button" id="btn-preset-core-proton" class="btn btn-secondary" style="font-size: 10px; padding: 4px 9px; white-space: nowrap; flex-shrink: 0;">⚡ Core + Proton</button>
                                 <button type="button" id="btn-preset-static-top" class="btn btn-secondary" style="font-size: 10px; padding: 4px 9px; white-space: nowrap; flex-shrink: 0;">📌 Top Static (6)</button>
                                 <button type="button" id="btn-preset-proton-only" class="btn btn-secondary" style="font-size: 10px; padding: 4px 9px; white-space: nowrap; flex-shrink: 0;">🛡️ Proton Only (3)</button>
@@ -785,7 +785,7 @@ html_content = f'''<!DOCTYPE html>
                             </div>
 
                             <!-- Node Items Container (Grouped by Continent/Category) -->
-                            <div id="us-nodes-list" class="us-nodes-container" style="max-height: 50vh; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-right: 2px; margin-bottom: 10px;">
+                            <div id="us-nodes-list" class="us-nodes-container" style="display: block; width: 100%; max-height: 52vh; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-right: 4px; margin-bottom: 10px; box-sizing: border-box;">
                                 <div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 16px;">Loading node catalog...</div>
                             </div>
 
@@ -3242,6 +3242,27 @@ html_content = f'''<!DOCTYPE html>
                 usNodeSearchQuery = e.target.value;
                 renderUsServerNodes();
             }});
+        }}
+
+        // Smooth mouse wheel horizontal scrolling for Pills and Presets
+        const pillsBarEl = document.getElementById("us-nodes-category-pills");
+        if (pillsBarEl) {{
+            pillsBarEl.addEventListener("wheel", (e) => {{
+                if (e.deltaY !== 0) {{
+                    pillsBarEl.scrollLeft += e.deltaY;
+                    e.preventDefault();
+                }}
+            }}, {{ passive: false }});
+        }}
+
+        const presetsBarEl = document.getElementById("us-nodes-presets-bar");
+        if (presetsBarEl) {{
+            presetsBarEl.addEventListener("wheel", (e) => {{
+                if (e.deltaY !== 0) {{
+                    presetsBarEl.scrollLeft += e.deltaY;
+                    e.preventDefault();
+                }}
+            }}, {{ passive: false }});
         }}
 
         // Preset 1: Core + Proton (13 nodes)

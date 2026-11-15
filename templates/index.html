@@ -732,30 +732,59 @@ html.modal-open, body.modal-open {
 
 /* US Server Exit Nodes Mobile-Optimized Layout */
 .us-nodes-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding-bottom: 6px;
+    display: block !important;
+    width: 100%;
+    box-sizing: border-box;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(6, 182, 212, 0.4) rgba(0, 0, 0, 0.2);
+}
+
+.us-nodes-container::-webkit-scrollbar {
+    width: 5px;
+}
+
+.us-nodes-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.us-nodes-container::-webkit-scrollbar-thumb {
+    background: rgba(6, 182, 212, 0.4);
+    border-radius: 4px;
+}
+
+.us-nodes-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(6, 182, 212, 0.7);
 }
 
 .us-node-group {
+    display: block !important;
+    width: 100%;
+    box-sizing: border-box;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    overflow: hidden;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    flex-shrink: 0 !important;
+    min-height: -webkit-fit-content;
+    min-height: fit-content;
 }
 
 .us-node-group-header {
     background: rgba(255, 255, 255, 0.03);
     border-bottom: 1px solid var(--border-color);
-    padding: 8px 12px;
+    padding: 9px 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 11px;
     font-weight: 700;
     color: var(--accent-cyan);
+    min-height: 38px;
+    box-sizing: border-box;
+    border-top-left-radius: var(--radius-md);
+    border-top-right-radius: var(--radius-md);
 }
 
 .us-node-group-count {
@@ -767,23 +796,29 @@ html.modal-open, body.modal-open {
 .us-node-group-list {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 6px;
+    gap: 6px;
+    padding: 8px;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .us-node-card {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 9px 12px;
+    gap: 5px;
+    padding: 10px 12px;
     border-radius: 8px;
     cursor: pointer;
     background: var(--bg-main);
     border: 1px solid var(--border-color);
-    transition: background 0.15s ease, border-color 0.15s ease;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
     user-select: none;
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0 !important;
+    min-height: 52px;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .us-node-card:active {
@@ -911,6 +946,33 @@ html.modal-open, body.modal-open {
     font-size: 10px;
     color: var(--text-muted);
     flex-shrink: 0;
+}
+
+#us-nodes-category-pills,
+#us-nodes-presets-bar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(6, 182, 212, 0.4) transparent;
+}
+
+#us-nodes-category-pills::-webkit-scrollbar,
+#us-nodes-presets-bar::-webkit-scrollbar {
+    height: 4px;
+}
+
+#us-nodes-category-pills::-webkit-scrollbar-track,
+#us-nodes-presets-bar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#us-nodes-category-pills::-webkit-scrollbar-thumb,
+#us-nodes-presets-bar::-webkit-scrollbar-thumb {
+    background: rgba(6, 182, 212, 0.4);
+    border-radius: 4px;
+}
+
+#us-nodes-category-pills::-webkit-scrollbar-thumb:hover,
+#us-nodes-presets-bar::-webkit-scrollbar-thumb:hover {
+    background: rgba(6, 182, 212, 0.75);
 }
 
 .modal-close {
@@ -1172,7 +1234,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                 <h1 class="app-title">Surfshark AWG Mobile</h1>
                 <div style="display: flex; align-items: center; gap: 6px;">
                     <p class="app-subtitle" style="margin: 0;">Standalone DoH &amp; Shadowrocket Importer</p>
-                    <span style="font-size: 9px; padding: 1px 6px; border-radius: 999px; background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); font-weight: 600;">v5.4 Updated</span>
+                    <span style="font-size: 9px; padding: 1px 6px; border-radius: 999px; background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); font-weight: 600;">v5.5 Layout Fixed</span>
                 </div>
             </div>
         </div>
@@ -1824,12 +1886,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                             </div>
 
                             <!-- Category Filter Pills Bar (Smooth Horizontal Scroll) -->
-                            <div id="us-nodes-category-pills" style="display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 6px 0; margin-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: none;">
+                            <div id="us-nodes-category-pills" style="display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 6px 0; margin-bottom: 8px; -webkit-overflow-scrolling: touch;">
                                 <button type="button" class="btn btn-primary us-cat-pill active" data-cat="all" style="font-size: 11px; padding: 4px 11px; white-space: nowrap; border-radius: 999px; flex-shrink: 0;">All Nodes</button>
                             </div>
 
                             <!-- Quick Action Presets (Horizontal Scrollable Bar) -->
-                            <div style="display: flex; gap: 6px; overflow-x: auto; padding: 6px 8px; margin-bottom: 10px; background: rgba(0,0,0,0.25); border-radius: var(--radius-md); -webkit-overflow-scrolling: touch; scrollbar-width: none;">
+                            <div id="us-nodes-presets-bar" style="display: flex; gap: 6px; overflow-x: auto; padding: 6px 8px; margin-bottom: 10px; background: rgba(0,0,0,0.25); border-radius: var(--radius-md); -webkit-overflow-scrolling: touch;">
                                 <button type="button" id="btn-preset-core-proton" class="btn btn-secondary" style="font-size: 10px; padding: 4px 9px; white-space: nowrap; flex-shrink: 0;">⚡ Core + Proton</button>
                                 <button type="button" id="btn-preset-static-top" class="btn btn-secondary" style="font-size: 10px; padding: 4px 9px; white-space: nowrap; flex-shrink: 0;">📌 Top Static (6)</button>
                                 <button type="button" id="btn-preset-proton-only" class="btn btn-secondary" style="font-size: 10px; padding: 4px 9px; white-space: nowrap; flex-shrink: 0;">🛡️ Proton Only (3)</button>
@@ -1844,7 +1906,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                             </div>
 
                             <!-- Node Items Container (Grouped by Continent/Category) -->
-                            <div id="us-nodes-list" class="us-nodes-container" style="max-height: 50vh; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-right: 2px; margin-bottom: 10px;">
+                            <div id="us-nodes-list" class="us-nodes-container" style="display: block; width: 100%; max-height: 52vh; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-right: 4px; margin-bottom: 10px; box-sizing: border-box;">
                                 <div style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 16px;">Loading node catalog...</div>
                             </div>
 
@@ -4301,6 +4363,27 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                 usNodeSearchQuery = e.target.value;
                 renderUsServerNodes();
             });
+        }
+
+        // Smooth mouse wheel horizontal scrolling for Pills and Presets
+        const pillsBarEl = document.getElementById("us-nodes-category-pills");
+        if (pillsBarEl) {
+            pillsBarEl.addEventListener("wheel", (e) => {
+                if (e.deltaY !== 0) {
+                    pillsBarEl.scrollLeft += e.deltaY;
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        }
+
+        const presetsBarEl = document.getElementById("us-nodes-presets-bar");
+        if (presetsBarEl) {
+            presetsBarEl.addEventListener("wheel", (e) => {
+                if (e.deltaY !== 0) {
+                    presetsBarEl.scrollLeft += e.deltaY;
+                    e.preventDefault();
+                }
+            }, { passive: false });
         }
 
         // Preset 1: Core + Proton (13 nodes)
